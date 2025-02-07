@@ -5,9 +5,13 @@ import {
 import { notFound } from "next/navigation";
 import EditUserForm from "@/app/ui/dashboard/users/edit-form";
 
-export default async function Page({ params }: { params: { id: string } }) {
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: Props) {
   // get the id from the url
-  const id = params.id;
+  const { id } = await params;
 
   // fetch user from database
   const user = await fetchUserById(id);

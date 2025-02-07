@@ -3,9 +3,13 @@ import { PetGallery } from "@/app/ui/publicpages/pet-gallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-export default async function Page({ params }: { params: { id: string } }) {
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: Props) {
   // get id from the url
-  const id = params.id;
+  const { id } = await params;
 
   // get pet from database
   const pet = await fetchFrontPagePetById(id);
