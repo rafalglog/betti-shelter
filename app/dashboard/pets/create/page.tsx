@@ -4,8 +4,8 @@ import { fetchAdoptionStatusList } from "@/app/lib/data/pets/pet";
 import { fetchSpecies } from "@/app/lib/data/pets/public";
 
 export default async function Page() {
-    const speciesList = await fetchSpecies();
-    const adoptionStatusList = await fetchAdoptionStatusList();
+  const speciesList = await fetchSpecies();
+  const adoptionStatusList = await fetchAdoptionStatusList();
 
   return (
     <main>

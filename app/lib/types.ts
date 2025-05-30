@@ -1,3 +1,3 @@
 export interface SearchParamsType {
-    [key: string]: string | undefined
+  [key: string]: string | undefined;
 }

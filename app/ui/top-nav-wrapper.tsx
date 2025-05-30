@@ -6,5 +6,5 @@ export default async function TopNavWrapper() {
   const showUserProfile = session ? true : false;
   return (
     <TopNav userImage={session?.user.image} showUserProfile={showUserProfile} />
-  )
+  );
 }

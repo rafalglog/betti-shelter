@@ -3,15 +3,16 @@ import path from "path";
 import { writeFile } from "fs/promises";
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@/app/lib/constants";
 import { rolesWithPermission } from "../actions/authorization";
+import { Role } from "@prisma/client";
 
 // Validate and upload images
 export async function validateAndUploadImages(petImages: FormDataEntryValue[]) {
   // Check if the user has permission to upload images
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Create Pet.");
   }
-  
+
   const imageUrlArray: string[] = [];
 
   if (petImages.length === 0) {

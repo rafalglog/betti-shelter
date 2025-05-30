@@ -2,7 +2,5 @@ import github from "next-auth/providers/github";
 import { NextAuthConfig } from "next-auth";
 
 export const authProviderConfigList = {
-  providers: [
-    // github,
-  ],
+  providers: [github],
 } satisfies NextAuthConfig;

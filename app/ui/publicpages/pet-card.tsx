@@ -8,15 +8,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 
-export default async function PetCard({
-  query,
-  currentPage,
-  speciesName,
-}: {
+interface Props {
   query: string;
   currentPage: number;
   speciesName: string;
-}) {
+}
+
+const PetCard = async ({ query, currentPage, speciesName }: Props) => {
   // user session
   const session = await auth();
 
@@ -26,9 +24,10 @@ export default async function PetCard({
     currentPage,
     speciesName
   );
+
   return (
     <div className="mt-6 flex gap-3 flex-wrap">
-      {pets?.map((pet) => (
+      {pets.map((pet) => (
         <div
           key={pet.id}
           className="bg-white relative border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center"
@@ -96,4 +95,6 @@ export default async function PetCard({
       ))}
     </div>
   );
-}
+};
+
+export default PetCard;

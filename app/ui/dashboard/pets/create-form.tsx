@@ -1,9 +1,9 @@
 "use client";
-import { useFormState } from "react-dom";
+
 import { createPet, CreatePetFormState } from "@/app/lib/actions/pet";
 import Link from "next/link";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { AdoptionStatus, Species } from "@prisma/client";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -19,7 +19,7 @@ export default function EditPetForm({
   // state to hold the pet images
   const [files, setFiles] = useState<File[]>([]);
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState<CreatePetFormState, FormData>(
+  const [state, dispatch] = useActionState<CreatePetFormState, FormData>(
     createPet,
     initialState
   );
@@ -495,9 +495,9 @@ export default function EditPetForm({
             <h1 className="text-sm text-gray-500">Images to be uploaded</h1>
             {files.map((file, index) => (
               <div key={index} className="flex text-gray-600 items-center">
-                <Image 
-                  src={URL.createObjectURL(file)} 
-                  alt={file.name} 
+                <Image
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
                   width={40}
                   height={40}
                 />

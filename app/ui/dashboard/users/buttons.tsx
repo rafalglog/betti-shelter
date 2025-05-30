@@ -25,14 +25,15 @@ export function DeleteUser({ id }: { id: string }) {
   return (
     <form action={deleteUserWithId}>
       {!confirmation ? (
-        <div onClick={handleClick} className="rounded-md border p-2 hover:bg-gray-100 hover:cursor-pointer">
+        <div
+          onClick={handleClick}
+          className="rounded-md border p-2 hover:bg-gray-100 hover:cursor-pointer"
+        >
           <span className="sr-only">Delete</span>
           <TrashIcon className="w-5" />
         </div>
       ) : (
-        <button
-          className="rounded-md border p-2 hover:bg-red-500 hover:text-white"
-        >
+        <button className="rounded-md border p-2 hover:bg-red-500 hover:text-white">
           <span className="sr-only">Delete</span>
           Are you sure?
         </button>

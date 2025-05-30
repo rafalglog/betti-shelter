@@ -3,8 +3,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { idSchema } from "@/app/lib/schemas/common";
+import { idSchema } from "@/app/lib/zod-schemas/common";
 import { z } from "zod";
+import { Role } from "@prisma/client";
 
 // error messages for the user form
 export type updateUserFormState = {
@@ -16,14 +17,15 @@ export type updateUserFormState = {
 
 // Define a schema for the user form
 const updateUserFormSchema = z.object({
-  role: z.enum(["user", "employee"], {
-    invalid_type_error: "Please select a role.",
+  role: z.nativeEnum(Role, {
+    required_error: "Please select a role.",
+    invalid_type_error: "Invalid role selected.",
   }),
 });
 
 export async function deleteUser(id: string) {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Delete User.");
   }
@@ -43,11 +45,9 @@ export async function deleteUser(id: string) {
 
     // Revalidate the cache
     revalidatePath("/dashboard/users");
-
   } catch (error) {
-    return {
-      message: "Database Error: Failed to delete user.",
-    };
+    console.error("Database Error: Failed to Delete User.", error);
+    throw new Error("Database Error: Failed to Delete User.");
   }
 }
 
@@ -57,7 +57,7 @@ export async function updateUser(
   formData: FormData
 ) {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Update User.");
   }
@@ -100,7 +100,7 @@ export async function updateUser(
 
   // Revalidate the cache
   revalidatePath("/dashboard/users");
-  
+
   // Redirect to the users page
   redirect("/dashboard/users");
 }

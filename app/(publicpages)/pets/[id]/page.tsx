@@ -3,6 +3,19 @@ import { PetGallery } from "@/app/ui/publicpages/pet-gallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+interface PetDetailProps {
+  label: string;
+  value: string | number;
+}
+
+// Component to display pet details
+const PetDetail = ({ label, value }: PetDetailProps) => (
+  <div>
+    <span className="font-medium">{label}:</span>
+    <span className="ml-2">{value}</span>
+  </div>
+);
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -23,7 +36,7 @@ export default async function Page({ params }: Props) {
     <main>
       <div className="grid grid-cols-1 sm:grid-cols-2 text-slate-500 ">
         {/* pet images */}
-        <PetGallery images={pet.petImages}/>
+        <PetGallery images={pet.petImages} />
 
         {/* pet details */}
         <div className="text-gray-600">
@@ -49,16 +62,3 @@ export default async function Page({ params }: Props) {
     </main>
   );
 }
-
-const PetDetail = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) => (
-  <div>
-    <span className="font-medium">{label}:</span>
-    <span className="ml-2">{value}</span>
-  </div>
-);

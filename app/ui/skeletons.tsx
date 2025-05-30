@@ -7,9 +7,7 @@ const shimmer =
 // dashboard: skeleton for the pets table
 export function PetsTableSkeleton() {
   return (
-    <div
-      className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1"
-    >
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap">Name</div>
         <div className="text-nowrap">Status</div>
@@ -34,7 +32,9 @@ export function PetsTableSkeleton() {
 // dashboard: skeleton for the pets table rows
 export function PetsTableRowSkeleton() {
   return (
-    <div className={`${shimmer} relative grid items-center grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] sm:grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}>
+    <div
+      className={`${shimmer} relative grid items-center grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] sm:grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}
+    >
       <div className="col-span-6 sm:col-span-1">
         <div className="flex items-center space-x-2">
           <div className="flex-shrink-0">
@@ -154,9 +154,7 @@ export function PaginationSkeleton() {
 
 export function UsersTableSkeleton() {
   return (
-    <div
-      className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1"
-    >
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-4 gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap col-span-2">Email</div>
         <div className="text-nowrap">Role</div>
@@ -177,7 +175,9 @@ export function UsersTableSkeleton() {
 
 export function UsersTableRowSkeleton() {
   return (
-    <div className={`${shimmer} relative grid items-center grid-cols-4 gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}>
+    <div
+      className={`${shimmer} relative grid items-center grid-cols-4 gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}
+    >
       <div className="col-span-4 sm:col-span-2">
         <div className="flex items-center space-x-2">
           <div className="flex-shrink-0">
@@ -209,7 +209,9 @@ export function FrontPetsCardSkeleton() {
 }
 export function PetCardSkeleton() {
   return (
-    <div className={`${shimmer} relative bg-gray-100 border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center`}>
+    <div
+      className={`${shimmer} relative bg-gray-100 border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center`}
+    >
       <HeartIcon className="absolute top-2 right-2 h-6 w-6 text-red-300" />
       <div>
         <div className="w-full">

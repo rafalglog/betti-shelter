@@ -11,7 +11,6 @@ export default function Page() {
     <>
       <div className="">
         <div className="mx-auto max-w-[40rem]">
-
           <h1 className="text-2xl">Contact Us</h1>
           <p className="text-gray-500 text-sm">
             We will contact you as soon as possible

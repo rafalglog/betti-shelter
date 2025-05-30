@@ -19,18 +19,22 @@ const links = [
   { name: "Users", href: "/dashboard/users", icon: ClipboardDocumentListIcon },
 ];
 
-export default function NavLinks({ userRole }: { userRole: string | undefined }) {
+export default function NavLinks({
+  userRole,
+}: {
+  userRole: string | undefined;
+}) {
   // Get the current pathname
   const pathname = usePathname();
 
   // Filter out the button links if the user is not an admin
-  const filteredLinks = links.filter(link => {
-    if (userRole !== 'admin' && link.name === 'Users') {
+  const filteredLinks = links.filter((link) => {
+    if (userRole !== "admin" && link.name === "Users") {
       return false;
     }
     return true;
   });
-  
+
   return (
     <>
       {filteredLinks.map((link) => {

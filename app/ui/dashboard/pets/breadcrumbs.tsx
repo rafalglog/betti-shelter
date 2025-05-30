@@ -1,6 +1,6 @@
-import { clsx } from 'clsx';
-import Link from 'next/link';
-import { opensans } from '@/app/ui/fonts';
+import { clsx } from "clsx";
+import Link from "next/link";
+import { opensans } from "@/app/ui/fonts";
 
 interface Breadcrumb {
   label: string;
@@ -15,18 +15,19 @@ export default function Breadcrumbs({
 }) {
   return (
     <nav aria-label="Breadcrumb" className="mb-6 block">
-      <ol className={clsx(opensans.className, 'flex text-lg font-medium')}>
+      <ol className={clsx(opensans.className, "flex text-lg font-medium")}>
         {breadcrumbs.map((breadcrumb, index) => (
           <li
             key={breadcrumb.href}
             aria-current={breadcrumb.active}
             className={clsx(
-              breadcrumb.active ? 'text-gray-900' : 'text-gray-500',
+              breadcrumb.active ? "text-gray-900" : "text-gray-500"
             )}
           >
             <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
-            {index < breadcrumbs.length - 1 &&
-              <span className="mx-3 inline-block">/</span>}
+            {index < breadcrumbs.length - 1 && (
+              <span className="mx-3 inline-block">/</span>
+            )}
           </li>
         ))}
       </ol>

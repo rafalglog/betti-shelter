@@ -1,7 +1,5 @@
 import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
-import {
-  fetchUserById,
-} from "@/app/lib/data/users/user";
+import { fetchUserById } from "@/app/lib/data/users/user";
 import { notFound } from "next/navigation";
 import EditUserForm from "@/app/ui/dashboard/users/edit-form";
 

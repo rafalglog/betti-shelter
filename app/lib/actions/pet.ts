@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 import path from "path";
 import prisma from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { idSchema } from "@/app/lib/schemas/common";
+import { idSchema } from "@/app/lib/zod-schemas/common";
 import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
+import { Role } from "@prisma/client";
 
 // Define a schema for the pet form
 const PetFormSchema = z.object({
@@ -66,7 +67,7 @@ export const createPet = async (
   formData: FormData
 ) => {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Create Pet.");
   }
@@ -178,7 +179,7 @@ export const updatePet = async (
   formData: FormData
 ) => {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Update Pet.");
   }
@@ -294,7 +295,7 @@ export const updatePet = async (
 
 export async function deletePet(id: string) {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Delete Pet.");
   }
@@ -314,7 +315,6 @@ export async function deletePet(id: string) {
 
     // Revalidate the cache for the /dashboard/pets path
     revalidatePath("/dashboard/pets");
-
   } catch (error) {
     return {
       message: "Database Error: Failed to Create Pet.",
@@ -324,14 +324,14 @@ export async function deletePet(id: string) {
 
 /**
  * Deletes a pet image by its ID.
- * 
+ *
  * @param {string} id - The ID of the pet image to delete.
  * @returns {Promise<{ message: string } | void>} - A message indicating the result of the operation.
  * @throws {Error} - Throws an error if the user does not have permission, the ID is invalid, or a database error occurs.
  */
 export async function deletePetImage(id: string) {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Delete Image.");
   }
@@ -355,20 +355,18 @@ export async function deletePetImage(id: string) {
 
     // Revalidate the cache for the /dashboard/pets path
     revalidatePath("/dashboard/pets");
-
   } catch (error) {
-    return {
-      message: "Database Error: Failed to delete Image.",
-    };
+    console.error("Database Error: Failed to Delete Image.");
+    throw new Error("Database Error: Failed to Delete Image.");
   }
 }
 
 export async function createPetLike(petId: string, userId?: string) {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([
-    "admin",
-    "employee",
-    "user",
+    Role.ADMIN,
+    Role.STAFF,
+    Role.USER,
   ]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Create Pet Like.");
@@ -400,7 +398,6 @@ export async function createPetLike(petId: string, userId?: string) {
 
     // Revalidate the cache for the /pets path
     revalidatePath("/pets");
-    
   } catch (error) {
     return {
       message: "Database Error: Failed to add pet to likes.",
@@ -411,9 +408,9 @@ export async function createPetLike(petId: string, userId?: string) {
 export async function deletePetLike(petId: string, userId?: string) {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([
-    "admin",
-    "employee",
-    "user",
+    Role.ADMIN,
+    Role.STAFF,
+    Role.USER,
   ]);
   if (!hasPermission) {
     throw new Error("Access Denied. Failed to Delete Pet.");
@@ -446,7 +443,6 @@ export async function deletePetLike(petId: string, userId?: string) {
 
     // Revalidate the cache for the /pets path
     revalidatePath("/pets");
-
   } catch (error) {
     return {
       message: "Database Error: Failed to delete pet to likes.",

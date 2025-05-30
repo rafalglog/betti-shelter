@@ -21,7 +21,7 @@ export const shimmer = (w: number, h: number) => `
 export const toBase64 = (str: string) =>
   // Check if the code is running on the server (Node.js)
   typeof window === "undefined"
-    // Use Buffer to convert the string to base64 on the server
-    ? Buffer.from(str).toString("base64")
-    // Use window.btoa to convert the string to base64 in the browser
-    : window.btoa(str);
+    ? // Use Buffer to convert the string to base64 on the server
+      Buffer.from(str).toString("base64")
+    : // Use window.btoa to convert the string to base64 in the browser
+      window.btoa(str);

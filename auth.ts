@@ -1,28 +1,14 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "./app/lib/prisma";
-import { z } from 'zod';
+import { z } from "zod";
 import { type DefaultSession } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import { User } from "@prisma/client";
 import { authProviderConfigList } from "./auth.config";
-
-// get user from db
-async function getUser(email: string): Promise<User | undefined | null> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email: email,
-      },
-    });
-    return user;
-  } catch (error) {
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-}
+import { Role } from "@prisma/client"; // Import the Role enum
 
 // declare custom user properties
 declare module "next-auth" {
@@ -30,12 +16,12 @@ declare module "next-auth" {
    * Returned by `auth`, `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
   interface User {
-    role: string;
+    role: Role;
   }
 
   interface Session {
     user: {
-      role: string;
+      role: Role;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -47,13 +33,28 @@ declare module "next-auth" {
 }
 declare module "@auth/core/adapters" {
   interface AdapterUser {
-    role: string;
+    role: Role;
   }
 }
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
-    role: string;
+    role: Role;
+  }
+}
+
+// get user from db
+async function getUser(email: string): Promise<User | undefined | null> {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    throw new Error("Failed to fetch user.");
   }
 }
 
@@ -62,12 +63,12 @@ const credentialsConfig = Credentials({
   // The credentials object is used to define the fields used to log in
   credentials: {
     email: {
-      label: 'Email',
-      type: 'email',
+      label: "Email",
+      type: "email",
     },
     password: {
-      label: 'Password',
-      type: 'password',
+      label: "Password",
+      type: "password",
     },
   },
   // The authorize callback validates credentials
@@ -80,12 +81,12 @@ const credentialsConfig = Credentials({
     // If the credentials are valid, return the user object
     if (parsedCredentials.success) {
       const { email, password } = parsedCredentials.data;
-    
+
       const user = await getUser(email);
-      
+
       // If user does not exist or password is missing, throw an error
       if (!user || !user.password) return null;
-      
+
       const passwordsMatch = await bcrypt.compare(password, user.password);
 
       // If the password is correct, return the user object
@@ -93,7 +94,7 @@ const credentialsConfig = Credentials({
     }
     return null;
   },
-})
+});
 
 // auth config
 export const authConfig = {
@@ -113,10 +114,10 @@ export const authConfig = {
       return session;
     },
   },
-  session: { 
+  session: {
     strategy: "jwt",
   },
-  providers: [...authProviderConfigList.providers, credentialsConfig ],
+  providers: [...authProviderConfigList.providers, credentialsConfig],
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

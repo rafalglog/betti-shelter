@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { PrismaClient } = require("@prisma/client");
+const { PrismaClient, Role } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const species = [
@@ -75,10 +75,7 @@ const petData = [
       connect: { id: "640566d8-2619-4764-8660-61a39baf075e" },
     },
     petImages: {
-      create: [
-        { url: "/uploads/dog2.jpg" },
-        { url: "/uploads/dog2-1.webp" }
-      ],
+      create: [{ url: "/uploads/dog2.jpg" }, { url: "/uploads/dog2-1.webp" }],
     },
   },
   {
@@ -341,7 +338,7 @@ async function seedUsers() {
         name: "admin",
         password: hashedPassword,
         email: "admin@example.com",
-        role: "admin",
+        role: Role.ADMIN,
       },
     });
   } catch (error) {

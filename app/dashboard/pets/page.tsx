@@ -9,41 +9,38 @@ import { fetchPetsPages } from "@/app/lib/data/pets/pet";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {
-    searchParams: Promise<SearchParamsType>;
+  searchParams: Promise<SearchParamsType>;
 }
 
 export default async function Page({ searchParams }: Props) {
-    // get the query and page number from the search params
-    const { query = "", page = "1" } = await searchParams;
-    const currentPage = Number(page);
-    
-    const totalPages = await fetchPetsPages(query);
+  // get the query and page number from the search params
+  const { query = "", page = "1" } = await searchParams;
+  const currentPage = Number(page);
 
-    return (
-        <div className="w-full">
-            {/* page title */}
-            <div className="flex w-full items-center justify-between">
-                <h1 className={`${opensans.className} text-2xl`}>Pets</h1>
-            </div>
+  const totalPages = await fetchPetsPages(query);
 
-            {/* search bar */}
-            <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-                <Search placeholder="Search pets..." />
-                <CreatePet />
-            </div>
+  return (
+    <div className="w-full">
+      {/* page title */}
+      <div className="flex w-full items-center justify-between">
+        <h1 className={`${opensans.className} text-2xl`}>Pets</h1>
+      </div>
 
-            {/* table of pets */}
-            <Suspense
-                key={query + currentPage}
-                fallback={<PetsTableSkeleton />}
-            >
-                <PetsTable query={query} currentPage={currentPage} />
-            </Suspense>
+      {/* search bar */}
+      <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
+        <Search placeholder="Search pets..." />
+        <CreatePet />
+      </div>
 
-            {/* table pagination buttons */}
-            <div className="mt-5 flex w-full justify-center">
-                <Pagination totalPages={totalPages} />
-            </div>
-        </div>
-    );
+      {/* table of pets */}
+      <Suspense key={query + currentPage} fallback={<PetsTableSkeleton />}>
+        <PetsTable query={query} currentPage={currentPage} />
+      </Suspense>
+
+      {/* table pagination buttons */}
+      <div className="mt-5 flex w-full justify-center">
+        <Pagination totalPages={totalPages} />
+      </div>
+    </div>
+  );
 }

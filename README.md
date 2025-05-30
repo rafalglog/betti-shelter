@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This is an open-source web application designed to help animal shelters manage their operations efficiently. The app provides a user-friendly interface for potential adopters to view available pets and a comprehensive dashboard for employees to manage pet and user information.
+This is an open-source web application designed to help animal shelters manage their operations efficiently. The app provides a user-friendly interface for potential adopters to view available pets and a comprehensive dashboard for staff members to manage pet and user information.
 
 ## Tech Stack
 

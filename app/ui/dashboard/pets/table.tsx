@@ -49,7 +49,9 @@ export default async function PetsTable({
                     <PhotoIcon className="w-7 text-gray-400" />
                   )}
                 </div>
-                <div className="truncate font-medium sm:font-normal">{pet.name}</div>
+                <div className="truncate font-medium sm:font-normal">
+                  {pet.name}
+                </div>
               </div>
             </div>
             <div className="truncate text-gray-500 sm:text-inherit">

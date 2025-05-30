@@ -3,7 +3,8 @@ import prisma from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { z } from "zod";
-import { idSchema } from "../../schemas/common";
+import { idSchema } from "../../zod-schemas/common";
+import { Role } from "@prisma/client";
 
 // Define a schema for fetchPetsPages
 const fetchPetsPagesSchema = z.string();
@@ -19,7 +20,7 @@ export async function fetchPetCardData() {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied");
   }
@@ -55,7 +56,7 @@ export async function fetchPetCardData() {
       availablePetsCount,
     };
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching card data.", error);
     }
     throw new Error("Error fetching card data.");
@@ -67,7 +68,7 @@ export async function fetchPetsPages(query: string) {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
@@ -96,7 +97,7 @@ export async function fetchPetsPages(query: string) {
     // return the total number of pages
     return totalPages;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets pages.", error);
     }
     throw new Error("Error fetching pets pages.");
@@ -108,7 +109,7 @@ export async function fetchLatestPets() {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
@@ -140,7 +141,7 @@ export async function fetchLatestPets() {
 
     return latestPets;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching latest pets.", error);
     }
     throw new Error("Error fetching latest pets.");
@@ -153,15 +154,15 @@ export async function fetchFilteredPets(query: string, currentPage: number) {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
 
   // Parse the query and currentPage
   const parsedData = fetchFilteredPetsSchema.safeParse({
-    parsedQuery: query, 
-    parsedCurrentPage: currentPage
+    parsedQuery: query,
+    parsedCurrentPage: currentPage,
   });
   if (!parsedData.success) {
     throw new Error("Invalid query type.");
@@ -215,7 +216,7 @@ export async function fetchFilteredPets(query: string, currentPage: number) {
     // return the pets
     return pets;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets.", error);
     }
     throw new Error("Error fetching pets.");
@@ -224,7 +225,7 @@ export async function fetchFilteredPets(query: string, currentPage: number) {
 
 export async function fetchAdoptionStatusList() {
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
@@ -236,7 +237,7 @@ export async function fetchAdoptionStatusList() {
     // return the adoption status list
     return adoptionStatusList;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching adoption status.", error);
     }
     throw new Error("Error fetching adoption status.");
@@ -248,7 +249,7 @@ export async function fetchPetById(id: string) {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin", "employee"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
@@ -274,7 +275,7 @@ export async function fetchPetById(id: string) {
     // return the pet
     return pet;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets.", error);
     }
     throw new Error("Error fetching pet.");

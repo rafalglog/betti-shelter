@@ -1,14 +1,16 @@
-import { Suspense } from 'react';
-import { CardsSkeleton, LatestPetsSkeleton } from '@/app/ui/skeletons';
-import CardWrapper from '@/app/ui/dashboard/cards';
-import LatestPets from '@/app/ui/dashboard/latest-pets';
-import { opensans } from '@/app/ui/fonts';
+import { Suspense } from "react";
+import { CardsSkeleton, LatestPetsSkeleton } from "@/app/ui/skeletons";
+import CardWrapper from "@/app/ui/dashboard/cards";
+import LatestPets from "@/app/ui/dashboard/latest-pets";
+import { opensans } from "@/app/ui/fonts";
 
 export default async function Page() {
   return (
     <main>
       {/* title */}
-      <h1 className={`${opensans.className} mb-4 text-xl md:text-2xl font-normal`}>
+      <h1
+        className={`${opensans.className} mb-4 text-xl md:text-2xl font-normal`}
+      >
         Dashboard
       </h1>
 
@@ -25,7 +27,6 @@ export default async function Page() {
           <LatestPets />
         </Suspense>
       </div>
-
     </main>
   );
 }

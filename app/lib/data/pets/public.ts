@@ -2,7 +2,7 @@ import prisma from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { idSchema } from "../../schemas/common";
+import { idSchema } from "../../zod-schemas/common";
 
 /*
 ============ data for the public pages ============
@@ -96,7 +96,7 @@ export async function fetchFilteredPublishedPetsWithCategory(
     // return the pets
     return pets;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets.", error);
     }
     throw new Error("Error fetching pets.");
@@ -141,7 +141,7 @@ export async function fetchPublishedPetsPagesWithCategory(
     // return the total number of pages
     return totalPages;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets pages.", error);
     }
     throw new Error("Error fetching pets pages.");
@@ -153,7 +153,7 @@ export async function fetchSpecies() {
     const species = await prisma.species.findMany();
     return species;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching species.", error);
     }
     throw new Error("Error fetching species.");
@@ -193,7 +193,7 @@ export async function fetchFrontPagePetById(id: string) {
     // return the pet
     return pet;
   } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pet.", error);
     }
     throw new Error("Error fetching pet.");

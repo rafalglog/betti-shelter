@@ -4,7 +4,6 @@ import { PowerIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
 import { signOut } from "@/auth";
 import { auth } from "@/auth";
 
-
 export default async function SideNav() {
   const session = await auth();
   const userRole = session?.user?.role;
@@ -24,7 +23,7 @@ export default async function SideNav() {
 
       {/* left nav links */}
       <div className="flex grow flex-row justify-between space-x-2 lg:flex-col lg:space-x-0 lg:space-y-2">
-        <NavLinks userRole={userRole}/>
+        <NavLinks userRole={userRole} />
         {/* expander */}
         <div className="hidden h-auto w-full grow rounded-md lg:block"></div>
         {/* sign out button */}

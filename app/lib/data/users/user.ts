@@ -3,7 +3,8 @@ import prisma from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { z } from "zod";
-import { idSchema } from "../../schemas/common";
+import { idSchema } from "../../zod-schemas/common";
+import { Role } from "@prisma/client";
 
 // Define a schema for fetchFilteredUsers
 const fetchFilteredUsersSchema = z.object({
@@ -19,7 +20,7 @@ export async function fetchFilteredUsers(query: string, currentPage: number) {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
     throw new Error("Access Denied");
   }
@@ -46,7 +47,7 @@ export async function fetchFilteredUsers(query: string, currentPage: number) {
           mode: "insensitive",
         },
         role: {
-          not: "admin",
+          not: Role.ADMIN,
         },
       },
       select: {
@@ -115,7 +116,7 @@ export async function fetchUserPages(query: string) {
   noStore();
 
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
     throw new Error("Access Denied");
   }
@@ -154,9 +155,9 @@ export async function fetchUserPages(query: string) {
 export async function fetchUserById(id: string) {
   // Disable caching for this function
   noStore();
-  
+
   // Check if the user has permission
-  const hasPermission = await rolesWithPermission(["admin"]);
+  const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
     throw new Error("Access Denied.");
   }
@@ -167,7 +168,7 @@ export async function fetchUserById(id: string) {
     throw new Error("Invalid ID format.");
   }
   const validatedId = parsedId.data;
-  
+
   // Fetch the user
   try {
     const user = await prisma.user.findUnique({

@@ -2,8 +2,7 @@
 import { PetImage } from "@prisma/client";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { updatePet, CreatePetFormState } from "@/app/lib/actions/pet";
-import { useFormState } from "react-dom";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { AdoptionStatus, Pet, Species } from "@prisma/client";
 import { TrashIcon } from "@heroicons/react/24/outline";
@@ -22,18 +21,22 @@ export default function EditPetForm({
   speciesList: Species[];
   adoptionStatusList: AdoptionStatus[];
 }) {
-
   const [files, setFiles] = useState<File[]>([]);
 
   const updatePetWithId = updatePet.bind(null, pet.id);
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useFormState<CreatePetFormState, FormData>(
+  const [state, dispatch] = useActionState<CreatePetFormState, FormData>(
     updatePetWithId,
     initialState
   );
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+  const ALLOWED_MIME_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
 
   // handle file change event
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,9 +45,7 @@ export default function EditPetForm({
       // Filter out invalid files with unsupported file types and max size of 5MB
       const validFiles = Array.from(files).filter(
         (file) =>
-          ALLOWED_MIME_TYPES.includes(
-            file.type
-          ) && file.size <= MAX_FILE_SIZE
+          ALLOWED_MIME_TYPES.includes(file.type) && file.size <= MAX_FILE_SIZE
       );
       setFiles((prevFiles) => [...prevFiles, ...validFiles]);
     }
@@ -60,9 +61,7 @@ export default function EditPetForm({
         .filter(
           (file): file is File =>
             file !== null &&
-          ALLOWED_MIME_TYPES.includes(
-              file.type
-            ) &&
+            ALLOWED_MIME_TYPES.includes(file.type) &&
             file.size <= MAX_FILE_SIZE
         );
       setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
@@ -119,7 +118,7 @@ export default function EditPetForm({
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-                
+
                 <div id="name-error" aria-live="polite" aria-atomic="true">
                   {state.errors?.name &&
                     state.errors.name.map((error: string) => (

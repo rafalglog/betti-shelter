@@ -1,7 +1,8 @@
 import SideNav from "@/app/ui/dashboard/sidenav";
 import { auth } from "@/auth";
+import { Role } from "@prisma/client";
 
-// Layout for the admin and employees dashboard
+// Layout for the admin and staff members dashboard
 const AdminDashboard = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex h-screen flex-col lg:flex-row lg:overflow-hidden">
@@ -30,7 +31,7 @@ export default async function Layout({
   const session = await auth();
   const userRole = session?.user?.role;
 
-  if (userRole === "employee" || userRole === "admin") {
+  if (userRole === Role.STAFF || userRole === Role.ADMIN) {
     return <AdminDashboard> {children} </AdminDashboard>;
   } else {
     return <AcessDenied />;
