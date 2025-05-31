@@ -2,12 +2,12 @@ import { HeartIcon } from "@heroicons/react/24/outline"; // Changed to outline v
 
 // Loading animation
 const shimmer =
-  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
+  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-linear-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
 // dashboard: skeleton for the pets table
 export const PetsTableSkeleton = () => {
   return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap">Name</div>
         <div className="text-nowrap">Status</div>
@@ -37,21 +37,21 @@ export const PetsTableRowSkeleton = () => {
     >
       <div className="col-span-6 sm:col-span-1">
         <div className="flex items-center space-x-2">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
           </div>
-          <div className="h-6 w-24 rounded bg-gray-200" />
+          <div className="h-6 w-24 rounded-sm bg-gray-200" />
         </div>
       </div>
-      <div className="h-6 w-16 rounded bg-gray-200" />
+      <div className="h-6 w-16 rounded-sm bg-gray-200" />
 
-      <div className="h-6 w-9 sm:w-12 rounded bg-gray-200" />
-      <div className="h-6 w-9 sm:w-12 rounded bg-gray-200" />
-      <div className="h-6 w-9 sm:w-12 rounded bg-gray-200" />
+      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
+      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
+      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
 
       <div className="flex justify-end sm:justify-center gap-3 col-span-2 sm:col-span-1">
-        <div className="h-[38px] w-[38px] rounded bg-gray-200" />
-        <div className="h-[38px] w-[38px] rounded bg-gray-200" />
+        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
+        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
       </div>
     </div>
   );
@@ -120,7 +120,7 @@ export const LatestPetRowSkeleton = () => {
 export const CardSkeleton = () => {
   return (
     <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-sm`}
+      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-xs`}
     >
       <div className="flex p-2">
         <div className="ml-2 h-6 w-16 rounded-md bg-gray-200 text-sm font-medium" />
@@ -146,16 +146,16 @@ export const CardsSkeleton = () => {
 export const PaginationSkeleton = () => {
   return (
     <>
-      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded" />
-      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded ml-3 mr-3" />
-      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded" />
+      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded-sm" />
+      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded-sm ml-3 mr-3" />
+      <div className="border border-gray-300 h-10 w-10 bg-gray-100 rounded-sm" />
     </>
   );
 };
 
 export const UsersTableSkeleton = () => {
   return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-4 gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap col-span-2">Email</div>
         <div className="text-nowrap">Role</div>
@@ -181,16 +181,16 @@ export const UsersTableRowSkeleton = () => {
     >
       <div className="col-span-4 sm:col-span-2">
         <div className="flex items-center space-x-2">
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
           </div>
-          <div className="h-6 w-24 rounded bg-gray-200" />
+          <div className="h-6 w-24 rounded-sm bg-gray-200" />
         </div>
       </div>
-      <div className="h-6 w-16 rounded bg-gray-200" />
+      <div className="h-6 w-16 rounded-sm bg-gray-200" />
       <div className="flex justify-end sm:justify-center gap-3 col-span-3 sm:col-span-1">
-        <div className="h-[38px] w-[38px] rounded bg-gray-200" />
-        <div className="h-[38px] w-[38px] rounded bg-gray-200" />
+        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
+        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
       </div>
     </div>
   );
@@ -218,8 +218,8 @@ export const PetCardSkeleton = () => {
       <div>
         <div className="w-full">
           <div className="h-28 w-28 bg-gray-200 rounded-md" />
-          <div className="h-5 w-24 rounded bg-gray-200 mt-1" />
-          <div className="h-5 w-24 rounded bg-gray-200 mt-1" />
+          <div className="h-5 w-24 rounded-sm bg-gray-200 mt-1" />
+          <div className="h-5 w-24 rounded-sm bg-gray-200 mt-1" />
         </div>
       </div>
     </div>

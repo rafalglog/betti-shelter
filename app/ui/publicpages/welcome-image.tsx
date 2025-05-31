@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const WelcomeImage = () => {
   return (
-    <div className="relative overflow-hidden bg-gray-200 h-96 flex flex-col items-center rounded">
+    <div className="relative overflow-hidden bg-gray-200 h-96 flex flex-col items-center rounded-sm">
       <Image
         src={welcomePicture}
         alt="home image"
@@ -19,7 +19,7 @@ const WelcomeImage = () => {
         </div>
         <Link
           href="/pets"
-          className="bg-tranparent hover:bg-white text-white hover:text-black font-semibold py-2 px-4 border border-white rounded transition-colors"
+          className="bg-tranparent hover:bg-white text-white hover:text-black font-semibold py-2 px-4 border border-white rounded-sm transition-colors"
         >
           <span>See Pets</span>
         </Link>

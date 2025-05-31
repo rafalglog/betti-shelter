@@ -43,7 +43,7 @@ const CategoryList = ({ species, speciesName }: Props) => {
       <ListboxButton
         className={clsx(
           "relative block w-52 rounded-lg bg-white border border-gray-200 py-1.5 pr-8 pl-3 text-left text-sm/6 text-gray-600",
-          "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2 data-[focus]:outline-white/25"
+          "focus:outline-hidden data-focus:outline-2 data-focus:-outline-offset-2 data-focus:outline-white/25"
         )}
       >
         {speciesName || optionList[0]}
@@ -59,16 +59,16 @@ const CategoryList = ({ species, speciesName }: Props) => {
       >
         <ListboxOptions
           anchor="bottom"
-          className="w-[var(--button-width)] z-10 bg-white rounded-xl border border-gray-200 p-1 [--anchor-gap:var(--spacing-1)] focus:outline-none"
+          className="w-(--button-width) z-10 bg-white rounded-xl border border-gray-200 p-1 [--anchor-gap:var(--spacing-1)] focus:outline-hidden"
         >
           {optionList.map((value) => (
             <ListboxOption
               key={value}
               value={value}
               onClick={() => handleCategoryChange(value)}
-              className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-gray-100/60"
+              className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-focus:bg-gray-100/60"
             >
-              <CheckIcon className="invisible size-4 fill-gray-600 group-data-[selected]:visible" />
+              <CheckIcon className="invisible size-4 fill-gray-600 group-data-selected:visible" />
               <div className="text-sm/6 text-gray-600">{value}</div>
             </ListboxOption>
           ))}

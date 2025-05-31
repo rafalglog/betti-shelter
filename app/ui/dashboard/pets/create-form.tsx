@@ -96,7 +96,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   required
                   autoComplete="off"
                   aria-describedby="name-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
 
@@ -123,7 +123,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   name="gender"
                   autoComplete="off"
                   aria-describedby="gender-error"
-                  className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   {GENDER_VALUES.map((gender) => (
                     <option key={gender} value={gender}>
@@ -156,7 +156,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="age"
                   autoComplete="off"
                   aria-describedby="age-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="age-error" aria-live="polite" aria-atomic="true">
@@ -183,7 +183,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="weight"
                   autoComplete="off"
                   aria-describedby="weight-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="weight-error" aria-live="polite" aria-atomic="true">
@@ -210,7 +210,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="height"
                   autoComplete="off"
                   aria-describedby="height-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="height-error" aria-live="polite" aria-atomic="true">
@@ -236,7 +236,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   name="species_id"
                   autoComplete="off"
                   aria-describedby="category-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   {speciesList.map((specie) => (
                     <option key={specie.id} value={specie.id}>
@@ -268,7 +268,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="breed"
                   autoComplete="off"
                   aria-describedby="breed-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="breed-error" aria-live="polite" aria-atomic="true">
@@ -295,7 +295,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="city"
                   autoComplete="true"
                   aria-describedby="city-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="city-error" aria-live="polite" aria-atomic="true">
@@ -322,7 +322,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   id="state"
                   autoComplete="true"
                   aria-describedby="state-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <div id="state-error" aria-live="polite" aria-atomic="true">
@@ -348,7 +348,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   name="published"
                   autoComplete="off"
                   aria-describedby="published-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   <option value="true">True</option>
                   <option value="false">False</option>
@@ -378,7 +378,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   autoComplete="off"
                   defaultValue={adoptionStatusList[1].id}
                   aria-describedby="adoption_status_id-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   {adoptionStatusList.map((adoptionStatus) => (
                     <option key={adoptionStatus.id} value={adoptionStatus.id}>
@@ -414,7 +414,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   name="description"
                   rows={3}
                   aria-describedby="description-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
               <p className="mt-3 text-sm leading-6 text-gray-600">
@@ -463,7 +463,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   <div className="mt-4 flex text-sm leading-6 text-gray-600">
                     <label
                       htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
+                      className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-hidden focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500"
                     >
                       <span>Upload a Photo</span>
                       <input
@@ -532,7 +532,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
         </Link>
         <button
           type="submit"
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           Save
         </button>

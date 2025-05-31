@@ -23,7 +23,7 @@ interface CardProps {
 
 export const Card = ({ title, value }: CardProps) => {
   return (
-    <div className="rounded-xl p-2 shadow-sm text-gray-800 bg-[#E1E7EA]">
+    <div className="rounded-xl p-2 shadow-xs text-gray-800 bg-[#E1E7EA]">
       <div className="flex pl-3 pt-2">
         <h3 className="text-sm font-medium tracking-wide">{title}</h3>
       </div>

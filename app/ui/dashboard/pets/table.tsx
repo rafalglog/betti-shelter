@@ -15,7 +15,7 @@ const PetsTable = async ({
   const pets = await fetchFilteredPets(query, currentPage);
 
   return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
       {/* table headers */}
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap">Name</div>
@@ -36,7 +36,7 @@ const PetsTable = async ({
             <div className="col-span-6 sm:col-span-1">
               <div className="flex items-center space-x-2">
                 {/* Flex container */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {/* Prevent the image from shrinking */}
                   {pet.petImages[0]?.url ? (
                     <Image

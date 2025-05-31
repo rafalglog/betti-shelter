@@ -50,11 +50,11 @@ const Page = async ({ params }: Props) => {
         </span>
         <div className="flex flex-row gap-x-2 overflow-auto">
           {pet.petImages.map((image, index) => (
-            <div key={image.id} className="relative flex-shrink-0">
+            <div key={image.id} className="relative shrink-0">
               <Link href={image.url} target="_blank">
                 <Image
                   key={image.id}
-                  className="flex-shrink-0 rounded aspect-square min-w-[12%] cursor-pointer object-cover"
+                  className="shrink-0 rounded-sm aspect-square min-w-[12%] cursor-pointer object-cover"
                   src={image.url}
                   height={100}
                   width={100}

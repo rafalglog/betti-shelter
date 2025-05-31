@@ -20,7 +20,7 @@ const PetGallery = ({ images }: PetGalleryProps) => {
   return (
     <div className="flex flex-col mr-8 gap-y-2">
       {/* large image */}
-      <div className="relative overflow-hidden flex items-center justify-center w-full h-80 bg-slate-200 rounded">
+      <div className="relative overflow-hidden flex items-center justify-center w-full h-80 bg-slate-200 rounded-sm">
         {selectedImage ? (
           <Link href={selectedImage} target="_blank">
             <Image
@@ -45,7 +45,7 @@ const PetGallery = ({ images }: PetGalleryProps) => {
         {images.map((image, index) => (
           <Image
             key={image.id}
-            className="flex-shrink-0 rounded aspect-square min-w-[24%] cursor-pointer object-cover"
+            className="shrink-0 rounded-sm aspect-square min-w-[24%] cursor-pointer object-cover"
             src={image.url}
             onClick={() => setSelectedImage(image.url)}
             height={100}

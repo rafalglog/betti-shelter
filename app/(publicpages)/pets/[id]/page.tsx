@@ -52,7 +52,7 @@ const Page = async ({ params }: Props) => {
           <div className="flex mt-2">
             <Link
               href="/contact"
-              className="bg-blue-600 text-white px-7 py-2 rounded"
+              className="bg-blue-600 text-white px-7 py-2 rounded-sm"
             >
               Adopt
             </Link>

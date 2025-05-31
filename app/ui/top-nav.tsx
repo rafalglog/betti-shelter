@@ -44,7 +44,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
             <div className="relative flex h-16 items-center justify-between">
               {/* bars menu button */}
               <div className="absolute inset-y-0 left-0 flex items-center md:hidden">
-                <DisclosureButton className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <DisclosureButton className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="absolute -inset-0.5" />
                   <span className="sr-only">Open main menu</span>
                   {open ? (
@@ -57,7 +57,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
 
               <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
                 {/* logo */}
-                <div className="flex flex-shrink-0 items-center">
+                <div className="flex shrink-0 items-center">
                   <LifebuoyIcon className="h-8 w-8 text-green-400" />
                   <span className="text-white font-bold text-xl ml-2">
                     Pet Adopt
@@ -81,7 +81,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
                   <Menu as="div" className="relative ml-3">
                     <div>
-                      <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                      <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-hidden focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                         <span className="absolute -inset-1.5" />
                         <span className="sr-only">Open user menu</span>
                         {userImage ? (
@@ -103,7 +103,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <MenuItems className="absolute right-0 z-30 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItems className="absolute right-0 z-30 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-hidden">
                         <MenuItem>
                           {({ focus }) => (
                             <button

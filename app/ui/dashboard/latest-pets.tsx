@@ -21,7 +21,7 @@ const LatestPets = async () => {
             return (
               <div
                 key={pet.id}
-                className="grid grid-cols-[40px,2fr,2fr,1fr] mb-4 items-center border-b border-gray-100 pb-4"
+                className="grid grid-cols-[40px_2fr_2fr_1fr] mb-4 items-center border-b border-gray-100 pb-4"
               >
                 <div>
                   {pet.petImages[0].url ? (

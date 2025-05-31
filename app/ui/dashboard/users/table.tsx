@@ -11,7 +11,7 @@ const UsersTable = async ({ query, currentPage }: UsersTableProps) => {
   const users = await fetchFilteredUsers(query, currentPage);
 
   return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-sm pb-4 pt-1">
+    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
       {/* table headers */}
       <div className="hidden border-b text-sm font-medium sm:grid grid-cols-4 gap-4 px-6 py-4 rounded-t-md">
         <div className="text-nowrap col-span-2">Email</div>
@@ -29,7 +29,7 @@ const UsersTable = async ({ query, currentPage }: UsersTableProps) => {
             <div className="col-span-4 sm:col-span-2">
               <div className="flex items-center space-x-2">
                 {/* Flex container */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   {/* Prevent the image from shrinking */}
                   {user.image ? (
                     <img

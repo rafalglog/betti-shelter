@@ -8,7 +8,7 @@ export const CreatePet = () => {
   return (
     <Link
       href="/dashboard/pets/create"
-      className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+      className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
     >
       <span className="hidden md:block">New Pet</span>{" "}
       <PlusIcon className="h-5 md:ml-4" />
@@ -34,7 +34,7 @@ export const DeletePetImage = ({ id }: { id: string }) => {
   const handleClick = () => setConfirmation(!confirmation);
   return (
     <form action={deleteImageWithId}>
-      <div className="mt-1 h-8 text-center text-sm rounded border hover:bg-red-500 hover:text-white hover:cursor-pointer flex items-center justify-center">
+      <div className="mt-1 h-8 text-center text-sm rounded-sm border hover:bg-red-500 hover:text-white hover:cursor-pointer flex items-center justify-center">
         {!confirmation ? (
           <div
             onClick={handleClick}

@@ -51,7 +51,7 @@ const PetCard = async ({ query, currentPage, speciesName }: Props) => {
                 aria-label={
                   isLikedByCurrentUser ? "Unlike this pet" : "Like this pet"
                 }
-                className="p-1 rounded-full hover:bg-red-100 active:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-300 transition-colors duration-150 ease-in-out"
+                className="p-1 rounded-full hover:bg-red-100 active:bg-red-200 focus:outline-hidden focus:ring-2 focus:ring-red-300 transition-colors duration-150 ease-in-out"
               >
                 <HeartIcon
                   className={clsx(
@@ -70,7 +70,7 @@ const PetCard = async ({ query, currentPage, speciesName }: Props) => {
             <button
               type="button"
               aria-label="Like this pet (requires login)"
-              className="p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-150 ease-in-out"
+              className="p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-gray-300 transition-colors duration-150 ease-in-out"
               onClick={() => {
                 alert("Please log in to like pets.");
               }}
