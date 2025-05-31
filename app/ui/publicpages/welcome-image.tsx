@@ -19,7 +19,7 @@ const WelcomeImage = () => {
         </div>
         <Link
           href="/pets"
-          className="bg-tranparent hover:bg-white text-white hover:text-black font-semibold py-2 px-4 border border-white rounded-sm transition-colors"
+          className="bg-tranparent hover:bg-white text-white hover:text-gray-800 font-semibold py-2 px-4 border border-white rounded-sm transition-colors"
         >
           <span>See Pets</span>
         </Link>

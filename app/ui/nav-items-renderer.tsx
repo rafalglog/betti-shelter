@@ -36,7 +36,7 @@ const NavItemsRenderer = ({
             onClick={onLinkClick} // Will be undefined for desktop, called for mobile
             passHref={!!onLinkClick} // passHref if onLinkClick is provided (typically for mobile)
             className={clsx(
-              "rounded-md px-3 py-2 font-medium",
+              "rounded-md px-4 py-2 font-medium",
               itemClassName,
               pathname === link.href
                 ? "bg-gray-900 text-white"

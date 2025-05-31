@@ -6,7 +6,7 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
+import { CheckIcon, ChevronDownIcon } from "@heroicons/react/16/solid";
 import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Species } from "@prisma/client";

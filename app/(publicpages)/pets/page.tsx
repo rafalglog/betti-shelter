@@ -33,7 +33,7 @@ const Page = async ({ searchParams }: Props) => {
     <div>
       <div className="">
         <div className="text-2xl">Pet List</div>
-        <div className="text-sm text-gray-500">
+        <div className="text-sm text-gray-500 mb-3">
           Currently available for adoption
         </div>
       </div>
@@ -45,9 +45,7 @@ const Page = async ({ searchParams }: Props) => {
         </div>
 
         {/* category option */}
-        <div className="">
-          <CategoryList species={speciesList} speciesName={speciesName} />
-        </div>
+        <CategoryList species={speciesList} speciesName={speciesName} />
       </div>
 
       {/* pets card */}
