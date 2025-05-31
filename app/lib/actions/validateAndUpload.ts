@@ -3,7 +3,7 @@
 import path from "path";
 import { writeFile } from "fs/promises";
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@/app/lib/constants";
-import { rolesWithPermission } from "../actions/authorization";
+import { rolesWithPermission } from "./authorization";
 import { Role } from "@prisma/client";
 
 // Validate and upload images

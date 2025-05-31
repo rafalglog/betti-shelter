@@ -2,8 +2,8 @@ import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { z } from "zod";
 import { auth } from "@/auth";
-import { idSchema } from "../../zod-schemas/common";
 import { PetListingStatus } from "@prisma/client";
+import { idSchema } from "../../zod-schemas";
 
 /*
 ============ data for the public pages ============

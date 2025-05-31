@@ -1,48 +1,14 @@
 "use server";
 
 import { unlink } from "fs/promises";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import path from "path";
 import { prisma } from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { idSchema } from "@/app/lib/zod-schemas/common";
-import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
-import { Role, Gender, PetListingStatus } from "@prisma/client";
-
-// Define a schema for the pet form
-const PetFormSchema = z.object({
-  name: z.string().min(1),
-  age: z.coerce
-    .number()
-    .gt(0, { message: "Please enter an age greater than 0." }),
-  gender: z.nativeEnum(Gender, {
-    required_error: "Please select a gender.",
-    invalid_type_error: "Invalid gender selected.",
-  }),
-  species_id: z.string(),
-  breed: z.string(),
-  weightKg: z.coerce
-    .number()
-    .gt(0, { message: "Please enter an weight greater than 0." }),
-  heightCm: z.coerce
-    .number()
-    .gt(0, { message: "Please enter an height greater than 0." }),
-  city: z.string(),
-  state: z.string(),
-  description: z.string(),
-  listingStatus: z.nativeEnum(PetListingStatus, {
-    invalid_type_error: "Please select a status.",
-  }),
-  adoption_status_id: z.string(),
-});
-
-// Define a schema for PetLike
-const createPetIdUserIdSchema = z.object({
-  parsedPetId: z.string(),
-  parsedUserId: z.string(),
-});
+import { validateAndUploadImages } from "@/app/lib/actions/validateAndUpload";
+import { Role } from "@prisma/client";
+import { createPetIdUserIdSchema, idSchema, PetFormSchema } from "../zod-schemas";
 
 // Error messages for the pet form
 export type CreatePetFormState = {
@@ -114,9 +80,8 @@ export const createPet = async (
     adoption_status_id,
   } = validatedFields.data;
 
-  const petImages = formData.getAll("petImages");
 
-  // store the images urls
+  const petImages = formData.getAll("petImages");
   let imageUrlArray: string[] = [];
 
   const result = await validateAndUploadImages(petImages);
@@ -481,7 +446,6 @@ export const togglePetLike = async (
   userId: string,
   isCurrentlyLiked: boolean
 ): Promise<void> => {
-
   const hasPermission = await rolesWithPermission([
     Role.ADMIN,
     Role.STAFF,

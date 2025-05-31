@@ -1,11 +1,12 @@
 "use server";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { idSchema } from "@/app/lib/zod-schemas/common";
 import { z } from "zod";
 import { Role } from "@prisma/client";
+import { idSchema } from "../zod-schemas";
 
 // error messages for the user form
 export type updateUserFormState = {

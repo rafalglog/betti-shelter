@@ -53,7 +53,7 @@ const NavItemsRenderer = ({
           className={clsx(
             "rounded-md px-3 py-2 font-medium text-gray-300 hover:bg-gray-700 hover:text-white",
             signInButtonClassName,
-            { "hover:cursor-pointer": !!onLinkClick }
+            !!onLinkClick && "hover:cursor-pointer"
           )}
           onClick={() => {
             signIn();

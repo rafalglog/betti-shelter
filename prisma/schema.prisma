@@ -45,12 +45,12 @@ model Pet {
   gender           Gender
   speciesId        String           @map(name: "species_id")
   species          Species          @relation(fields: [speciesId], references: [id])
-  breed            String
+  breed            String?
   weightKg         Float?           @map(name: "weight_kg")
   heightCm         Float?           @map(name: "height_cm")
   city             String
   state            String
-  description      String
+  description      String?
   listingStatus    PetListingStatus @default(DRAFT)
   adoptionStatusId String           @map(name: "adoption_status_id")
   adoptionStatus   AdoptionStatus   @relation(fields: [adoptionStatusId], references: [id])

@@ -3,25 +3,34 @@
 import { createPet, CreatePetFormState } from "@/app/lib/actions/pet";
 import Link from "next/link";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useActionState, useState } from "react";
+import { useActionState, useState, startTransition } from "react";
 import { AdoptionStatus, Species } from "@prisma/client";
 import Image from "next/image";
-import { ALLOWED_MIME_TYPES, GENDER_VALUES, LISTING_STATUS_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
+import {
+  ALLOWED_MIME_TYPES,
+  GENDER_VALUES,
+  LISTING_STATUS_VALUES,
+  MAX_FILE_SIZE,
+} from "@/app/lib/constants";
+import clsx from "clsx";
 
 interface CreatePetFormProps {
   speciesList: Species[];
   adoptionStatusList: AdoptionStatus[];
 }
 
-const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) => {
+const CreatePetForm = ({
+  speciesList,
+  adoptionStatusList,
+}: CreatePetFormProps) => {
   // state to hold the pet images
   const [files, setFiles] = useState<File[]>([]);
 
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useActionState<CreatePetFormState, FormData>(
-    createPet,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState<
+    CreatePetFormState,
+    FormData
+  >(createPet, initialState);
 
   // handle file change event
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,8 +81,10 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
       }
     });
 
-    // Dispatch the form data
-    dispatch(formData);
+    // Manually call to formAction in startTransition
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   return (
@@ -198,7 +209,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
 
             <div className="sm:col-span-2">
               <label
-                htmlFor="height"
+                htmlFor="heightCm"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Height (cm)
@@ -348,16 +359,20 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
                   name="listingStatus"
                   autoComplete="off"
                   aria-describedby="listingStatus-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   {LISTING_STATUS_VALUES.map((status) => (
-                    <option key={status} value={status} className="capitalize">
+                    <option key={status} value={status}>
                       {status.toLowerCase()}
                     </option>
                   ))}
                 </select>
               </div>
-              <div id="listingStatus-error" aria-live="polite" aria-atomic="true">
+              <div
+                id="listingStatus-error"
+                aria-live="polite"
+                aria-atomic="true"
+              >
                 {state.errors?.listingStatus &&
                   state.errors.listingStatus.map((error: string) => (
                     <p className="mt-2 text-sm text-red-500" key={error}>
@@ -525,6 +540,7 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
         </div>
       </div>
 
+      {/* Cancel Button */}
       <div className="mt-6 flex items-center justify-end gap-x-6">
         <Link
           href="/dashboard/pets"
@@ -533,11 +549,18 @@ const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) 
         >
           Cancel
         </Link>
+
+        {/* Save Button */}
         <button
           type="submit"
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          disabled={isPending}
+          className={clsx(
+            "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
+            "shadow-xs hover:bg-indigo-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          )}
         >
-          Save
+          {isPending ? "Saving..." : "Save"}
         </button>
       </div>
     </form>

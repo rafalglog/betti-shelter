@@ -3,9 +3,9 @@ import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { z } from "zod";
-import { idSchema } from "../../zod-schemas/common";
 import { AdoptionStatus, Role } from "@prisma/client";
 import { PetWithImagesPayload } from "../../types";
+import { idSchema } from "../../zod-schemas";
 
 // Define a schema for fetchPetsPages
 const fetchPetsPagesSchema = z.string();

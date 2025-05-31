@@ -23,7 +23,7 @@ const LatestPets = async () => {
                 className="grid grid-cols-[40px_2fr_2fr_1fr] mb-4 items-center border-b border-gray-100 pb-4"
               >
                 <div>
-                  {pet.petImages[0].url ? (
+                  {pet.petImages && pet.petImages.length > 0 && pet.petImages[0].url ? ( 
                     <Image
                       src={pet.petImages[0].url}
                       className="rounded-full w-7 h-7 object-cover"
