@@ -3,6 +3,7 @@ import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { z } from "zod";
 import { auth } from "@/auth";
 import { idSchema } from "../../zod-schemas/common";
+import { PetListingStatus } from "@prisma/client";
 
 /*
 ============ data for the public pages ============
@@ -51,7 +52,7 @@ export const fetchFilteredPublishedPetsWithCategory = async (
           contains: parsedQuery,
           mode: "insensitive",
         },
-        published: true,
+        listingStatus: PetListingStatus.PUBLISHED,
         // if speciesName is provided, filter by species
         ...(parsedSpeciesName && {
           species: {
@@ -125,7 +126,7 @@ export const fetchPublishedPetsPagesWithCategory = async (
           contains: parsedQuery,
           mode: "insensitive",
         },
-        published: true,
+        listingStatus: PetListingStatus.PUBLISHED,
         // if speciesName is provided, filter by species
         ...(parsedSpeciesName && {
           species: {
@@ -178,8 +179,8 @@ export const fetchFrontPagePetById = async (id: string) => {
         city: true,
         state: true,
         age: true,
-        weight: true,
-        height: true,
+        weightKg: true,
+        heightCm: true,
         species: {
           select: {
             name: true,

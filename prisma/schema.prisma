@@ -19,6 +19,12 @@ enum Gender {
   UNKNOWN
 }
 
+enum PetListingStatus {
+  DRAFT // Profile is being prepared, not yet ready for public view.
+  PUBLISHED // Profile is live and publicly accessible.
+  ARCHIVED // Profile is no longer public (e.g., pet adopted, transferred) and is kept for records.
+}
+
 model Like {
   id String @id @default(cuid())
 
@@ -32,28 +38,25 @@ model Like {
   @@map(name: "likes")
 }
 
-// weight and height: These are Int. If you need to store decimal values 
-// (e.g., 2.5 kg), consider changing them to Float. Adding units to 
-// the field name (e.g., weightInKg, heightInCm) or in a comment can also improve clarity.
 model Pet {
-  id               String         @id @default(cuid())
+  id               String           @id @default(cuid())
   name             String
   age              Int
   gender           Gender
-  speciesId        String         @map(name: "species_id")
-  species          Species        @relation(fields: [speciesId], references: [id])
+  speciesId        String           @map(name: "species_id")
+  species          Species          @relation(fields: [speciesId], references: [id])
   breed            String
-  weight           Int
-  height           Int
+  weightKg         Float?           @map(name: "weight_kg")
+  heightCm         Float?           @map(name: "height_cm")
   city             String
   state            String
   description      String
-  published        Boolean        @default(false)
-  adoptionStatusId String         @map(name: "adoption_status_id")
-  adoptionStatus   AdoptionStatus @relation(fields: [adoptionStatusId], references: [id])
+  listingStatus    PetListingStatus @default(DRAFT)
+  adoptionStatusId String           @map(name: "adoption_status_id")
+  adoptionStatus   AdoptionStatus   @relation(fields: [adoptionStatusId], references: [id])
   petImages        PetImage[]
-  createdAt        DateTime       @default(now()) @map(name: "created_at")
-  updatedAt        DateTime       @updatedAt @map(name: "updated_at")
+  createdAt        DateTime         @default(now()) @map(name: "created_at")
+  updatedAt        DateTime         @updatedAt @map(name: "updated_at")
   likes            Like[]
 
   @@map(name: "pets")
@@ -73,7 +76,7 @@ model AdoptionStatus {
   name String @unique
   Pet  Pet[]
 
-  @@map(name: "adoption_statuses") // CHANGED from adoption_status to adoption_statuses
+  @@map(name: "adoption_statuses")
 }
 
 model Species {
@@ -81,14 +84,14 @@ model Species {
   name String @unique
   Pet  Pet[]
 
-  @@map(name: "species") // This is fine as species can be singular/plural
+  @@map(name: "species")
 }
 
 model Account {
-  userId            String    @map(name: "user_id")
+  userId            String  @map(name: "user_id")
   type              String
   provider          String
-  providerAccountId String    @map(name: "provider_account_id")
+  providerAccountId String  @map(name: "provider_account_id")
   access_token      String?
   token_type        String?
   scope             String?
@@ -99,7 +102,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
-  @@map(name: "accounts") // ADDED @@map
+  @@map(name: "accounts")
 }
 
 model User {

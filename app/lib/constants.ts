@@ -1,4 +1,4 @@
-import { Gender, Role } from "@prisma/client";
+import { Gender, PetListingStatus, Role } from "@prisma/client";
 
 // items per page for pagination
 export const ITEMS_PER_PAGE = 6;
@@ -17,3 +17,5 @@ export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 export const GENDER_VALUES = Object.values(Gender);
 
 export const ROLE_VALUES = Object.values(Role);
+
+export const LISTING_STATUS_VALUES = Object.values(PetListingStatus);

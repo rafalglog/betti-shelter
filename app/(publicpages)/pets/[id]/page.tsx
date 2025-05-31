@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 
 interface PetDetailProps {
   label: string;
-  value: string | number;
+  value: string | number | null | undefined;
 }
 
 // Component to display pet details
@@ -45,8 +45,8 @@ const Page = async ({ params }: Props) => {
           <div className=" text-sm mb-4">{`${pet.city}, ${pet.state}`}</div>
           <div className="grid grid-cols-4 sm:grid-cols-1 [&>div:last-child]:col-span-4 sm:[&>div:last-child]:col-span-1 gap-y-4">
             <PetDetail label="Age" value={pet.age} />
-            <PetDetail label="Weight" value={pet.weight} />
-            <PetDetail label="Height" value={pet.height} />
+            <PetDetail label="Weight Kg" value={pet.weightKg} />
+            <PetDetail label="Height Cm" value={pet.heightCm} />
             <PetDetail label="Category" value={pet.species.name} />
             <PetDetail label="Description" value={pet.description} />
           </div>

@@ -9,7 +9,7 @@ import { prisma } from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { idSchema } from "@/app/lib/zod-schemas/common";
 import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
-import { Role, Gender } from "@prisma/client";
+import { Role, Gender, PetListingStatus } from "@prisma/client";
 
 // Define a schema for the pet form
 const PetFormSchema = z.object({
@@ -23,16 +23,16 @@ const PetFormSchema = z.object({
   }),
   species_id: z.string(),
   breed: z.string(),
-  weight: z.coerce
+  weightKg: z.coerce
     .number()
     .gt(0, { message: "Please enter an weight greater than 0." }),
-  height: z.coerce
+  heightCm: z.coerce
     .number()
     .gt(0, { message: "Please enter an height greater than 0." }),
   city: z.string(),
   state: z.string(),
   description: z.string(),
-  published: z.enum(["true", "false"], {
+  listingStatus: z.nativeEnum(PetListingStatus, {
     invalid_type_error: "Please select a status.",
   }),
   adoption_status_id: z.string(),
@@ -52,12 +52,12 @@ export type CreatePetFormState = {
     gender?: string[];
     species_id?: string[];
     breed?: string[];
-    weight?: string[];
-    height?: string[];
+    weightKg?: string[];
+    heightCm?: string[];
     city?: string[];
     state?: string[];
     description?: string[];
-    published?: string[];
+    listingStatus?: string[];
     adoption_status_id?: string[];
     petImages?: string[];
   };
@@ -81,12 +81,12 @@ export const createPet = async (
     gender: formData.get("gender"),
     species_id: formData.get("species_id"),
     breed: formData.get("breed"),
-    weight: formData.get("weight"),
-    height: formData.get("height"),
+    weightKg: formData.get("weightKg"),
+    heightCm: formData.get("heightCm"),
     city: formData.get("city"),
     state: formData.get("state"),
     description: formData.get("description"),
-    published: formData.get("published"),
+    listingStatus: formData.get("listingStatus"),
     adoption_status_id: formData.get("adoption_status_id"),
   });
 
@@ -105,12 +105,12 @@ export const createPet = async (
     gender,
     species_id,
     breed,
-    weight,
-    height,
+    weightKg,
+    heightCm,
     city,
     state,
     description,
-    published,
+    listingStatus,
     adoption_status_id,
   } = validatedFields.data;
 
@@ -128,9 +128,6 @@ export const createPet = async (
     return result;
   }
 
-  // Convert the published value to a boolean
-  const publishedToBoolean = published === "true" ? true : false;
-
   // Insert the pet into the database
   try {
     await prisma.pet.create({
@@ -144,12 +141,12 @@ export const createPet = async (
           },
         },
         breed: breed,
-        weight: weight,
-        height: height,
+        weightKg: weightKg,
+        heightCm: heightCm,
         city: city,
         state: state,
         description: description,
-        published: publishedToBoolean,
+        listingStatus: listingStatus,
         adoptionStatus: {
           connect: {
             id: adoption_status_id,
@@ -200,8 +197,8 @@ export const updatePet = async (
     gender: formData.get("gender"),
     species_id: formData.get("species_id"),
     breed: formData.get("breed"),
-    weight: formData.get("weight"),
-    height: formData.get("height"),
+    weightKg: formData.get("weight"),
+    heightCm: formData.get("height"),
     city: formData.get("city"),
     state: formData.get("state"),
     description: formData.get("description"),
@@ -224,12 +221,12 @@ export const updatePet = async (
     gender,
     species_id,
     breed,
-    weight,
-    height,
+    weightKg,
+    heightCm,
     city,
     state,
     description,
-    published,
+    listingStatus,
     adoption_status_id,
   } = validatedFields.data;
 
@@ -247,9 +244,6 @@ export const updatePet = async (
     return result;
   }
 
-  // Convert the published value to a boolean
-  const publishedToBoolean = published === "true" ? true : false;
-
   // Update the pet in the database
   try {
     await prisma.pet.update({
@@ -264,12 +258,12 @@ export const updatePet = async (
           },
         },
         breed: breed,
-        weight: weight,
-        height: height,
+        weightKg: weightKg,
+        heightCm: heightCm,
         city: city,
         state: state,
         description: description,
-        published: publishedToBoolean,
+        listingStatus: listingStatus,
         adoptionStatus: {
           connect: {
             id: adoption_status_id,

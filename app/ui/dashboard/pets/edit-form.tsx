@@ -7,7 +7,7 @@ import Link from "next/link";
 import { AdoptionStatus, Pet, Species } from "@prisma/client";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { ALLOWED_MIME_TYPES, GENDER_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
+import { ALLOWED_MIME_TYPES, GENDER_VALUES, LISTING_STATUS_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
 import { PetWithImagesPayload } from "@/app/lib/types";
 
 interface EditPetFormProps {
@@ -185,25 +185,25 @@ const EditPetForm = ({
 
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="weight"
+                  htmlFor="weightKg"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Weight
+                  Weight (kg)
                 </label>
                 <div className="mt-2">
                   <input
                     type="number"
-                    name="weight"
-                    id="weight"
-                    defaultValue={pet.weight}
+                    name="weightKg"
+                    id="weightKg"
+                    defaultValue={pet.weightKg ?? ""}
                     autoComplete="off"
-                    aria-describedby="weight-error"
+                    aria-describedby="weightKg-error"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-                <div id="weight-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.weight &&
-                    state.errors.weight.map((error: string) => (
+                <div id="weightKg-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.weightKg &&
+                    state.errors.weightKg.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
@@ -213,25 +213,25 @@ const EditPetForm = ({
 
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="height"
+                  htmlFor="heightCm"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Height
+                  Height (cm)
                 </label>
                 <div className="mt-2">
                   <input
                     type="number"
-                    name="height"
-                    id="height"
-                    defaultValue={pet.height}
+                    name="heightCm"
+                    id="heightCm"
+                    defaultValue={pet.heightCm ?? ""}
                     autoComplete="off"
-                    aria-describedby="height-error"
+                    aria-describedby="heightCm-error"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
-                <div id="height-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.height &&
-                    state.errors.height.map((error: string) => (
+                <div id="heightCm-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.heightCm &&
+                    state.errors.heightCm.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
@@ -361,27 +361,30 @@ const EditPetForm = ({
 
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="published"
+                  htmlFor="listingStatus"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Published
+                  Listing Status
                 </label>
                 <div className="mt-2">
                   <select
-                    id="published"
-                    name="published"
-                    defaultValue={pet.published ? "true" : "false"}
+                    id="listingStatus"
+                    name="listingStatus"
+                    defaultValue={pet.listingStatus}
                     autoComplete="off"
-                    aria-describedby="published-error"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    aria-describedby="listingStatus-error"
+                    className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   >
-                    <option value="true">True</option>
-                    <option value="false">False</option>
+                    {LISTING_STATUS_VALUES.map((status) => (
+                      <option key={status} value={status}>
+                        {status.toLowerCase()}
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <div id="published-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.published &&
-                    state.errors.published.map((error: string) => (
+                <div id="listingStatus-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.listingStatus &&
+                    state.errors.listingStatus.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
