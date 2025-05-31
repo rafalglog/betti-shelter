@@ -2,9 +2,10 @@
 import { useRouter } from "next/navigation";
 import { deletePet } from "@/app/lib/actions/pet";
 import { use } from "react";
+import { IDParamType } from "@/app/lib/types";
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: IDParamType;
 }
 
 const DeletePetModal = ({ params }: Props) => {

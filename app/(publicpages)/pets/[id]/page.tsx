@@ -1,4 +1,5 @@
 import { fetchFrontPagePetById } from "@/app/lib/data/pets/public";
+import { IDParamType } from "@/app/lib/types";
 import PetGallery from "@/app/ui/publicpages/pet-gallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -17,7 +18,7 @@ const PetDetail = ({ label, value }: PetDetailProps) => (
 );
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {

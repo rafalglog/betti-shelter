@@ -1,4 +1,3 @@
-import { opensans } from "@/app/ui/fonts";
 import { fetchPetCardData } from "@/app/lib/data/pets/pet";
 
 // Card component that displays the total number of pets, adopted pets, pending pets, and available pets
@@ -28,8 +27,7 @@ export const Card = ({ title, value }: CardProps) => {
         <h3 className="text-sm font-medium tracking-wide">{title}</h3>
       </div>
       <p
-        className={`${opensans.className}
-            truncate rounded-x px-4 py-5 md:py-8 text-center text-3xl`}
+        className="font-opensans truncate rounded-x px-4 py-5 md:py-8 text-center text-3xl"
       >
         {value}
       </p>

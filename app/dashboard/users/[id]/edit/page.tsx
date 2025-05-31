@@ -2,9 +2,10 @@ import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
 import { fetchUserById } from "@/app/lib/data/users/user";
 import { notFound } from "next/navigation";
 import EditUserForm from "@/app/ui/dashboard/users/edit-form";
+import { IDParamType } from "@/app/lib/types";
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { inter } from "./ui/fonts";
+import { inter, openSans } from "./ui/fonts";
 
 export const metadata: Metadata = {
   title: "Pet Shelter",
@@ -14,7 +14,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={`${inter.className} ${openSans.variable}`}>
+        {children}
+      </body>
     </html>
   );
 }

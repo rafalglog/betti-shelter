@@ -1,8 +1,7 @@
 import { Prisma } from "@prisma/client";
 
-export interface SearchParamsType {
-  [key: string]: string | undefined;
-}
+export type SearchParamsType = Promise<{ [key: string]: string | undefined }>;
+export type IDParamType = Promise<{ id: string }>;
 
 // Type for the pet object when images are included
 export type PetWithImagesPayload = Prisma.PetGetPayload<{

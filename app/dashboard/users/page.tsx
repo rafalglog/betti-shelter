@@ -1,14 +1,13 @@
 import Pagination from "@/app/ui/dashboard/pets/pagination";
 import Search from "@/app/ui/search";
 import UsersTable from "@/app/ui/dashboard/users/table";
-import { opensans } from "@/app/ui/fonts";
 import { UsersTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchUserPages } from "@/app/lib/data/users/user";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {
-  searchParams: Promise<SearchParamsType>;
+  searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
@@ -22,7 +21,7 @@ const Page = async ({ searchParams }: Props) => {
     <div className="w-full">
       {/* page title */}
       <div className="flex w-full items-center justify-between">
-        <h1 className={`${opensans.className} text-2xl`}>Users</h1>
+        <h1 className="font-opensans text-2xl">Users</h1>
       </div>
 
       {/* search bar */}

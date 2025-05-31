@@ -7,9 +7,10 @@ import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons";
 import Image from "next/image";
 import Link from "next/link";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
+import { IDParamType } from "@/app/lib/types";
 
 interface Props {
-  params: Promise<{ id: string }>;
+  params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {

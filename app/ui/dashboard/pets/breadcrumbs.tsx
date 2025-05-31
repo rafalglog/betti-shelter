@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
 import Link from "next/link";
-import { opensans } from "@/app/ui/fonts";
 
 interface Breadcrumb {
   label: string;
@@ -15,7 +14,7 @@ interface BreadcrumbsProps {
 const Breadcrumbs = ({ breadcrumbs }: BreadcrumbsProps) => {
   return (
     <nav aria-label="Breadcrumb" className="mb-6 block">
-      <ol className={clsx(opensans.className, "flex text-lg font-medium")}>
+      <ol className="font-opensans flex text-lg font-medium">
         {breadcrumbs.map((breadcrumb, index) => (
           <li
             key={breadcrumb.href}

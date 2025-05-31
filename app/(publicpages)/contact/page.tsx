@@ -10,7 +10,7 @@ const Page = () => {
     // Added a bit of padding to the overall container for better spacing on smaller screens
     <div className="p-4 md:p-0">
       <div className="mx-auto max-w-lg"> {/* Changed max-w-160 to max-w-lg for better typical form width */}
-        <h1 className="text-2xl font-semibold text-gray-900">Contact Us</h1> {/* Added font-semibold and text-gray-900 for consistency */}
+        <h1 className="text-2xl font-opensans font-semibold text-gray-900">Contact Us</h1> {/* Added font-semibold and text-gray-900 for consistency */}
         <p className="text-gray-600 text-sm mt-1"> {/* Adjusted text color and margin */}
           We will contact you as soon as possible
         </p>

@@ -11,7 +11,7 @@ import CategoryList from "@/app/ui/publicpages/category-list";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {
-  searchParams: Promise<SearchParamsType>;
+  searchParams: SearchParamsType;
 }
 
 // front page for the pets

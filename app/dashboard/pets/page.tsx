@@ -2,14 +2,13 @@ import Pagination from "@/app/ui/dashboard/pets/pagination";
 import Search from "@/app/ui/search";
 import PetsTable from "@/app/ui/dashboard/pets/table";
 import { CreatePet } from "@/app/ui/dashboard/pets/buttons";
-import { opensans } from "@/app/ui/fonts";
 import { PetsTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchPetsPages } from "@/app/lib/data/pets/pet";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {
-  searchParams: Promise<SearchParamsType>;
+  searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
@@ -23,7 +22,7 @@ const Page = async ({ searchParams }: Props) => {
     <div className="w-full">
       {/* page title */}
       <div className="flex w-full items-center justify-between">
-        <h1 className={`${opensans.className} text-2xl`}>Pets</h1>
+        <h1 className="font-opensans text-2xl">Pets</h1>
       </div>
 
       {/* search bar */}
