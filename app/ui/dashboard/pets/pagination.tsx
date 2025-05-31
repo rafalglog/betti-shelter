@@ -6,7 +6,11 @@ import Link from "next/link";
 import { generatePagination } from "@/app/lib/utils/pagination";
 import { usePathname, useSearchParams } from "next/navigation";
 
-export default function Pagination({ totalPages }: { totalPages: number }) {
+interface PaginationProps {
+  totalPages: number;
+}
+
+const Pagination = ({ totalPages }: PaginationProps) => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -64,18 +68,19 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
   );
 }
 
-// Number component for pagination.
-function PaginationNumber({
-  page,
-  href,
-  isActive,
-  position,
-}: {
+interface PaginationNumberProps {
   page: number | string;
   href: string;
   position?: "first" | "last" | "middle" | "single";
   isActive: boolean;
-}) {
+}
+
+const PaginationNumber = ({
+  page,
+  href,
+  isActive,
+  position,
+}: PaginationNumberProps) => {
   const className = clsx(
     "flex h-10 w-10 items-center justify-center text-sm border",
     {
@@ -98,16 +103,17 @@ function PaginationNumber({
   );
 }
 
-// Arrow component for pagination.
-function PaginationArrow({
-  href,
-  direction,
-  isDisabled,
-}: {
+interface PaginationArrowProps {
   href: string;
   direction: "left" | "right";
   isDisabled?: boolean;
-}) {
+}
+
+const PaginationArrow = ({
+  href,
+  direction,
+  isDisabled,
+}: PaginationArrowProps) => {
   const className = clsx(
     "flex h-10 w-10 items-center justify-center rounded-md border",
     {
@@ -133,3 +139,5 @@ function PaginationArrow({
     </Link>
   );
 }
+
+export default Pagination;

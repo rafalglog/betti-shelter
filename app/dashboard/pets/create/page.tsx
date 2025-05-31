@@ -3,7 +3,7 @@ import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
 import { fetchAdoptionStatusList } from "@/app/lib/data/pets/pet";
 import { fetchSpecies } from "@/app/lib/data/pets/public";
 
-export default async function Page() {
+const Page = async () => {
   const speciesList = await fetchSpecies();
   const adoptionStatusList = await fetchAdoptionStatusList();
 
@@ -26,3 +26,5 @@ export default async function Page() {
     </main>
   );
 }
+
+export default Page;

@@ -1,6 +1,6 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import prisma from "./app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { z } from "zod";
 import { type DefaultSession } from "next-auth";
 import { JWT } from "next-auth/jwt";

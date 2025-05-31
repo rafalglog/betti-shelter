@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const { PrismaClient, Role } = require("@prisma/client");
+const { PrismaClient, Role, Gender } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const species = [
@@ -34,7 +34,7 @@ const petData = [
   {
     name: "Frisco",
     age: 5,
-    gender: "Female",
+    gender: Gender.FEMALE,
     species: {
       connect: { id: "134aadd0-2436-4f5c-bdd6-c7245cf3e3a2" },
     },
@@ -60,7 +60,7 @@ const petData = [
   {
     name: "Flash",
     age: 3,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "134aadd0-2436-4f5c-bdd6-c7245cf3e3a2" },
     },
@@ -81,7 +81,7 @@ const petData = [
   {
     name: "Fido",
     age: 5,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "134aadd0-2436-4f5c-bdd6-c7245cf3e3a2" },
     },
@@ -107,7 +107,7 @@ const petData = [
   {
     name: "Whiskers",
     age: 3,
-    gender: "Female",
+    gender: Gender.FEMALE,
     species: {
       connect: { id: "16fbe716-4b15-4fec-8f11-2a6ab543e886" },
     },
@@ -132,7 +132,7 @@ const petData = [
   {
     name: "Misty",
     age: 2,
-    gender: "female",
+    gender: Gender.FEMALE,
     species: {
       connect: { id: "16fbe716-4b15-4fec-8f11-2a6ab543e886" },
     },
@@ -158,7 +158,7 @@ const petData = [
   {
     name: "Tweety",
     age: 2,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "2c791ce7-33b0-49cd-8e2c-93dca66d845d" },
     },
@@ -183,7 +183,7 @@ const petData = [
   {
     name: "Sunny",
     age: 1,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "2c791ce7-33b0-49cd-8e2c-93dca66d845d" },
     },
@@ -209,7 +209,7 @@ const petData = [
   {
     name: "Bella",
     age: 1,
-    gender: "Female",
+    gender: Gender.FEMALE,
     species: {
       connect: { id: "f73842fa-2769-4b6d-8763-774cbd8ab109" },
     },
@@ -235,7 +235,7 @@ const petData = [
   {
     name: "Godzilla",
     age: 1,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "da1d8d4e-3e10-4adf-a9c6-f009eb93812c" },
     },
@@ -260,7 +260,7 @@ const petData = [
   {
     name: "Donatello",
     age: 2,
-    gender: "Male",
+    gender: Gender.MALE,
     species: {
       connect: { id: "da1d8d4e-3e10-4adf-a9c6-f009eb93812c" },
     },

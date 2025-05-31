@@ -12,7 +12,7 @@ interface Props {
   searchParams: Promise<SearchParamsType>;
 }
 
-export default async function Page({ searchParams }: Props) {
+const Page = async ({ searchParams }: Props) => {
   // get the query and page number from the search params
   const { query = "", page = "1" } = await searchParams;
   const currentPage = Number(page);
@@ -44,3 +44,5 @@ export default async function Page({ searchParams }: Props) {
     </div>
   );
 }
+
+export default Page;

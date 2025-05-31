@@ -1,8 +1,7 @@
-import { createPetLike, deletePetLike } from "@/app/lib/actions/pet";
+import { togglePetLike } from "@/app/lib/actions/pet";
 import { fetchFilteredPublishedPetsWithCategory } from "@/app/lib/data/pets/public";
 import { auth } from "@/auth";
-import { HeartIcon } from "@heroicons/react/24/outline";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import { HeartIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,10 +14,10 @@ interface Props {
 }
 
 const PetCard = async ({ query, currentPage, speciesName }: Props) => {
-  // user session
+  // User session
   const session = await auth();
+  const currentUserId = session?.user?.id;
 
-  // fetch pets
   const pets = await fetchFilteredPublishedPetsWithCategory(
     query,
     currentPage,
@@ -27,72 +26,99 @@ const PetCard = async ({ query, currentPage, speciesName }: Props) => {
 
   return (
     <div className="mt-6 flex gap-3 flex-wrap">
-      {pets.map((pet) => (
-        <div
-          key={pet.id}
-          className="bg-white relative border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center"
-        >
-          {session && session.user.id ? (
+      {pets.map((pet) => {
+        const isLikedByCurrentUser = !!(
+          currentUserId &&
+          pet.likes &&
+          pet.likes.some((like) => like.userId === currentUserId)
+        );
+
+        let likeButtonElement;
+
+        if (currentUserId) {
+          // User is logged in - render a form with a submit button to toggle like
+          likeButtonElement = (
             <form
-              action={async () => {
-                "use server";
-                if (pet.likes && pet.likes.length > 0) {
-                  await deletePetLike(pet.id, session.user.id);
-                } else {
-                  await createPetLike(pet.id, session.user.id);
-                }
-              }}
+              action={togglePetLike.bind(
+                null,
+                pet.id,
+                currentUserId,
+                isLikedByCurrentUser
+              )}
             >
-              <button type="submit" className="absolute top-2 right-2">
+              <button
+                type="submit"
+                aria-label={
+                  isLikedByCurrentUser ? "Unlike this pet" : "Like this pet"
+                }
+                className="p-1 rounded-full hover:bg-red-100 active:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-300 transition-colors duration-150 ease-in-out"
+              >
                 <HeartIcon
                   className={clsx(
-                    "h-6 w-6 text-red-300",
-                    pet.likes &&
-                      pet.likes.length > 0 &&
-                      "fill-red-300 text-red-300"
+                    "h-6 w-6 transition-all duration-150 ease-in-out",
+                    isLikedByCurrentUser
+                      ? "text-red-500 fill-red-500"
+                      : "text-red-400 hover:text-red-500"
                   )}
                 />
               </button>
             </form>
-          ) : (
-            <button type="submit" className="absolute top-2 right-2">
-              <HeartIcon
-                className={clsx(
-                  "h-6 w-6 text-red-300",
-                  pet.likes &&
-                    pet.likes.length > 0 &&
-                    "fill-red-300 text-red-300"
-                )}
-              />
+          );
+        } else {
+          // User is not logged in - render a button that could prompt for login
+          likeButtonElement = (
+            <button
+              type="button"
+              aria-label="Like this pet (requires login)"
+              className="p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-150 ease-in-out"
+              onClick={() => {
+                alert("Please log in to like pets.");
+              }}
+            >
+              <HeartIcon className="h-6 w-6 text-gray-400 hover:text-gray-500 transition-colors duration-150 ease-in-out" />
             </button>
-          )}
+          );
+        }
 
-          <Link href={`/pets/${pet.id}`}>
-            <div className="w-full">
-              {pet.petImages.length > 0 ? (
-                <Image
-                  src={pet.petImages[0].url}
-                  alt="Pet"
-                  width={300}
-                  height={300}
-                  placeholder={`data:image/svg+xml;base64,${toBase64(
-                    shimmer(300, 300)
-                  )}`}
-                  className="rounded-md w-28 h-28 object-cover"
-                />
-              ) : (
-                <div className="w-28 h-28 bg-gray-200 rounded-md flex">
-                  <PhotoIcon className="w-8 h-8 m-auto text-gray-500" />
-                </div>
-              )}
-              <p className="font-medium w-28 overflow-hidden truncate">
-                {pet.name}
-              </p>
-              <h2 className="text-sm text-gray-600">{`${pet.city}, ${pet.state}`}</h2>
+        return (
+          <div
+            key={pet.id}
+            className="bg-white relative border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center"
+          >
+            <div className="absolute top-2 right-2 z-10">
+              {likeButtonElement}
             </div>
-          </Link>
-        </div>
-      ))}
+
+            <Link href={`/pets/${pet.id}`} className="w-full">
+              <div className="w-full flex flex-col items-center">
+                {pet.petImages && pet.petImages.length > 0 ? (
+                  <Image
+                    src={pet.petImages[0].url}
+                    alt={`Photo of ${pet.name}`}
+                    width={112}
+                    height={112}
+                    placeholder={`data:image/svg+xml;base64,${toBase64(
+                      shimmer(112, 112)
+                    )}`}
+                    className="rounded-md w-28 h-28 object-cover mb-2"
+                  />
+                ) : (
+                  <div className="w-28 h-28 bg-gray-200 rounded-md flex items-center justify-center mb-2">
+                    <PhotoIcon className="w-8 h-8 text-gray-500" />
+                  </div>
+                )}
+                <p
+                  className="font-medium w-full text-center overflow-hidden truncate px-1"
+                  title={pet.name}
+                >
+                  {pet.name}
+                </p>
+                <h2 className="text-sm text-gray-600 text-center w-full overflow-hidden truncate px-1">{`${pet.city}, ${pet.state}`}</h2>
+              </div>
+            </Link>
+          </div>
+        );
+      })}
     </div>
   );
 };

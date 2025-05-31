@@ -1,4 +1,4 @@
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { z } from "zod";
 import { auth } from "@/auth";
@@ -20,11 +20,11 @@ const fetchFilteredPublishedPetsWithCategorySchema = z.object({
   parsedSpeciesName: z.string().optional(),
 });
 
-export async function fetchFilteredPublishedPetsWithCategory(
+export const fetchFilteredPublishedPetsWithCategory = async (
   query: string,
   currentPage: number,
   speciesName?: string
-) {
+) => {
   // Parse the query, currentPage, and speciesName
   const parsedData = fetchFilteredPublishedPetsWithCategorySchema.safeParse({
     parsedQuery: query,
@@ -101,12 +101,12 @@ export async function fetchFilteredPublishedPetsWithCategory(
     }
     throw new Error("Error fetching pets.");
   }
-}
+};
 
-export async function fetchPublishedPetsPagesWithCategory(
+export const fetchPublishedPetsPagesWithCategory = async (
   query: string,
   speciesName?: string
-) {
+) => {
   // Parse the query and speciesName
   const parsedData = fetchPublishedPetsPagesWithCategorySchema.safeParse({
     parsedQuery: query,
@@ -146,9 +146,9 @@ export async function fetchPublishedPetsPagesWithCategory(
     }
     throw new Error("Error fetching pets pages.");
   }
-}
+};
 
-export async function fetchSpecies() {
+export const fetchSpecies = async () => {
   try {
     const species = await prisma.species.findMany();
     return species;
@@ -158,9 +158,9 @@ export async function fetchSpecies() {
     }
     throw new Error("Error fetching species.");
   }
-}
+};
 
-export async function fetchFrontPagePetById(id: string) {
+export const fetchFrontPagePetById = async (id: string) => {
   // Validate the id at runtime
   const parsedId = idSchema.safeParse(id);
   if (!parsedId.success) {
@@ -198,4 +198,4 @@ export async function fetchFrontPagePetById(id: string) {
     }
     throw new Error("Error fetching pet.");
   }
-}
+};

@@ -1,5 +1,5 @@
 import { unstable_noStore as noStore } from "next/cache";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { z } from "zod";
@@ -15,7 +15,10 @@ const fetchFilteredUsersSchema = z.object({
 // Define a schema for fetchUserPages
 const fetchUserPagesSchema = z.string();
 
-export async function fetchFilteredUsers(query: string, currentPage: number) {
+export const fetchFilteredUsers = async (
+  query: string,
+  currentPage: number
+) => {
   // Disable caching for this function
   noStore();
 
@@ -109,9 +112,9 @@ export async function fetchFilteredUsers(query: string, currentPage: number) {
     }
     throw new Error("Error fetching users.");
   }
-}
+};
 
-export async function fetchUserPages(query: string) {
+export const fetchUserPages = async (query: string) => {
   // Disable caching for this function
   noStore();
 
@@ -150,9 +153,9 @@ export async function fetchUserPages(query: string) {
     }
     throw new Error("Error fetching user pages.");
   }
-}
+};
 
-export async function fetchUserById(id: string) {
+export const fetchUserById = async (id: string) => {
   // Disable caching for this function
   noStore();
 
@@ -190,4 +193,4 @@ export async function fetchUserById(id: string) {
     }
     throw new Error("Error fetching user.");
   }
-}
+};

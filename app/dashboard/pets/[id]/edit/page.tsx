@@ -12,7 +12,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function Page({ params }: Props) {
+const Page = async ({ params }: Props) => {
   // get id from the url
   const { id } = await params;
 
@@ -38,6 +38,7 @@ export default async function Page({ params }: Props) {
           },
         ]}
       />
+      
       <h2 className="text-base font-semibold leading-7 text-gray-900">
         Pet Information
       </h2>
@@ -48,7 +49,7 @@ export default async function Page({ params }: Props) {
           Uploaded images
         </span>
         <div className="flex flex-row gap-x-2 overflow-auto">
-          {pet.petImages?.map((image, index) => (
+          {pet.petImages.map((image, index) => (
             <div key={image.id} className="relative flex-shrink-0">
               <Link href={image.url} target="_blank">
                 <Image
@@ -78,3 +79,5 @@ export default async function Page({ params }: Props) {
     </main>
   );
 }
+
+export default Page;

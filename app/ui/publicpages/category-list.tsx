@@ -16,7 +16,7 @@ interface Props {
   speciesName: string;
 }
 
-export default function CategoryList({ species, speciesName }: Props) {
+const CategoryList = ({ species, speciesName }: Props) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -77,3 +77,5 @@ export default function CategoryList({ species, speciesName }: Props) {
     </Listbox>
   );
 }
+
+export default CategoryList;

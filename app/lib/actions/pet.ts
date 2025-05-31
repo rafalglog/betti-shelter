@@ -1,14 +1,15 @@
 "use server";
+
 import { unlink } from "fs/promises";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import path from "path";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { idSchema } from "@/app/lib/zod-schemas/common";
 import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
-import { Role } from "@prisma/client";
+import { Role, Gender } from "@prisma/client";
 
 // Define a schema for the pet form
 const PetFormSchema = z.object({
@@ -16,8 +17,9 @@ const PetFormSchema = z.object({
   age: z.coerce
     .number()
     .gt(0, { message: "Please enter an age greater than 0." }),
-  gender: z.enum(["male", "female"], {
-    invalid_type_error: "Please select a gender.",
+  gender: z.nativeEnum(Gender, {
+    required_error: "Please select a gender.",
+    invalid_type_error: "Invalid gender selected.",
   }),
   species_id: z.string(),
   breed: z.string(),
@@ -293,7 +295,7 @@ export const updatePet = async (
   redirect("/dashboard/pets");
 };
 
-export async function deletePet(id: string) {
+export const deletePet = async (id: string) => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -320,16 +322,9 @@ export async function deletePet(id: string) {
       message: "Database Error: Failed to Create Pet.",
     };
   }
-}
+};
 
-/**
- * Deletes a pet image by its ID.
- *
- * @param {string} id - The ID of the pet image to delete.
- * @returns {Promise<{ message: string } | void>} - A message indicating the result of the operation.
- * @throws {Error} - Throws an error if the user does not have permission, the ID is invalid, or a database error occurs.
- */
-export async function deletePetImage(id: string) {
+export const deletePetImage = async (id: string) => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -359,35 +354,43 @@ export async function deletePetImage(id: string) {
     console.error("Database Error: Failed to Delete Image.");
     throw new Error("Database Error: Failed to Delete Image.");
   }
-}
+};
 
-export async function createPetLike(petId: string, userId?: string) {
-  // Check if the user has permission
+export const createPetLike = async (
+  petId: string,
+  userId: string
+): Promise<void> => {
   const hasPermission = await rolesWithPermission([
     Role.ADMIN,
     Role.STAFF,
     Role.USER,
   ]);
   if (!hasPermission) {
-    throw new Error("Access Denied. Failed to Create Pet Like.");
+    console.error(
+      `Access Denied: User ${userId} attempted to like pet ${petId} without permission.`
+    );
+    throw new Error(
+      "Access Denied. You do not have permission to like this pet."
+    );
   }
 
-  // Validate at runtime using Zod
   const validatedArgs = createPetIdUserIdSchema.safeParse({
     parsedPetId: petId,
     parsedUserId: userId,
   });
+
   if (!validatedArgs.success) {
-    return {
-      errors: validatedArgs.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Pet.",
-    };
+    const errorMessages = JSON.stringify(
+      validatedArgs.error.flatten().fieldErrors
+    );
+    console.error(`Validation Error for createPetLike: ${errorMessages}`);
+    throw new Error(
+      `Invalid pet or user ID provided for liking. Errors: ${errorMessages}`
+    );
   }
 
-  // Prepare data for insertion into the database
   const { parsedPetId, parsedUserId } = validatedArgs.data;
 
-  // Insert the pet like into the database
   try {
     await prisma.like.create({
       data: {
@@ -395,42 +398,60 @@ export async function createPetLike(petId: string, userId?: string) {
         userId: parsedUserId,
       },
     });
-
-    // Revalidate the cache for the /pets path
     revalidatePath("/pets");
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to add pet to likes.",
-    };
+  } catch (error: any) {
+    if (error.code === "P2002") {
+      console.warn(
+        `User ${parsedUserId} already liked pet ${parsedPetId}. No action taken.`
+      );
+      revalidatePath("/pets");
+      return;
+    }
+    console.error(
+      `Database Error: Failed to add pet like for pet ${parsedPetId}, user ${parsedUserId}.`,
+      error
+    );
+    throw new Error(
+      "Database Error: Failed to add pet to likes. Please try again."
+    );
   }
-}
+};
 
-export async function deletePetLike(petId: string, userId?: string) {
-  // Check if the user has permission
+export const deletePetLike = async (
+  petId: string,
+  userId: string
+): Promise<void> => {
   const hasPermission = await rolesWithPermission([
     Role.ADMIN,
     Role.STAFF,
     Role.USER,
   ]);
   if (!hasPermission) {
-    throw new Error("Access Denied. Failed to Delete Pet.");
+    console.error(
+      `Access Denied: User ${userId} attempted to unlike pet ${petId} without permission.`
+    );
+    throw new Error(
+      "Access Denied. You do not have permission to unlike this pet."
+    );
   }
 
-  // Validate at runtime using Zod
   const parsedArgs = createPetIdUserIdSchema.safeParse({
     parsedPetId: petId,
     parsedUserId: userId,
   });
+
   if (!parsedArgs.success) {
-    return {
-      errors: parsedArgs.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update Pet.",
-    };
+    const errorMessages = JSON.stringify(
+      parsedArgs.error.flatten().fieldErrors
+    );
+    console.error(`Validation Error for deletePetLike: ${errorMessages}`);
+    throw new Error(
+      `Invalid pet or user ID for unliking. Errors: ${errorMessages}`
+    );
   }
-  // Prepare data for insertion into the database
+
   const { parsedPetId, parsedUserId } = parsedArgs.data;
 
-  // Delete the pet like from the database
   try {
     await prisma.like.delete({
       where: {
@@ -440,12 +461,67 @@ export async function deletePetLike(petId: string, userId?: string) {
         },
       },
     });
-
-    // Revalidate the cache for the /pets path
     revalidatePath("/pets");
-  } catch (error) {
-    return {
-      message: "Database Error: Failed to delete pet to likes.",
-    };
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      // Record to delete not found
+      console.warn(
+        `Like not found for user ${parsedUserId} and pet ${parsedPetId} during delete. No action taken.`
+      );
+      revalidatePath("/pets");
+      revalidatePath(`/pets/${parsedPetId}`);
+      return;
+    }
+    console.error(
+      `Database Error: Failed to delete pet like for pet ${parsedPetId}, user ${parsedUserId}.`,
+      error
+    );
+    throw new Error(
+      "Database Error: Failed to remove pet from likes. Please try again."
+    );
   }
-}
+};
+
+export const togglePetLike = async (
+  petId: string,
+  userId: string,
+  isCurrentlyLiked: boolean
+): Promise<void> => {
+
+  const hasPermission = await rolesWithPermission([
+    Role.ADMIN,
+    Role.STAFF,
+    Role.USER,
+  ]);
+  if (!hasPermission) {
+    console.error(
+      `Access Denied: User ${userId} attempted to unlike pet ${petId} without permission.`
+    );
+    throw new Error(
+      "Access Denied. You do not have permission to unlike this pet."
+    );
+  }
+
+  const validatedArgs = createPetIdUserIdSchema.safeParse({
+    parsedPetId: petId,
+    parsedUserId: userId,
+  });
+
+  if (!validatedArgs.success) {
+    const errorMessages = JSON.stringify(
+      validatedArgs.error.flatten().fieldErrors
+    );
+    console.error(`Validation Error for togglePetLike: ${errorMessages}`);
+    throw new Error(
+      `Invalid arguments for toggling like status. Errors: ${errorMessages}`
+    );
+  }
+
+  // No try-catch needed here if createPetLike/deletePetLike throw errors,
+  // as those errors will propagate up.
+  if (isCurrentlyLiked) {
+    await deletePetLike(petId, userId);
+  } else {
+    await createPetLike(petId, userId);
+  }
+};

@@ -2,13 +2,12 @@ import { fetchFilteredUsers } from "@/app/lib/data/users/user";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { DeleteUser, EditUser } from "./buttons";
 
-export default async function UsersTable({
-  query,
-  currentPage,
-}: {
+interface UsersTableProps {
   query: string;
   currentPage: number;
-}) {
+}
+
+const UsersTable = async ({ query, currentPage }: UsersTableProps) => {
   const users = await fetchFilteredUsers(query, currentPage);
 
   return (
@@ -61,4 +60,6 @@ export default async function UsersTable({
       </div>
     </div>
   );
-}
+};
+
+export default UsersTable;

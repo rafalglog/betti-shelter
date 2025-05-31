@@ -2,22 +2,21 @@
 
 import { createPet, CreatePetFormState } from "@/app/lib/actions/pet";
 import Link from "next/link";
-import { PhotoIcon } from "@heroicons/react/24/outline";
+import { PhotoIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useActionState, useState } from "react";
 import { AdoptionStatus, Species } from "@prisma/client";
-import { TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@/app/lib/constants";
+import { ALLOWED_MIME_TYPES, GENDER_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
 
-export default function EditPetForm({
-  speciesList,
-  adoptionStatusList,
-}: {
+interface CreatePetFormProps {
   speciesList: Species[];
   adoptionStatusList: AdoptionStatus[];
-}) {
+}
+
+const CreatePetForm = ({ speciesList, adoptionStatusList }: CreatePetFormProps) => {
   // state to hold the pet images
   const [files, setFiles] = useState<File[]>([]);
+
   const initialState = { message: null, errors: {} };
   const [state, dispatch] = useActionState<CreatePetFormState, FormData>(
     createPet,
@@ -124,10 +123,13 @@ export default function EditPetForm({
                   name="gender"
                   autoComplete="off"
                   aria-describedby="gender-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                  className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
+                  {GENDER_VALUES.map((gender) => (
+                    <option key={gender} value={gender}>
+                      {gender.toLowerCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div id="gender-error" aria-live="polite" aria-atomic="true">
@@ -537,4 +539,6 @@ export default function EditPetForm({
       </div>
     </form>
   );
-}
+};
+
+export default CreatePetForm;

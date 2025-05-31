@@ -7,20 +7,20 @@ import Link from "next/link";
 import { AdoptionStatus, Pet, Species } from "@prisma/client";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import { ALLOWED_MIME_TYPES, GENDER_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
+import { PetWithImagesPayload } from "@/app/lib/types";
 
-interface PetWithImages extends Pet {
-  petImages: PetImage[];
+interface EditPetFormProps {
+  pet: PetWithImagesPayload;
+  speciesList: Species[];
+  adoptionStatusList: AdoptionStatus[];
 }
 
-export default function EditPetForm({
+const EditPetForm = ({
   pet,
   speciesList,
   adoptionStatusList,
-}: {
-  pet: PetWithImages;
-  speciesList: Species[];
-  adoptionStatusList: AdoptionStatus[];
-}) {
+}: EditPetFormProps) => {
   const [files, setFiles] = useState<File[]>([]);
 
   const updatePetWithId = updatePet.bind(null, pet.id);
@@ -29,14 +29,6 @@ export default function EditPetForm({
     updatePetWithId,
     initialState
   );
-
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_MIME_TYPES = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ];
 
   // handle file change event
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,9 +81,6 @@ export default function EditPetForm({
 
     // Dispatch the form data
     dispatch(formData);
-
-    // Optionally, manually submit the form
-    // event.currentTarget.requestSubmit();
   };
 
   return (
@@ -143,10 +132,17 @@ export default function EditPetForm({
                     defaultValue={pet.gender}
                     autoComplete="off"
                     aria-describedby="gender-error"
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
+                    className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   >
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
+                    {GENDER_VALUES.map((gender) => (
+                      <option
+                        key={gender}
+                        value={gender}
+                        className="capitalize"
+                      >
+                        {gender.toLowerCase()}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div id="gender-error" aria-live="polite" aria-atomic="true">
@@ -574,4 +570,6 @@ export default function EditPetForm({
       </form>
     </>
   );
-}
+};
+
+export default EditPetForm;

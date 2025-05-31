@@ -8,11 +8,11 @@ interface Breadcrumb {
   active?: boolean;
 }
 
-export default function Breadcrumbs({
-  breadcrumbs,
-}: {
+interface BreadcrumbsProps {
   breadcrumbs: Breadcrumb[];
-}) {
+}
+
+const Breadcrumbs = ({ breadcrumbs }: BreadcrumbsProps) => {
   return (
     <nav aria-label="Breadcrumb" className="mb-6 block">
       <ol className={clsx(opensans.className, "flex text-lg font-medium")}>
@@ -33,4 +33,6 @@ export default function Breadcrumbs({
       </ol>
     </nav>
   );
-}
+};
+
+export default Breadcrumbs;

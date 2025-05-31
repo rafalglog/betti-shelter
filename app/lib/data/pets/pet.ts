@@ -1,10 +1,11 @@
 import { unstable_noStore as noStore } from "next/cache";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { z } from "zod";
 import { idSchema } from "../../zod-schemas/common";
-import { Role } from "@prisma/client";
+import { AdoptionStatus, Role } from "@prisma/client";
+import { PetWithImagesPayload } from "../../types";
 
 // Define a schema for fetchPetsPages
 const fetchPetsPagesSchema = z.string();
@@ -15,7 +16,7 @@ const fetchFilteredPetsSchema = z.object({
   parsedCurrentPage: z.number(),
 });
 
-export async function fetchPetCardData() {
+export const fetchPetCardData = async () => {
   // Disable caching
   noStore();
 
@@ -61,9 +62,9 @@ export async function fetchPetCardData() {
     }
     throw new Error("Error fetching card data.");
   }
-}
+};
 
-export async function fetchPetsPages(query: string) {
+export const fetchPetsPages = async (query: string) => {
   // Disable caching
   noStore();
 
@@ -102,9 +103,9 @@ export async function fetchPetsPages(query: string) {
     }
     throw new Error("Error fetching pets pages.");
   }
-}
+};
 
-export async function fetchLatestPets() {
+export const fetchLatestPets = async () => {
   // Disable caching
   noStore();
 
@@ -146,10 +147,10 @@ export async function fetchLatestPets() {
     }
     throw new Error("Error fetching latest pets.");
   }
-}
+};
 
 // data for the pets table in the dashboard
-export async function fetchFilteredPets(query: string, currentPage: number) {
+export const fetchFilteredPets = async (query: string, currentPage: number) => {
   // Disable caching
   noStore();
 
@@ -221,9 +222,9 @@ export async function fetchFilteredPets(query: string, currentPage: number) {
     }
     throw new Error("Error fetching pets.");
   }
-}
+};
 
-export async function fetchAdoptionStatusList() {
+export const fetchAdoptionStatusList = async (): Promise<AdoptionStatus[]> => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -242,9 +243,11 @@ export async function fetchAdoptionStatusList() {
     }
     throw new Error("Error fetching adoption status.");
   }
-}
+};
 
-export async function fetchPetById(id: string) {
+export const fetchPetById = async (
+  id: string
+): Promise<PetWithImagesPayload | null> => {
   // Disable caching
   noStore();
 
@@ -280,4 +283,4 @@ export async function fetchPetById(id: string) {
     }
     throw new Error("Error fetching pet.");
   }
-}
+};

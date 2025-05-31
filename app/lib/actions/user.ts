@@ -1,7 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import prisma from "@/app/lib/prisma";
+import { prisma } from "@/app/lib/prisma";
 import { rolesWithPermission } from "@/app/lib/actions/authorization";
 import { idSchema } from "@/app/lib/zod-schemas/common";
 import { z } from "zod";
@@ -23,7 +23,7 @@ const updateUserFormSchema = z.object({
   }),
 });
 
-export async function deleteUser(id: string) {
+export const deleteUser = async (id: string) => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
@@ -49,13 +49,13 @@ export async function deleteUser(id: string) {
     console.error("Database Error: Failed to Delete User.", error);
     throw new Error("Database Error: Failed to Delete User.");
   }
-}
+};
 
-export async function updateUser(
+export const updateUser = async (
   id: string,
   prevState: updateUserFormState,
   formData: FormData
-) {
+) => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
@@ -103,4 +103,4 @@ export async function updateUser(
 
   // Redirect to the users page
   redirect("/dashboard/users");
-}
+};

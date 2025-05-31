@@ -1,12 +1,14 @@
 "use client";
 import { updateUser, updateUserFormState } from "@/app/lib/actions/user";
+import { ROLE_VALUES } from "@/app/lib/constants";
+import { Role } from "@prisma/client";
 import Link from "next/link";
 import { useActionState } from "react";
 
 interface userWithRole {
   id: string;
   email: string;
-  role: string;
+  role: Role;
 }
 
 interface EditUserFormProps {
@@ -45,10 +47,15 @@ const EditUserForm = ({ user }: EditUserFormProps) => {
                   defaultValue={user.role}
                   autoComplete="off"
                   aria-describedby="role-error"
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 sm:max-w-xs sm:text-sm sm:leading-6 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
+                  className="block capitalize w-full rounded-md border-0 py-1.5 text-gray-900 sm:max-w-xs sm:text-sm sm:leading-6 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
                 >
-                  <option value="user">User</option>
-                  <option value="staff">Staff</option>
+                  {ROLE_VALUES.map((role) => {
+                    return (
+                      <option key={role} value={role}>
+                        {role.toLowerCase()}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
               <div id="role-error" aria-live="polite" aria-atomic="true">

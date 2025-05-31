@@ -7,7 +7,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default function DeletePetModal({ params }: Props) {
+const DeletePetModal = ({ params }: Props) => {
   const router = useRouter();
   const { id } = use(params);
 
@@ -39,3 +39,5 @@ export default function DeletePetModal({ params }: Props) {
     </div>
   );
 }
+
+export default DeletePetModal;

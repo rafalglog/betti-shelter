@@ -7,7 +7,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function Page({ params }: Props) {
+const Page = async ({ params }: Props) => {
   // get the id from the url
   const { id } = await params;
 
@@ -39,3 +39,5 @@ export default async function Page({ params }: Props) {
     </main>
   );
 }
+
+export default Page;

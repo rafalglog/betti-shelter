@@ -1,4 +1,4 @@
-export default function Page() {
+const Page = () => {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2">
@@ -28,3 +28,5 @@ export default function Page() {
     </>
   );
 }
+
+export default Page;

@@ -4,19 +4,8 @@ import { opensans } from "@/app/ui/fonts";
 import { fetchLatestPets } from "@/app/lib/data/pets/pet";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-interface LatestPetsType {
-  id: string;
-  name: string;
-  age: number;
-  city: string;
-  state: string;
-  petImages: {
-    url: string;
-  }[];
-}
-
-export default async function LatestPets() {
-  const latestPets: LatestPetsType[] = await fetchLatestPets();
+const LatestPets = async () => {
+  const latestPets = await fetchLatestPets();
 
   return (
     <div className="flex w-full flex-col md:col-span-4">
@@ -35,9 +24,9 @@ export default async function LatestPets() {
                 className="grid grid-cols-[40px,2fr,2fr,1fr] mb-4 items-center border-b border-gray-100 pb-4"
               >
                 <div>
-                  {pet.petImages[0]?.url ? (
+                  {pet.petImages[0].url ? (
                     <Image
-                      src={pet.petImages[0]?.url}
+                      src={pet.petImages[0].url}
                       className="rounded-full w-7 h-7 object-cover"
                       width={50}
                       height={50}
@@ -63,4 +52,6 @@ export default async function LatestPets() {
       </div>
     </div>
   );
-}
+};
+
+export default LatestPets;

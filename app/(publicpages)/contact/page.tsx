@@ -6,7 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 // contact us page
-export default function Page() {
+const Page = () => {
   return (
     <>
       <div className="">
@@ -114,3 +114,5 @@ export default function Page() {
     </>
   );
 }
+
+export default Page;

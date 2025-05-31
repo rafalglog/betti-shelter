@@ -4,7 +4,7 @@ import Link from "next/link";
 import { deletePetImage } from "@/app/lib/actions/pet";
 import { useState } from "react";
 
-export function CreatePet() {
+export const CreatePet = () => {
   return (
     <Link
       href="/dashboard/pets/create"
@@ -14,9 +14,9 @@ export function CreatePet() {
       <PlusIcon className="h-5 md:ml-4" />
     </Link>
   );
-}
+};
 
-export function UpdatePet({ id }: { id: string }) {
+export const UpdatePet = ({ id }: { id: string }) => {
   return (
     <Link
       href={`/dashboard/pets/${id}/edit`}
@@ -25,9 +25,9 @@ export function UpdatePet({ id }: { id: string }) {
       <PencilIcon className="w-5" />
     </Link>
   );
-}
+};
 
-export function DeletePetImage({ id }: { id: string }) {
+export const DeletePetImage = ({ id }: { id: string }) => {
   const deleteImageWithId = deletePetImage.bind(null, id);
   // Confirmation state for the delete button
   const [confirmation, setConfirmation] = useState(false);
@@ -52,9 +52,9 @@ export function DeletePetImage({ id }: { id: string }) {
       </div>
     </form>
   );
-}
+};
 
-export function DeletePet({ id }: { id: string }) {
+export const DeletePet = ({ id }: { id: string }) => {
   return (
     <Link
       href={`/dashboard/pets/delete/${id}`}
@@ -65,4 +65,4 @@ export function DeletePet({ id }: { id: string }) {
       <TrashIcon className="w-5" />
     </Link>
   );
-}
+};

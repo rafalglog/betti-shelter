@@ -1,16 +1,17 @@
 "use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PhotoIcon } from "@heroicons/react/24/outline";
+import { PetImage as PrismaPetImage } from "@prisma/client";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 
-type ImageProps = {
-  id: string;
-  url: string;
-  petId: string;
-};
-export const PetGallery = ({ images }: { images: ImageProps[] }) => {
+interface PetGalleryProps {
+  images: PrismaPetImage[];
+}
+
+const PetGallery = ({ images }: PetGalleryProps) => {
   // State to keep track of the selected image
   const [selectedImage, setSelectedImage] = useState(
     images.length > 0 ? images[0].url : ""
@@ -30,7 +31,7 @@ export const PetGallery = ({ images }: { images: ImageProps[] }) => {
               placeholder={`data:image/svg+xml;base64,${toBase64(
                 shimmer(600, 600)
               )}`}
-              alt="selected image"
+              alt="Selected pet image, enlarged view"
             />
           </Link>
         ) : (
@@ -52,10 +53,12 @@ export const PetGallery = ({ images }: { images: ImageProps[] }) => {
             placeholder={`data:image/svg+xml;base64,${toBase64(
               shimmer(100, 100)
             )}`}
-            alt={`image ${index}`}
+            alt={`Pet image thumbnail ${index + 1}`}
           />
         ))}
       </div>
     </div>
   );
 };
+
+export default PetGallery;

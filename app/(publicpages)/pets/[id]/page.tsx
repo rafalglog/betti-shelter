@@ -1,5 +1,5 @@
 import { fetchFrontPagePetById } from "@/app/lib/data/pets/public";
-import { PetGallery } from "@/app/ui/publicpages/pet-gallery";
+import PetGallery from "@/app/ui/publicpages/pet-gallery";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -20,7 +20,7 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
-export default async function Page({ params }: Props) {
+const Page = async ({ params }: Props) => {
   // get id from the url
   const { id } = await params;
 
@@ -62,3 +62,5 @@ export default async function Page({ params }: Props) {
     </main>
   );
 }
+
+export default Page;

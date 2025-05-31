@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Disclosure,
   DisclosureButton,
@@ -16,8 +17,8 @@ import {
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { signIn, signOut } from "next-auth/react";
-import Link from "next/link";
+import { signOut } from "next-auth/react";
+import NavItemsRenderer from "./nav-items-renderer";
 
 const links = [
   { name: "Home", href: "/" },
@@ -27,17 +28,16 @@ const links = [
   { name: "Dashboard", href: "/dashboard" },
 ];
 
-export default function TopNav({
-  userImage,
-  showUserProfile,
-}: {
+interface TopNavProps {
   userImage: string | null | undefined;
   showUserProfile: boolean;
-}) {
+}
+
+const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
   const pathname = usePathname();
 
   return (
-    <Disclosure as="nav" className="bg-gray-800 rounded-md">
+    <Disclosure as="nav" className="bg-gray-800 z-20 relative rounded-md data-[headlessui-state=open]:rounded-b-none">
       {({ open, close }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 md:px-6 lg:px-8">
@@ -66,36 +66,13 @@ export default function TopNav({
 
                 {/* top nav links */}
                 <div className="hidden md:ml-6 md:block">
-                  <div className="flex space-x-4">
-                    {links.map((link) =>
-                      link.name === "Dashboard" && !showUserProfile ? null : (
-                        <Link
-                          key={link.name}
-                          href={link.href}
-                          className={clsx(
-                            "rounded-md px-3 py-2 text-sm font-medium",
-                            pathname === link.href
-                              ? "bg-gray-900 text-white"
-                              : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                          )}
-                          aria-current={
-                            pathname === link.href ? "page" : undefined
-                          }
-                        >
-                          {link.name}
-                        </Link>
-                      )
-                    )}
-                    {/* If there is no session then show the sign in button */}
-                    {!showUserProfile && (
-                      <button
-                        className="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white"
-                        onClick={() => signIn()}
-                      >
-                        Sign In
-                      </button>
-                    )}
-                  </div>
+                  <NavItemsRenderer
+                    links={links}
+                    pathname={pathname}
+                    showUserProfile={showUserProfile}
+                    itemClassName="text-sm"
+                    signInButtonClassName="text-sm"
+                  />
                 </div>
               </div>
 
@@ -126,14 +103,14 @@ export default function TopNav({
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <MenuItems className="absolute right-0 z-30 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <MenuItem>
                           {({ focus }) => (
                             <button
                               onClick={() => signOut()}
                               className={clsx(
                                 "w-full text-left px-4 py-2 text-sm text-gray-700",
-                                { "bg-gray-100": focus }
+                                focus && "bg-gray-100"
                               )}
                             >
                               Sign out
@@ -149,38 +126,22 @@ export default function TopNav({
           </div>
 
           {/* small screen drop down menu */}
-          <DisclosurePanel className="sm:hidden">
+          <DisclosurePanel className="md:hidden absolute left-0 right-0 z-10 bg-gray-800 rounded-b-md">
             <div className="space-y-1 px-2 pb-3 pt-2">
-              {links.map((link) =>
-                link.name === "Dashboard" && !showUserProfile ? null : (
-                  <Link
-                    onClick={() => close()}
-                    key={link.name}
-                    href={link.href}
-                    passHref
-                    className={clsx(
-                      "block rounded-md px-3 py-2 text-base font-medium",
-                      pathname === link.href
-                        ? "bg-gray-900 text-white"
-                        : "text-gray-300 hover:bg-gray-700 hover:text-white"
-                    )}
-                  >
-                    {link.name}
-                  </Link>
-                )
-              )}
-              {!showUserProfile && (
-                <button
-                  className="block rounded-md px-3 py-2 text-base font-medium text-gray-300 hover:bg-gray-700 hover:text-white hover:cursor-pointer"
-                  onClick={() => signIn()}
-                >
-                  Sign In
-                </button>
-              )}
+              <NavItemsRenderer
+                links={links}
+                pathname={pathname}
+                showUserProfile={showUserProfile}
+                onLinkClick={close} // Pass the 'close' function from Disclosure
+                itemClassName="block text-base" // Mobile uses block and text-base
+                signInButtonClassName="block text-base" // Mobile uses block and text-base
+              />
             </div>
           </DisclosurePanel>
         </>
       )}
     </Disclosure>
   );
-}
+};
+
+export default TopNav;

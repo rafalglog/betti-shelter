@@ -3,9 +3,9 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { deleteUser } from "@/app/lib/actions/user";
 import { useState } from "react";
+import { UserIdProps } from "@/app/lib/types";
 
-// The buttons for updating and deleting a user
-export function EditUser({ id }: { id: string }) {
+export const EditUser = ({ id }: UserIdProps) => {
   return (
     <Link
       href={`/dashboard/users/${id}/edit`}
@@ -16,7 +16,7 @@ export function EditUser({ id }: { id: string }) {
   );
 }
 
-export function DeleteUser({ id }: { id: string }) {
+export const DeleteUser = ({ id }: UserIdProps) => {
   // Bind the user id to the deleteUser function
   const deleteUserWithId = deleteUser.bind(null, id);
   // Confirmation state for the delete button

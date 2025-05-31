@@ -13,25 +13,34 @@ enum Role {
   USER
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
 model Like {
   id String @id @default(cuid())
 
   petId String @map(name: "pet_id")
-  pet   Pet    @relation(fields: [petId], references: [id])
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   userId String @map(name: "user_id")
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, petId])
   @@map(name: "likes")
 }
 
+// weight and height: These are Int. If you need to store decimal values 
+// (e.g., 2.5 kg), consider changing them to Float. Adding units to 
+// the field name (e.g., weightInKg, heightInCm) or in a comment can also improve clarity.
 model Pet {
   id               String         @id @default(cuid())
   name             String
   age              Int
-  gender           String
-  speciesId        String
+  gender           Gender
+  speciesId        String         @map(name: "species_id")
   species          Species        @relation(fields: [speciesId], references: [id])
   breed            String
   weight           Int
@@ -43,7 +52,8 @@ model Pet {
   adoptionStatusId String         @map(name: "adoption_status_id")
   adoptionStatus   AdoptionStatus @relation(fields: [adoptionStatusId], references: [id])
   petImages        PetImage[]
-  createdAt        DateTime       @default(now())
+  createdAt        DateTime       @default(now()) @map(name: "created_at")
+  updatedAt        DateTime       @updatedAt @map(name: "updated_at")
   likes            Like[]
 
   @@map(name: "pets")
@@ -63,7 +73,7 @@ model AdoptionStatus {
   name String @unique
   Pet  Pet[]
 
-  @@map("adoption_status")
+  @@map(name: "adoption_statuses") // CHANGED from adoption_status to adoption_statuses
 }
 
 model Species {
@@ -71,24 +81,25 @@ model Species {
   name String @unique
   Pet  Pet[]
 
-  @@map(name: "species")
+  @@map(name: "species") // This is fine as species can be singular/plural
 }
 
 model Account {
-  userId            String
+  userId            String    @map(name: "user_id")
   type              String
   provider          String
-  providerAccountId String
+  providerAccountId String    @map(name: "provider_account_id")
   access_token      String?
   token_type        String?
   scope             String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
+  @@map(name: "accounts") // ADDED @@map
 }
 
 model User {
@@ -96,11 +107,11 @@ model User {
   name          String?
   password      String?
   email         String    @unique
-  emailVerified DateTime?
+  emailVerified DateTime? @map(name: "email_verified")
   image         String?
   accounts      Account[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
   likes         Like[]
   role          Role      @default(USER)
 

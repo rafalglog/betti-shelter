@@ -1,4 +1,5 @@
 "use server";
+
 import path from "path";
 import { writeFile } from "fs/promises";
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@/app/lib/constants";
@@ -6,7 +7,9 @@ import { rolesWithPermission } from "../actions/authorization";
 import { Role } from "@prisma/client";
 
 // Validate and upload images
-export async function validateAndUploadImages(petImages: FormDataEntryValue[]) {
+export const validateAndUploadImages = async (
+  petImages: FormDataEntryValue[]
+) => {
   // Check if the user has permission to upload images
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -71,4 +74,4 @@ export async function validateAndUploadImages(petImages: FormDataEntryValue[]) {
       message: "Failed to upload one or more images.",
     };
   }
-}
+};

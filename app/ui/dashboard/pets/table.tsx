@@ -3,14 +3,15 @@ import { UpdatePet, DeletePet } from "@/app/ui/dashboard/pets/buttons";
 import { fetchFilteredPets } from "@/app/lib/data/pets/pet";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
-// dashboard: table of pets
-export default async function PetsTable({
-  query,
-  currentPage,
-}: {
+interface PetsTableProps {
   query: string;
   currentPage: number;
-}) {
+}
+
+const PetsTable = async ({
+  query,
+  currentPage,
+}: PetsTableProps) => {
   const pets = await fetchFilteredPets(query, currentPage);
 
   return (
@@ -74,3 +75,5 @@ export default async function PetsTable({
     </div>
   );
 }
+
+export default PetsTable;

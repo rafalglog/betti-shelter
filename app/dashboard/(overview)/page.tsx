@@ -4,10 +4,9 @@ import CardWrapper from "@/app/ui/dashboard/cards";
 import LatestPets from "@/app/ui/dashboard/latest-pets";
 import { opensans } from "@/app/ui/fonts";
 
-export default async function Page() {
+const Page = () => {
   return (
     <main>
-      {/* title */}
       <h1
         className={`${opensans.className} mb-4 text-xl md:text-2xl font-normal`}
       >
@@ -29,4 +28,6 @@ export default async function Page() {
       </div>
     </main>
   );
-}
+};
+
+export default Page;
