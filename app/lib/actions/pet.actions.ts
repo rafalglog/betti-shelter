@@ -320,7 +320,7 @@ export const deletePetImage = async (id: string) => {
   // Validate the id at runtime
   const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    console.error(`Invalid PetImage ID format for delete: ${parsedId.error.flatten().formErrors.join(", ")}`);
     throw new Error("Invalid Pet ID format.");
   }
   const validatedId = parsedId.data; // This is the PetImage ID
@@ -331,11 +331,25 @@ export const deletePetImage = async (id: string) => {
       where: { id: validatedId },
     });
 
+    if (!deletedPetImage) {
+      console.error(`PetImage with ID ${validatedId} not found or failed to delete.`);
+      throw new Error("Image not found or failed to delete from database.");
+    }
+
     // Delete the file from the uploads folder
     const filePath = path.join(process.cwd(), "public", deletedPetImage.url);
-    await unlink(filePath);
+    try {
+      await unlink(filePath);
+    } catch (fileError: any) {
+      console.error(`Failed to delete image file ${deletedPetImage.url} from filesystem for PetImage ${validatedId}:`, fileError);
+    }
 
     revalidatePath("/dashboard/pets");
+    // Revalidate the specific pet's edit page and its public page
+    if (deletedPetImage.petId) {
+      revalidatePath(`/dashboard/pets/${deletedPetImage.petId}/edit`);
+      revalidatePath(`/pets/${deletedPetImage.petId}`);
+    }
   } catch (error) {
     console.error(`Database Error deleting image ${validatedId}:`, error);
     throw new Error("Database Error: Failed to Delete Image.");

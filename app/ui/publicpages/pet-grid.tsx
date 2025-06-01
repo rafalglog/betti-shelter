@@ -26,11 +26,8 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
   return (
     <div className="mt-6 flex gap-3 flex-wrap">
       {pets.map((pet) => {
-        const isLikedByCurrentUser = !!(
-          currentUserId &&
-          pet.likes &&
-          pet.likes.some((like) => like.userId === currentUserId)
-        );
+        // If currentUserId exists and pet.likes array has one entry, it means the current user liked this pet.
+        const isLikedByCurrentUser = !!(currentUserId && pet.likes?.length > 0);
 
         return (
           <div
