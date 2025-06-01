@@ -3,7 +3,7 @@ import Search from "@/app/ui/search";
 import UsersTable from "@/app/ui/dashboard/users/table";
 import { UsersTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import { fetchUserPages } from "@/app/lib/data/users/user";
+import { fetchUserPages } from "@/app/lib/data/users/user.data";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {

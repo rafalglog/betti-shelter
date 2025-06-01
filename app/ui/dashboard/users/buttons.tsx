@@ -1,7 +1,8 @@
 "use client";
+
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { deleteUser } from "@/app/lib/actions/user";
+import { deleteUser } from "@/app/lib/actions/user.actions";
 import { useState } from "react";
 import { UserIdProps } from "@/app/lib/types";
 

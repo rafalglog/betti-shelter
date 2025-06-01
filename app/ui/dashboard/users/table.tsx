@@ -1,4 +1,4 @@
-import { fetchFilteredUsers } from "@/app/lib/data/users/user";
+import { fetchFilteredUsers } from "@/app/lib/data/users/user.data";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { DeleteUser, EditUser } from "./buttons";
 

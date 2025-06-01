@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { UpdatePet, DeletePet } from "@/app/ui/dashboard/pets/buttons";
-import { fetchFilteredPets } from "@/app/lib/data/pets/pet";
+import { fetchFilteredPets } from "@/app/lib/data/pets/pet.data";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 
 interface PetsTableProps {
@@ -8,10 +8,7 @@ interface PetsTableProps {
   currentPage: number;
 }
 
-const PetsTable = async ({
-  query,
-  currentPage,
-}: PetsTableProps) => {
+const PetsTable = async ({ query, currentPage }: PetsTableProps) => {
   const pets = await fetchFilteredPets(query, currentPage);
 
   return (
@@ -74,6 +71,6 @@ const PetsTable = async ({
       </div>
     </div>
   );
-}
+};
 
 export default PetsTable;

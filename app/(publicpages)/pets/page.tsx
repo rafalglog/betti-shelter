@@ -4,9 +4,9 @@ import { FrontPetsCardSkeleton } from "../../ui/skeletons";
 import {
   fetchPublishedPetsPagesWithCategory,
   fetchSpecies,
-} from "@/app/lib/data/pets/public";
+} from "@/app/lib/data/pets/public.data";
 import Pagination from "@/app/ui/dashboard/pets/pagination";
-import PetCard from "@/app/ui/publicpages/pet-card";
+import PetGrid from "@/app/ui/publicpages/pet-grid";
 import CategoryList from "@/app/ui/publicpages/category-list";
 import { SearchParamsType } from "@/app/lib/types";
 
@@ -53,14 +53,14 @@ const Page = async ({ searchParams }: Props) => {
         key={query + currentPage + speciesName}
         fallback={<FrontPetsCardSkeleton />}
       >
-        <PetCard
+        <PetGrid
           query={query}
           currentPage={currentPage}
           speciesName={speciesName}
         />
       </Suspense>
 
-      {/* table pagination buttons */}
+      {/* Pagination buttons */}
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
       </div>

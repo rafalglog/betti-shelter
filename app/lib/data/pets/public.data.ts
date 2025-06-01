@@ -1,44 +1,35 @@
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
-import { z } from "zod";
 import { auth } from "@/auth";
 import { PetListingStatus } from "@prisma/client";
-import { idSchema } from "../../zod-schemas";
+import { cuidSchema } from "../../zod-schemas/common.schemas";
+import { PublishedPetsFilterSchema, PublishedPetsPageCountSchema } from "../../zod-schemas/pet.schemas";
 
 /*
 ============ data for the public pages ============
 */
-// Schema for fetchPublishedPetsPagesWithCategory function
-const fetchPublishedPetsPagesWithCategorySchema = z.object({
-  parsedQuery: z.string(),
-  parsedSpeciesName: z.string().optional(),
-});
-
-// Schema for the function parameters
-const fetchFilteredPublishedPetsWithCategorySchema = z.object({
-  parsedQuery: z.string(),
-  parsedCurrentPage: z.number(),
-  parsedSpeciesName: z.string().optional(),
-});
 
 export const fetchFilteredPublishedPetsWithCategory = async (
-  query: string,
-  currentPage: number,
-  speciesName?: string
+  queryInput: string,
+  currentPageInput: number,
+  speciesNameInput?: string
 ) => {
   // Parse the query, currentPage, and speciesName
-  const parsedData = fetchFilteredPublishedPetsWithCategorySchema.safeParse({
-    parsedQuery: query,
-    parsedCurrentPage: currentPage,
-    parsedSpeciesName: speciesName,
+  const validatedArgs = PublishedPetsFilterSchema.safeParse({
+    query: queryInput,
+    currentPage: currentPageInput,
+    speciesName: speciesNameInput,
   });
-  if (!parsedData.success) {
-    throw new Error("Invalid type.");
+  if (!validatedArgs.success) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Validation error in fetchFilteredPublishedPetsWithCategory:", validatedArgs.error.flatten());
+    }
+    throw new Error("Invalid arguments for fetching pets.");
   }
-  const { parsedQuery, parsedCurrentPage, parsedSpeciesName } = parsedData.data;
+  const { query, currentPage, speciesName } = validatedArgs.data;
 
   // page offset
-  const offset = (parsedCurrentPage - 1) * ITEMS_PER_PAGE;
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   // get the user id from the session
   const session = await auth();
@@ -49,14 +40,14 @@ export const fetchFilteredPublishedPetsWithCategory = async (
     const pets = await prisma.pet.findMany({
       where: {
         name: {
-          contains: parsedQuery,
+          contains: query,
           mode: "insensitive",
         },
         listingStatus: PetListingStatus.PUBLISHED,
         // if speciesName is provided, filter by species
-        ...(parsedSpeciesName && {
+        ...(speciesName && {
           species: {
-            name: parsedSpeciesName,
+            name: speciesName,
           },
         }),
       },
@@ -105,32 +96,35 @@ export const fetchFilteredPublishedPetsWithCategory = async (
 };
 
 export const fetchPublishedPetsPagesWithCategory = async (
-  query: string,
-  speciesName?: string
+  queryInput: string,
+  speciesNameInput?: string
 ) => {
   // Parse the query and speciesName
-  const parsedData = fetchPublishedPetsPagesWithCategorySchema.safeParse({
-    parsedQuery: query,
-    parsedSpeciesName: speciesName,
+  const validatedArgs = PublishedPetsPageCountSchema.safeParse({
+    query: queryInput,
+    speciesName: speciesNameInput,
   });
-  if (!parsedData.success) {
-    throw new Error("Invalid type.");
+  if (!validatedArgs.success) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Validation error in fetchPublishedPetsPagesWithCategory:", validatedArgs.error.flatten());
+    }
+    throw new Error("Invalid arguments for fetching pet pages.");
   }
-  const { parsedQuery, parsedSpeciesName } = parsedData.data;
+  const { query, speciesName } = validatedArgs.data;
 
   // fetch the total number of pets based on the query
   try {
     const count = await prisma.pet.count({
       where: {
         name: {
-          contains: parsedQuery,
+          contains: query,
           mode: "insensitive",
         },
         listingStatus: PetListingStatus.PUBLISHED,
         // if speciesName is provided, filter by species
-        ...(parsedSpeciesName && {
+        ...(speciesName && {
           species: {
-            name: parsedSpeciesName,
+            name: speciesName,
           },
         }),
       },
@@ -163,9 +157,10 @@ export const fetchSpecies = async () => {
 
 export const fetchFrontPagePetById = async (id: string) => {
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid id.");
+    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    throw new Error("Invalid Pet ID format.");
   }
   const validatedId = parsedId.data;
 

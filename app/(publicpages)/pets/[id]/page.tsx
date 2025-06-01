@@ -1,4 +1,4 @@
-import { fetchFrontPagePetById } from "@/app/lib/data/pets/public";
+import { fetchFrontPagePetById } from "@/app/lib/data/pets/public.data";
 import { IDParamType } from "@/app/lib/types";
 import PetGallery from "@/app/ui/publicpages/pet-gallery";
 import Link from "next/link";

@@ -1,14 +1,20 @@
 "use client";
-import { PetImage } from "@prisma/client";
+
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { updatePet, CreatePetFormState } from "@/app/lib/actions/pet";
-import { useActionState, useState } from "react";
+import { updatePet } from "@/app/lib/actions/pet.actions";
+import { startTransition, useActionState, useState } from "react";
 import Link from "next/link";
 import { AdoptionStatus, Pet, Species } from "@prisma/client";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
-import { ALLOWED_MIME_TYPES, GENDER_VALUES, LISTING_STATUS_VALUES, MAX_FILE_SIZE } from "@/app/lib/constants";
+import {
+  ALLOWED_MIME_TYPES,
+  GENDER_VALUES,
+  LISTING_STATUS_VALUES,
+  MAX_FILE_SIZE,
+} from "@/app/lib/constants";
 import { PetWithImagesPayload } from "@/app/lib/types";
+import { CreatePetFormState } from "@/app/lib/error-messages-type";
 
 interface EditPetFormProps {
   pet: PetWithImagesPayload;
@@ -25,7 +31,7 @@ const EditPetForm = ({
 
   const updatePetWithId = updatePet.bind(null, pet.id);
   const initialState = { message: null, errors: {} };
-  const [state, dispatch] = useActionState<CreatePetFormState, FormData>(
+  const [state, formAction] = useActionState<CreatePetFormState, FormData>(
     updatePetWithId,
     initialState
   );
@@ -79,8 +85,10 @@ const EditPetForm = ({
       }
     });
 
-    // Dispatch the form data
-    dispatch(formData);
+    // Manually call to formAction in startTransition
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   return (
@@ -241,15 +249,15 @@ const EditPetForm = ({
 
               <div className="sm:col-span-3">
                 <label
-                  htmlFor="species_id"
+                  htmlFor="speciesId"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Species
                 </label>
                 <div className="mt-2">
                   <select
-                    id="species_id"
-                    name="species_id"
+                    id="speciesId"
+                    name="speciesId"
                     defaultValue={pet.speciesId}
                     autoComplete="off"
                     aria-describedby="category-error"
@@ -262,13 +270,9 @@ const EditPetForm = ({
                     ))}
                   </select>
                 </div>
-                <div
-                  id="species_id-error"
-                  aria-live="polite"
-                  aria-atomic="true"
-                >
-                  {state.errors?.species_id &&
-                    state.errors.species_id.map((error: string) => (
+                <div id="speciesId-error" aria-live="polite" aria-atomic="true">
+                  {state.errors?.speciesId &&
+                    state.errors.speciesId.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>
@@ -382,7 +386,11 @@ const EditPetForm = ({
                     ))}
                   </select>
                 </div>
-                <div id="listingStatus-error" aria-live="polite" aria-atomic="true">
+                <div
+                  id="listingStatus-error"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
                   {state.errors?.listingStatus &&
                     state.errors.listingStatus.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
@@ -394,18 +402,18 @@ const EditPetForm = ({
 
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="adoption_status_id"
+                  htmlFor="adoptionStatusId"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
                   Status
                 </label>
                 <div className="mt-2">
                   <select
-                    id="adoption_status_id"
-                    name="adoption_status_id"
+                    id="adoptionStatusId"
+                    name="adoptionStatusId"
                     defaultValue={pet.adoptionStatusId}
                     autoComplete="off"
-                    aria-describedby="adoption_status_id-error"
+                    aria-describedby="adoptionStatusId-error"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                   >
                     {adoptionStatusList.map((adoptionStatus) => (
@@ -416,12 +424,12 @@ const EditPetForm = ({
                   </select>
                 </div>
                 <div
-                  id="adoption_status_id-error"
+                  id="adoptionStatusId-error"
                   aria-live="polite"
                   aria-atomic="true"
                 >
-                  {state.errors?.adoption_status_id &&
-                    state.errors.adoption_status_id.map((error: string) => (
+                  {state.errors?.adoptionStatusId &&
+                    state.errors.adoptionStatusId.map((error: string) => (
                       <p className="mt-2 text-sm text-red-500" key={error}>
                         {error}
                       </p>

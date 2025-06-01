@@ -1,7 +1,7 @@
 import EditPetForm from "@/app/ui/dashboard/pets/edit-form";
 import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
-import { fetchPetById, fetchAdoptionStatusList } from "@/app/lib/data/pets/pet";
-import { fetchSpecies } from "@/app/lib/data/pets/public";
+import { fetchPetById, fetchAdoptionStatusList } from "@/app/lib/data/pets/pet.data";
+import { fetchSpecies } from "@/app/lib/data/pets/public.data";
 import { notFound } from "next/navigation";
 import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons";
 import Image from "next/image";

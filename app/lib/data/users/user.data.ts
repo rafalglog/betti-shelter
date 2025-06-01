@@ -1,52 +1,44 @@
-import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
-import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { z } from "zod";
+import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
 import { Role } from "@prisma/client";
-import { idSchema } from "../../zod-schemas";
-
-// Define a schema for fetchFilteredUsers
-const fetchFilteredUsersSchema = z.object({
-  parsedQuery: z.string(),
-  parsedCurrentPage: z.number(),
-});
-
-// Define a schema for fetchUserPages
-const fetchUserPagesSchema = z.string();
+import { cuidSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
+import {
+  FilteredUsersParamsSchema
+} from "../../zod-schemas/user.schemas";
 
 export const fetchFilteredUsers = async (
-  query: string,
-  currentPage: number
+  queryInput: string,
+  currentPageInput: number
 ) => {
-  // Disable caching for this function
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
-    throw new Error("Access Denied");
+    throw new Error("Access Denied.");
   }
 
   // Parse the query and currentPage
-  const parsedData = fetchFilteredUsersSchema.safeParse({
-    parsedQuery: query,
-    parsedCurrentPage: currentPage,
+  const validatedArgs = FilteredUsersParamsSchema.safeParse({
+    query: queryInput,
+    currentPage: currentPageInput,
   });
-  if (!parsedData.success) {
-    throw new Error("Invalid type.");
+  if (!validatedArgs.success) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Validation error in fetchFilteredUsers:", validatedArgs.error.flatten());
+    }
+    throw new Error("Invalid arguments for fetching users.");
   }
-  const { parsedQuery, parsedCurrentPage } = parsedData.data;
+  const { query, currentPage } = validatedArgs.data;
 
   // page offset
-  const offset = (parsedCurrentPage - 1) * ITEMS_PER_PAGE;
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   // fetch the users
   try {
     const users = await prisma.user.findMany({
       where: {
         email: {
-          contains: parsedQuery,
+          contains: query,
           mode: "insensitive",
         },
         role: {
@@ -65,41 +57,6 @@ export const fetchFilteredUsers = async (
       take: ITEMS_PER_PAGE,
       skip: offset,
     });
-    // const [employees, totalEmployees] = await prisma.$transaction([
-    //   prisma.user.findMany({
-    //     where: {
-    //       email: {
-    //         contains: parsedQuery,
-    //         mode: "insensitive",
-    //       },
-    //       role: {
-    //         not: "admin",
-    //       },
-    //     },
-    //     select: {
-    //       id: true,
-    //       email: true,
-    //       image: true,
-    //       role: true,
-    //     },
-    //     orderBy: {
-    //       createdAt: "desc",
-    //     },
-    //     take: EMPLOYEE_PER_PAGE,
-    //     skip: offset,
-    //   }),
-    //   prisma.user.count({
-    //     where: {
-    //       email: {
-    //         contains: parsedQuery,
-    //         mode: "insensitive",
-    //       },
-    //       role: {
-    //         not: "admin",
-    //       },
-    //     },
-    //   }),
-    // ]);
 
     // add a 4 seconds delay to simulate a slow network
     // await new Promise((resolve) => setTimeout(resolve, 4000));
@@ -115,9 +72,6 @@ export const fetchFilteredUsers = async (
 };
 
 export const fetchUserPages = async (query: string) => {
-  // Disable caching for this function
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
@@ -125,9 +79,9 @@ export const fetchUserPages = async (query: string) => {
   }
 
   // Parse the query
-  const parsedQuery = fetchUserPagesSchema.safeParse(query);
+  const parsedQuery = searchQuerySchema.safeParse(query);
   if (!parsedQuery.success) {
-    throw new Error("Invalid type.");
+    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query.");
   }
   const validatedQuery = parsedQuery.data;
 
@@ -156,9 +110,6 @@ export const fetchUserPages = async (query: string) => {
 };
 
 export const fetchUserById = async (id: string) => {
-  // Disable caching for this function
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN]);
   if (!hasPermission) {
@@ -166,9 +117,10 @@ export const fetchUserById = async (id: string) => {
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid ID format.");
+    console.error(`Invalid User ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    throw new Error("Invalid User ID format.");
   }
   const validatedId = parsedId.data;
 

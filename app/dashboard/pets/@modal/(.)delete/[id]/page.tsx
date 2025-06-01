@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { deletePet } from "@/app/lib/actions/pet";
+import { deletePet } from "@/app/lib/actions/pet.actions";
 import { use } from "react";
 import { IDParamType } from "@/app/lib/types";
 

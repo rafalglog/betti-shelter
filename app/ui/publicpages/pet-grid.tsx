@@ -1,11 +1,10 @@
-import { togglePetLike } from "@/app/lib/actions/pet";
-import { fetchFilteredPublishedPetsWithCategory } from "@/app/lib/data/pets/public";
+import { fetchFilteredPublishedPetsWithCategory } from "@/app/lib/data/pets/public.data";
 import { auth } from "@/auth";
-import { HeartIcon, PhotoIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
+import { PhotoIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
+import LikeButton from "./like-button";
 
 interface Props {
   query: string;
@@ -13,7 +12,7 @@ interface Props {
   speciesName: string;
 }
 
-const PetCard = async ({ query, currentPage, speciesName }: Props) => {
+const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
   // User session
   const session = await auth();
   const currentUserId = session?.user?.id;
@@ -33,60 +32,17 @@ const PetCard = async ({ query, currentPage, speciesName }: Props) => {
           pet.likes.some((like) => like.userId === currentUserId)
         );
 
-        let likeButtonElement;
-
-        if (currentUserId) {
-          // User is logged in - render a form with a submit button to toggle like
-          likeButtonElement = (
-            <form
-              action={togglePetLike.bind(
-                null,
-                pet.id,
-                currentUserId,
-                isLikedByCurrentUser
-              )}
-            >
-              <button
-                type="submit"
-                aria-label={
-                  isLikedByCurrentUser ? "Unlike this pet" : "Like this pet"
-                }
-                className="p-1 rounded-full hover:bg-red-100 active:bg-red-200 focus:outline-hidden focus:ring-2 focus:ring-red-300 transition-colors duration-150 ease-in-out"
-              >
-                <HeartIcon
-                  className={clsx(
-                    "h-6 w-6 transition-all duration-150 ease-in-out",
-                    isLikedByCurrentUser
-                      ? "text-red-500 fill-red-500"
-                      : "text-red-400 hover:text-red-500"
-                  )}
-                />
-              </button>
-            </form>
-          );
-        } else {
-          // User is not logged in - render a button that could prompt for login
-          likeButtonElement = (
-            <button
-              type="button"
-              aria-label="Like this pet (requires login)"
-              className="p-1 rounded-full hover:bg-gray-100 active:bg-gray-200 focus:outline-hidden focus:ring-2 focus:ring-gray-300 transition-colors duration-150 ease-in-out"
-              onClick={() => {
-                alert("Please log in to like pets.");
-              }}
-            >
-              <HeartIcon className="h-6 w-6 text-gray-400 hover:text-gray-500 transition-colors duration-150 ease-in-out" />
-            </button>
-          );
-        }
-
         return (
           <div
             key={pet.id}
             className="bg-white relative border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center"
           >
             <div className="absolute top-2 right-2 z-10">
-              {likeButtonElement}
+              <LikeButton
+                petId={pet.id}
+                currentUserId={currentUserId}
+                isLikedByCurrentUser={isLikedByCurrentUser}
+              />
             </div>
 
             <Link href={`/pets/${pet.id}`} className="w-full">
@@ -123,4 +79,4 @@ const PetCard = async ({ query, currentPage, speciesName }: Props) => {
   );
 };
 
-export default PetCard;
+export default PetGrid;

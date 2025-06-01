@@ -1,6 +1,7 @@
 "use client";
-import { updateUser, updateUserFormState } from "@/app/lib/actions/user";
+import { updateUser } from "@/app/lib/actions/user.actions";
 import { ROLE_VALUES } from "@/app/lib/constants";
+import { updateUserFormState } from "@/app/lib/error-messages-type";
 import { Role } from "@prisma/client";
 import Link from "next/link";
 import { useActionState } from "react";

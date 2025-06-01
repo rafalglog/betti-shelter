@@ -5,30 +5,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import path from "path";
 import { prisma } from "@/app/lib/prisma";
-import { rolesWithPermission } from "@/app/lib/actions/authorization";
+import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
 import { validateAndUploadImages } from "@/app/lib/actions/validateAndUpload";
 import { Role } from "@prisma/client";
-import { createPetIdUserIdSchema, idSchema, PetFormSchema } from "../zod-schemas";
-
-// Error messages for the pet form
-export type CreatePetFormState = {
-  errors?: {
-    name?: string[];
-    age?: string[];
-    gender?: string[];
-    species_id?: string[];
-    breed?: string[];
-    weightKg?: string[];
-    heightCm?: string[];
-    city?: string[];
-    state?: string[];
-    description?: string[];
-    listingStatus?: string[];
-    adoption_status_id?: string[];
-    petImages?: string[];
-  };
-  message?: string | null;
-};
+import { cuidSchema } from "../zod-schemas/common.schemas";
+import { petLikeSchema, PetFormSchema } from "../zod-schemas/pet.schemas";
+import { CreatePetFormState } from "../error-messages-type";
 
 export const createPet = async (
   prevState: CreatePetFormState,
@@ -45,7 +27,7 @@ export const createPet = async (
     name: formData.get("name"),
     age: formData.get("age"),
     gender: formData.get("gender"),
-    species_id: formData.get("species_id"),
+    speciesId: formData.get("speciesId"),
     breed: formData.get("breed"),
     weightKg: formData.get("weightKg"),
     heightCm: formData.get("heightCm"),
@@ -53,7 +35,7 @@ export const createPet = async (
     state: formData.get("state"),
     description: formData.get("description"),
     listingStatus: formData.get("listingStatus"),
-    adoption_status_id: formData.get("adoption_status_id"),
+    adoptionStatusId: formData.get("adoptionStatusId"),
   });
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -69,7 +51,7 @@ export const createPet = async (
     name,
     age,
     gender,
-    species_id,
+    speciesId,
     breed,
     weightKg,
     heightCm,
@@ -77,7 +59,7 @@ export const createPet = async (
     state,
     description,
     listingStatus,
-    adoption_status_id,
+    adoptionStatusId,
   } = validatedFields.data;
 
 
@@ -102,7 +84,7 @@ export const createPet = async (
         gender: gender,
         species: {
           connect: {
-            id: species_id,
+            id: speciesId,
           },
         },
         breed: breed,
@@ -114,7 +96,7 @@ export const createPet = async (
         listingStatus: listingStatus,
         adoptionStatus: {
           connect: {
-            id: adoption_status_id,
+            id: adoptionStatusId,
           },
         },
         petImages: {
@@ -125,6 +107,7 @@ export const createPet = async (
       },
     });
   } catch (error) {
+    console.error("Database Error creating pet:", error);
     return {
       message: "Database Error: Failed to Create Pet.",
     };
@@ -149,9 +132,11 @@ export const updatePet = async (
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid ID format.");
+    return {
+      message: "Invalid Pet ID format.",
+    };
   }
   const validatedId = parsedId.data;
 
@@ -160,15 +145,15 @@ export const updatePet = async (
     name: formData.get("name"),
     age: formData.get("age"),
     gender: formData.get("gender"),
-    species_id: formData.get("species_id"),
+    speciesId: formData.get("speciesId"),
     breed: formData.get("breed"),
-    weightKg: formData.get("weight"),
-    heightCm: formData.get("height"),
+    weightKg: formData.get("weightKg"),
+    heightCm: formData.get("heightCm"),
     city: formData.get("city"),
     state: formData.get("state"),
     description: formData.get("description"),
-    published: formData.get("published"),
-    adoption_status_id: formData.get("adoption_status_id"),
+    listingStatus: formData.get("listingStatus"),
+    adoptionStatusId: formData.get("adoptionStatusId"),
   });
 
   // If form validation fails, return errors early. Otherwise, continue.
@@ -184,7 +169,7 @@ export const updatePet = async (
     name,
     age,
     gender,
-    species_id,
+    speciesId,
     breed,
     weightKg,
     heightCm,
@@ -192,7 +177,7 @@ export const updatePet = async (
     state,
     description,
     listingStatus,
-    adoption_status_id,
+    adoptionStatusId,
   } = validatedFields.data;
 
   const petImages = formData.getAll("petImages");
@@ -200,13 +185,16 @@ export const updatePet = async (
   // store the images urls
   let imageUrlArray: string[] = [];
 
-  const result = await validateAndUploadImages(petImages);
-  if (Array.isArray(result)) {
-    // Images were successfully uploaded
-    imageUrlArray = result;
-  } else {
-    // Return the error
-    return result;
+  // Only validate and upload if new images are provided
+  if (petImages.length > 0 && (petImages[0] as File).size > 0) {
+    const result = await validateAndUploadImages(petImages);
+    if (Array.isArray(result)) {
+      // Images were successfully uploaded
+      imageUrlArray = result;
+    } else {
+      // Return the error
+      return result;
+    }
   }
 
   // Update the pet in the database
@@ -219,7 +207,7 @@ export const updatePet = async (
         gender: gender,
         species: {
           connect: {
-            id: species_id,
+            id: speciesId,
           },
         },
         breed: breed,
@@ -231,24 +219,30 @@ export const updatePet = async (
         listingStatus: listingStatus,
         adoptionStatus: {
           connect: {
-            id: adoption_status_id,
+            id: adoptionStatusId,
           },
         },
-        petImages: {
-          create: imageUrlArray.map((url) => ({
-            url: url,
-          })),
-        },
+        // Conditionally update images only if new ones were uploaded
+        ...(imageUrlArray.length > 0 && {
+          petImages: {
+            create: imageUrlArray.map((url) => ({
+              url: url,
+            })),
+          },
+        }),
       },
     });
   } catch (error) {
+    console.error(`Database Error updating pet ${validatedId}:`, error) 
     return {
       message: "Database Error: Failed to Update Pet.",
     };
   }
 
-  // Revalidate the cache for the /dashboard/pets path
+  // Revalidate the cache for the /dashboard/pets path and the individual pet page
+  // This ensures that the updated pet data is reflected in the UI
   revalidatePath("/dashboard/pets");
+  revalidatePath(`/pets/${validatedId}`);
 
   // Redirect to the /dashboard/pets path
   redirect("/dashboard/pets");
@@ -262,23 +256,56 @@ export const deletePet = async (id: string) => {
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid ID format.");
+    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    throw new Error("Invalid Pet ID format.");
   }
   const validatedId = parsedId.data;
 
   // Delete the pet from the database
   try {
+    // Consider deleting associated images from storage first
+    const petToDelete = await prisma.pet.findUnique({
+      where: { id: validatedId },
+      include: { petImages: true },
+    });
+
+    const failedToDeleteFiles: { url: string; error: string }[] = [];
+
+    if (petToDelete?.petImages && petToDelete.petImages.length > 0) {
+      for (const image of petToDelete.petImages) {
+        try {
+          const filePath = path.join(process.cwd(), "public", image.url);
+          await unlink(filePath);
+        } catch (fileError: any) {
+          const errorMessage = `Failed to delete image file ${image.url} for pet ${validatedId}: ${fileError.message}`;
+          console.error(errorMessage, fileError);
+          failedToDeleteFiles.push({ url: image.url, error: fileError.message });
+        }
+      }
+    }
+
     await prisma.pet.delete({
       where: { id: validatedId },
     });
 
     // Revalidate the cache for the /dashboard/pets path
     revalidatePath("/dashboard/pets");
+    revalidatePath(`/pets/${validatedId}`);
+
+    // If there were any file deletion errors, return them
+    if (failedToDeleteFiles.length > 0) {
+      return {
+        message: `Pet deleted successfully, but ${failedToDeleteFiles.length} associated image file(s) could not be deleted. Please check server logs or contact support.`,
+        details: failedToDeleteFiles,
+      };
+    }
+
   } catch (error) {
+    console.error(`Database Error deleting pet ${validatedId}:`, error);
     return {
-      message: "Database Error: Failed to Create Pet.",
+      message: "Database Error: Failed to Delete Pet.",
     };
   }
 };
@@ -291,11 +318,12 @@ export const deletePetImage = async (id: string) => {
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid ID format.");
+    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    throw new Error("Invalid Pet ID format.");
   }
-  const validatedId = parsedId.data;
+  const validatedId = parsedId.data; // This is the PetImage ID
 
   // Delete the image from the database
   try {
@@ -307,10 +335,9 @@ export const deletePetImage = async (id: string) => {
     const filePath = path.join(process.cwd(), "public", deletedPetImage.url);
     await unlink(filePath);
 
-    // Revalidate the cache for the /dashboard/pets path
     revalidatePath("/dashboard/pets");
   } catch (error) {
-    console.error("Database Error: Failed to Delete Image.");
+    console.error(`Database Error deleting image ${validatedId}:`, error);
     throw new Error("Database Error: Failed to Delete Image.");
   }
 };
@@ -326,17 +353,14 @@ export const createPetLike = async (
   ]);
   if (!hasPermission) {
     console.error(
-      `Access Denied: User ${userId} attempted to like pet ${petId} without permission.`
+      `Access Denied: User ${userId} (unvalidated) attempted to like pet ${petId} (unvalidated) without permission.`
     );
     throw new Error(
-      "Access Denied. You do not have permission to like this pet."
+      "Access Denied. You do not have permission to like this pet. Please log in."
     );
   }
 
-  const validatedArgs = createPetIdUserIdSchema.safeParse({
-    parsedPetId: petId,
-    parsedUserId: userId,
-  });
+  const validatedArgs = petLikeSchema.safeParse({ petId, userId });
 
   if (!validatedArgs.success) {
     const errorMessages = JSON.stringify(
@@ -348,26 +372,31 @@ export const createPetLike = async (
     );
   }
 
-  const { parsedPetId, parsedUserId } = validatedArgs.data;
+  const { petId: validatedPetId, userId: validatedUserId } = validatedArgs.data;
 
   try {
     await prisma.like.create({
       data: {
-        petId: parsedPetId,
-        userId: parsedUserId,
+        petId: validatedPetId,
+        userId: validatedUserId,
       },
     });
+
+    // Revalidate the cache for the /pets path and the individual pet page
     revalidatePath("/pets");
+    revalidatePath(`/pets/${validatedPetId}`);
+
   } catch (error: any) {
     if (error.code === "P2002") {
       console.warn(
-        `User ${parsedUserId} already liked pet ${parsedPetId}. No action taken.`
+        `User ${validatedUserId} already liked pet ${validatedPetId}. No action taken.`
       );
       revalidatePath("/pets");
+      revalidatePath(`/pets/${validatedPetId}`);
       return;
     }
     console.error(
-      `Database Error: Failed to add pet like for pet ${parsedPetId}, user ${parsedUserId}.`,
+      `Database Error: Failed to add pet like for pet ${validatedPetId}, user ${validatedUserId}.`,
       error
     );
     throw new Error(
@@ -387,21 +416,18 @@ export const deletePetLike = async (
   ]);
   if (!hasPermission) {
     console.error(
-      `Access Denied: User ${userId} attempted to unlike pet ${petId} without permission.`
+      `Access Denied: User ${userId} (unvalidated) attempted to unlike pet ${petId} (unvalidated) without permission.`
     );
     throw new Error(
       "Access Denied. You do not have permission to unlike this pet."
     );
   }
 
-  const parsedArgs = createPetIdUserIdSchema.safeParse({
-    parsedPetId: petId,
-    parsedUserId: userId,
-  });
+  const validatedArgs = petLikeSchema.safeParse({ petId, userId });
 
-  if (!parsedArgs.success) {
+  if (!validatedArgs.success) {
     const errorMessages = JSON.stringify(
-      parsedArgs.error.flatten().fieldErrors
+      validatedArgs.error.flatten().fieldErrors
     );
     console.error(`Validation Error for deletePetLike: ${errorMessages}`);
     throw new Error(
@@ -409,30 +435,31 @@ export const deletePetLike = async (
     );
   }
 
-  const { parsedPetId, parsedUserId } = parsedArgs.data;
+  const { petId: validatedPetId, userId: validatedUserId } = validatedArgs.data;
 
   try {
     await prisma.like.delete({
       where: {
         userId_petId: {
-          petId: parsedPetId,
-          userId: parsedUserId,
+          petId: validatedPetId,
+          userId: validatedUserId,
         },
       },
     });
+
     revalidatePath("/pets");
+    revalidatePath(`/pets/${validatedPetId}`);
   } catch (error: any) {
     if (error.code === "P2025") {
-      // Record to delete not found
       console.warn(
-        `Like not found for user ${parsedUserId} and pet ${parsedPetId} during delete. No action taken.`
+        `Like not found for user ${validatedUserId} and pet ${validatedPetId} during delete. No action taken.`
       );
       revalidatePath("/pets");
-      revalidatePath(`/pets/${parsedPetId}`);
+      revalidatePath(`/pets/${validatedPetId}`);
       return;
     }
     console.error(
-      `Database Error: Failed to delete pet like for pet ${parsedPetId}, user ${parsedUserId}.`,
+      `Database Error: Failed to delete pet like for pet ${validatedPetId}, user ${validatedUserId}.`,
       error
     );
     throw new Error(
@@ -453,33 +480,31 @@ export const togglePetLike = async (
   ]);
   if (!hasPermission) {
     console.error(
-      `Access Denied: User ${userId} attempted to unlike pet ${petId} without permission.`
+      `Access Denied: User ${userId} (unvalidated) attempted to toggle like for pet ${petId} (unvalidated) without permission.`
     );
     throw new Error(
-      "Access Denied. You do not have permission to unlike this pet."
+      "Access Denied. You do not have permission to change like status for this pet."
     );
   }
 
-  const validatedArgs = createPetIdUserIdSchema.safeParse({
-    parsedPetId: petId,
-    parsedUserId: userId,
-  });
+  // Validate IDs before passing them to other actions
+  const validatedArgs = petLikeSchema.safeParse({ petId, userId });
 
   if (!validatedArgs.success) {
     const errorMessages = JSON.stringify(
       validatedArgs.error.flatten().fieldErrors
     );
-    console.error(`Validation Error for togglePetLike: ${errorMessages}`);
+    console.error(`Validation Error for togglePetLike: ${errorMessages} ${petId}, ${userId}`);
     throw new Error(
       `Invalid arguments for toggling like status. Errors: ${errorMessages}`
     );
   }
 
-  // No try-catch needed here if createPetLike/deletePetLike throw errors,
-  // as those errors will propagate up.
+  const { petId: validatedPetId, userId: validatedUserId } = validatedArgs.data;
+
   if (isCurrentlyLiked) {
-    await deletePetLike(petId, userId);
+    await deletePetLike(validatedPetId, validatedUserId);
   } else {
-    await createPetLike(petId, userId);
+    await createPetLike(validatedPetId, validatedUserId);
   }
 };

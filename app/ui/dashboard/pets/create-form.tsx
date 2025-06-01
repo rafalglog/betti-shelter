@@ -1,6 +1,6 @@
 "use client";
 
-import { createPet, CreatePetFormState } from "@/app/lib/actions/pet";
+import { createPet } from "@/app/lib/actions/pet.actions";
 import Link from "next/link";
 import { PhotoIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useActionState, useState, startTransition } from "react";
@@ -13,6 +13,7 @@ import {
   MAX_FILE_SIZE,
 } from "@/app/lib/constants";
 import clsx from "clsx";
+import { CreatePetFormState } from "@/app/lib/error-messages-type";
 
 interface CreatePetFormProps {
   speciesList: Species[];
@@ -236,29 +237,29 @@ const CreatePetForm = ({
 
             <div className="sm:col-span-3">
               <label
-                htmlFor="species_id"
+                htmlFor="speciesId"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Species
               </label>
               <div className="mt-2">
                 <select
-                  id="species_id"
-                  name="species_id"
+                  id="speciesId"
+                  name="speciesId"
                   autoComplete="off"
                   aria-describedby="category-error"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
-                  {speciesList.map((specie) => (
-                    <option key={specie.id} value={specie.id}>
-                      {specie.name}
+                  {speciesList.map((species) => (
+                    <option key={species.id} value={species.id}>
+                      {species.name}
                     </option>
                   ))}
                 </select>
               </div>
-              <div id="species_id-error" aria-live="polite" aria-atomic="true">
-                {state.errors?.species_id &&
-                  state.errors.species_id.map((error: string) => (
+              <div id="speciesId-error" aria-live="polite" aria-atomic="true">
+                {state.errors?.speciesId &&
+                  state.errors.speciesId.map((error: string) => (
                     <p className="mt-2 text-sm text-red-500" key={error}>
                       {error}
                     </p>
@@ -384,18 +385,18 @@ const CreatePetForm = ({
 
             <div className="sm:col-span-2">
               <label
-                htmlFor="adoption_status_id"
+                htmlFor="adoptionStatusId"
                 className="block text-sm font-medium leading-6 text-gray-900"
               >
                 Status
               </label>
               <div className="mt-2">
                 <select
-                  id="adoption_status_id"
-                  name="adoption_status_id"
+                  id="adoptionStatusId"
+                  name="adoptionStatusId"
                   autoComplete="off"
                   defaultValue={adoptionStatusList[1].id}
-                  aria-describedby="adoption_status_id-error"
+                  aria-describedby="adoptionStatusId-error"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6"
                 >
                   {adoptionStatusList.map((adoptionStatus) => (
@@ -406,12 +407,12 @@ const CreatePetForm = ({
                 </select>
               </div>
               <div
-                id="adoption_status_id-error"
+                id="adoptionStatusId-error"
                 aria-live="polite"
                 aria-atomic="true"
               >
-                {state.errors?.adoption_status_id &&
-                  state.errors.adoption_status_id.map((error: string) => (
+                {state.errors?.adoptionStatusId &&
+                  state.errors.adoptionStatusId.map((error: string) => (
                     <p className="mt-2 text-sm text-red-500" key={error}>
                       {error}
                     </p>

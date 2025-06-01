@@ -1,7 +1,7 @@
 import CreatePetForm from "@/app/ui/dashboard/pets/create-form";
 import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
-import { fetchAdoptionStatusList } from "@/app/lib/data/pets/pet";
-import { fetchSpecies } from "@/app/lib/data/pets/public";
+import { fetchAdoptionStatusList } from "@/app/lib/data/pets/pet.data";
+import { fetchSpecies } from "@/app/lib/data/pets/public.data";
 
 const Page = async () => {
   const speciesList = await fetchSpecies();

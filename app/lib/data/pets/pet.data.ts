@@ -1,52 +1,55 @@
-import { unstable_noStore as noStore } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants";
-import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { z } from "zod";
+import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
 import { AdoptionStatus, Role } from "@prisma/client";
 import { PetWithImagesPayload } from "../../types";
-import { idSchema } from "../../zod-schemas";
-
-// Define a schema for fetchPetsPages
-const fetchPetsPagesSchema = z.string();
-
-// Define a schema for fetchFilteredPets
-const fetchFilteredPetsSchema = z.object({
-  parsedQuery: z.string(),
-  parsedCurrentPage: z.number(),
-});
+import { cuidSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
+import { DashboardPetsFilterSchema } from "../../zod-schemas/pet.schemas";
 
 export const fetchPetCardData = async () => {
-  // Disable caching
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
     throw new Error("Access Denied");
   }
 
-  // Get pet card data
   try {
     const totalPets = await prisma.pet.count();
-    const adoptedPetsCount = await prisma.pet.count({
-      // Adopted status
+
+    // Define the specific status names you want to count
+    const statusNamesToCount = ["Adopted", "Pending", "Available"];
+
+    // Fetch counts for specific statuses in a single query
+    const statusCountsData = await prisma.adoptionStatus.findMany({
       where: {
-        adoptionStatusId: "2609d1ce-f62b-42e3-a649-0129ace0152b",
+        name: {
+          in: statusNamesToCount,
+        },
+      },
+      select: {
+        name: true,
+        _count: {
+          select: { Pet: true },
+        },
       },
     });
-    const pendingPetsCount = await prisma.pet.count({
-      // Pending status
-      where: {
-        adoptionStatusId: "09fe1188-741e-4a97-a9ad-0cfd094ee247",
-      },
-    });
-    const availablePetsCount = await prisma.pet.count({
-      // Available status
-      where: {
-        adoptionStatusId: "640566d8-2619-4764-8660-61a39baf075e",
-      },
-    });
+
+    // Initialize counts
+    let adoptedPetsCount = 0;
+    let pendingPetsCount = 0;
+    let availablePetsCount = 0;
+
+    // Map the results
+    for (const status of statusCountsData) {
+      if (status.name === "Adopted" && status._count) {
+        adoptedPetsCount = status._count.Pet;
+      } else if (status.name === "Pending" && status._count) {
+        pendingPetsCount = status._count.Pet;
+      } else if (status.name === "Available" && status._count) {
+        availablePetsCount = status._count.Pet;
+      }
+    }
+
     // add a 4 seconds delay to simulate a slow network
     // await new Promise((resolve) => setTimeout(resolve, 4000));
 
@@ -65,9 +68,6 @@ export const fetchPetCardData = async () => {
 };
 
 export const fetchPetsPages = async (query: string) => {
-  // Disable caching
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -75,9 +75,9 @@ export const fetchPetsPages = async (query: string) => {
   }
 
   // Parse the query
-  const parsedQuery = fetchPetsPagesSchema.safeParse(query);
+  const parsedQuery = searchQuerySchema.safeParse(query);
   if (!parsedQuery.success) {
-    throw new Error("Invalid type.");
+    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query.");
   }
   const validatedQuery = parsedQuery.data;
 
@@ -106,9 +106,6 @@ export const fetchPetsPages = async (query: string) => {
 };
 
 export const fetchLatestPets = async () => {
-  // Disable caching
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -150,10 +147,7 @@ export const fetchLatestPets = async () => {
 };
 
 // data for the pets table in the dashboard
-export const fetchFilteredPets = async (query: string, currentPage: number) => {
-  // Disable caching
-  noStore();
-
+export const fetchFilteredPets = async (queryInput: string, currentPageInput: number) => {
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -161,22 +155,25 @@ export const fetchFilteredPets = async (query: string, currentPage: number) => {
   }
 
   // Parse the query and currentPage
-  const parsedData = fetchFilteredPetsSchema.safeParse({
-    parsedQuery: query,
-    parsedCurrentPage: currentPage,
+  const validatedArgs = DashboardPetsFilterSchema.safeParse({
+    query: queryInput,
+    currentPage: currentPageInput,
   });
-  if (!parsedData.success) {
-    throw new Error("Invalid query type.");
+  if (!validatedArgs.success) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Validation error in fetchFilteredPets:", validatedArgs.error.flatten());
+    }
+    throw new Error("Invalid arguments for fetching filtered pets.");
   }
-  const { parsedQuery, parsedCurrentPage } = parsedData.data;
+  const { query, currentPage } = validatedArgs.data;
 
   // Calculate the number of records to skip based on the current page
-  const offset = (parsedCurrentPage - 1) * ITEMS_PER_PAGE;
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   try {
     const pets = await prisma.pet.findMany({
       where: {
         name: {
-          contains: parsedQuery,
+          contains: query,
           mode: "insensitive",
         },
       },
@@ -232,7 +229,6 @@ export const fetchAdoptionStatusList = async (): Promise<AdoptionStatus[]> => {
   }
 
   try {
-    // Fetch the adoption status list. ["Available", "Adopted", "Pending"]
     const adoptionStatusList = await prisma.adoptionStatus.findMany();
 
     // return the adoption status list
@@ -248,9 +244,6 @@ export const fetchAdoptionStatusList = async (): Promise<AdoptionStatus[]> => {
 export const fetchPetById = async (
   id: string
 ): Promise<PetWithImagesPayload | null> => {
-  // Disable caching
-  noStore();
-
   // Check if the user has permission
   const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
   if (!hasPermission) {
@@ -258,9 +251,10 @@ export const fetchPetById = async (
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error("Invalid type.");
+    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
+    throw new Error("Invalid Pet ID format.");
   }
   const validatedId = parsedId.data;
 

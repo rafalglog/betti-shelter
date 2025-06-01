@@ -3,26 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
-import { rolesWithPermission } from "@/app/lib/actions/authorization";
-import { z } from "zod";
+import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
 import { Role } from "@prisma/client";
-import { idSchema } from "../zod-schemas";
-
-// error messages for the user form
-export type updateUserFormState = {
-  errors?: {
-    role?: string[];
-  };
-  message?: string | null;
-};
-
-// Define a schema for the user form
-const updateUserFormSchema = z.object({
-  role: z.nativeEnum(Role, {
-    required_error: "Please select a role.",
-    invalid_type_error: "Invalid role selected.",
-  }),
-});
+import { cuidSchema } from "../zod-schemas/common.schemas";
+import { updateUserFormSchema } from "../zod-schemas/user.schemas";
+import { updateUserFormState } from "../error-messages-type";
 
 export const deleteUser = async (id: string) => {
   // Check if the user has permission
@@ -32,9 +17,10 @@ export const deleteUser = async (id: string) => {
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    throw new Error();
+    console.error("Invalid User ID format for deletion:", parsedId.error.flatten().formErrors.join(", "));
+    throw new Error("Invalid User ID format.");
   }
   const validatedId = parsedId.data;
 
@@ -64,7 +50,7 @@ export const updateUser = async (
   }
 
   // Validate the id at runtime
-  const parsedId = idSchema.safeParse(id);
+  const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
     return {
       message: "Invalid User ID. Failed to Update User.",

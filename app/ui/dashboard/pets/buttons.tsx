@@ -1,7 +1,7 @@
 "use client";
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { deletePetImage } from "@/app/lib/actions/pet";
+import { deletePetImage } from "@/app/lib/actions/pet.actions";
 import { useState } from "react";
 
 export const CreatePet = () => {
