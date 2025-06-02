@@ -1,6 +1,7 @@
 import { fetchFilteredUsers } from "@/app/lib/data/users/user.data";
 import { PhotoIcon } from "@heroicons/react/24/solid";
-import { DeleteUser, EditUser } from "./buttons";
+import { EditUser } from "./buttons/edit-user";
+import { DeleteUser } from "./buttons/delete-user";
 
 interface UsersTableProps {
   query: string;

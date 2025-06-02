@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { UpdatePet, DeletePet } from "@/app/ui/dashboard/pets/buttons";
 import { fetchFilteredPets } from "@/app/lib/data/pets/pet.data";
 import { PhotoIcon } from "@heroicons/react/24/solid";
+import { DeletePet } from "./buttons/delete-pet";
+import { UpdatePet } from "./buttons/update-pet";
 
 interface PetsTableProps {
   query: string;

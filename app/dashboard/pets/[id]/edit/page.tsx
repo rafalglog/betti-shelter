@@ -3,11 +3,11 @@ import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
 import { fetchPetById, fetchAdoptionStatusList } from "@/app/lib/data/pets/pet.data";
 import { fetchSpecies } from "@/app/lib/data/pets/public.data";
 import { notFound } from "next/navigation";
-import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons";
 import Image from "next/image";
 import Link from "next/link";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import { IDParamType } from "@/app/lib/types";
+import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons/delete-pet-image";
 
 interface Props {
   params: IDParamType;

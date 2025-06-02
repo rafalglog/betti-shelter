@@ -471,15 +471,6 @@ const EditPetForm = ({
                 </div>
               </div>
             </div>
-
-            {/* form errors */}
-            <div id="pets-error" aria-live="polite" aria-atomic="true">
-              {state.message && (
-                <p className="mt-2 text-sm text-red-500" key={state.message}>
-                  {state.message}
-                </p>
-              )}
-            </div>
           </div>
 
           <div className="border-b border-gray-900/10 pb-12 pt-6">
@@ -563,6 +554,15 @@ const EditPetForm = ({
           </div>
         </div>
 
+        {/* form errors */}
+        <div id="pets-error" aria-live="polite" aria-atomic="true">
+          {state.message && (
+            <p className="mt-2 text-sm text-red-500 text-right" key={state.message}>
+              {state.message}
+            </p>
+          )}
+        </div>
+
         <div className="mt-6 flex items-center justify-end gap-x-6">
           <Link
             href="/dashboard/pets"
@@ -571,6 +571,7 @@ const EditPetForm = ({
           >
             Cancel
           </Link>
+
           <button
             type="submit"
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

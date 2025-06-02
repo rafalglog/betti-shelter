@@ -1,11 +1,11 @@
 import Pagination from "@/app/ui/dashboard/pets/pagination";
 import Search from "@/app/ui/search";
 import PetsTable from "@/app/ui/dashboard/pets/table";
-import { CreatePet } from "@/app/ui/dashboard/pets/buttons";
 import { PetsTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
 import { fetchPetsPages } from "@/app/lib/data/pets/pet.data";
 import { SearchParamsType } from "@/app/lib/types";
+import { CreatePet } from "@/app/ui/dashboard/pets/buttons/create-pet";
 
 interface Props {
   searchParams: SearchParamsType;
