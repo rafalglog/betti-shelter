@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { inter, openSans } from "./ui/fonts";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Pet Shelter",
@@ -16,6 +17,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`${inter.className} ${openSans.variable}`}>
         {children}
+        <Toaster position="bottom-center" reverseOrder={false} />
       </body>
     </html>
   );

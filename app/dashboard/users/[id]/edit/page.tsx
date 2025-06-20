@@ -1,44 +1,39 @@
-import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
 import { fetchUserById } from "@/app/lib/data/users/user.data";
 import { notFound } from "next/navigation";
-import EditUserForm from "@/app/ui/dashboard/users/edit-form";
+import EditUserForm from "@/app/ui/dashboard/users/edit-user-form";
 import { IDParamType } from "@/app/lib/types";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
 
 interface Props {
   params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {
-  // get the id from the url
-  const { id } = await params;
+  return (
+    <Authorize
+      permission={Permissions.PET_READ_DETAIL}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent params={params} />
+    </Authorize>
+  );
+};
 
-  // fetch user from database
-  const user = await fetchUserById(id);
+const PageContent = async ({ params }: Props) => {
+  const { id: userId } = await params;
 
-  // if the pet is not found then return not found page
+  const user = await fetchUserById(userId);
   if (!user) {
     notFound();
   }
 
   return (
     <main>
-      <Breadcrumbs
-        breadcrumbs={[
-          { label: "Users", href: "/dashboard/user" },
-          {
-            label: "Edit User",
-            href: `/dashboard/users/${id}/edit`,
-            active: true,
-          },
-        ]}
-      />
-      <h2 className="text-base font-semibold leading-7 text-gray-900">
-        User Role
-      </h2>
-
       <EditUserForm user={user} />
     </main>
   );
-}
+};
 
 export default Page;

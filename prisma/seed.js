@@ -12,27 +12,19 @@ const speciesData = [
   { name: "Other" },
 ];
 
-// Data for Adoption Status (ID will be auto-generated)
-const adoptionStatusData = [
-  { name: "Adopted" },
-  { name: "Available" },
-  { name: "Pending" },
-  { name: "On Hold" },
-  { name: "Medical Hold" },
-  { name: "Behavioral Assessment/Hold" },
-  { name: "Foster Care" },
-  { name: "Foster-to-Adopt" },
-  { name: "Not Yet Available" },
-  { name: "Reclaimed" },
-  { name: "Transferred" },
-];
+// Helper function to generate random dates between 2022 and 2025
+function getRandomDate() {
+  const start = new Date(2022, 0, 1); // January 1, 2022
+  const end = new Date(); // Current date
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
 
-// Data for Pets, using names for species and adoption status
+// Data for Pets, using names for species
 const petSeedData = [
   // dogs
   {
     name: "Frisco",
-    age: 5,
+    birthDate: getRandomDate(),
     gender: Gender.FEMALE,
     speciesName: "Dog",
     breed: "Golden Retriever",
@@ -42,7 +34,6 @@ const petSeedData = [
     state: "NY",
     description: "Friendly and playful",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/dog1.jpg" },
@@ -54,7 +45,7 @@ const petSeedData = [
   },
   {
     name: "Flash",
-    age: 3,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Dog",
     breed: "American Eskimo Dog",
@@ -64,14 +55,13 @@ const petSeedData = [
     state: "NY",
     description: "Independent and curious",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [{ url: "/uploads/dog2.jpg" }, { url: "/uploads/dog2-1.webp" }],
     },
   },
   {
     name: "Fido",
-    age: 5,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Dog",
     breed: "Airedale Terrier",
@@ -81,7 +71,6 @@ const petSeedData = [
     state: "NY",
     description: "Friendly and playful",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/dog3.jpg" },
@@ -93,7 +82,7 @@ const petSeedData = [
   // cats
   {
     name: "Whiskers",
-    age: 3,
+    birthDate: getRandomDate(),
     gender: Gender.FEMALE,
     speciesName: "Cat",
     breed: "Siamese cat",
@@ -103,7 +92,6 @@ const petSeedData = [
     state: "NY",
     description: "Independent and curious",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/cat1.webp" },
@@ -114,7 +102,7 @@ const petSeedData = [
   },
   {
     name: "Misty",
-    age: 2,
+    birthDate: getRandomDate(),
     gender: Gender.FEMALE,
     speciesName: "Cat",
     breed: "British Shorthair",
@@ -124,7 +112,6 @@ const petSeedData = [
     state: "NY",
     description: "Vocal and charming",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/cat2.webp" },
@@ -136,7 +123,7 @@ const petSeedData = [
   // birds
   {
     name: "Tweety",
-    age: 2,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Bird",
     breed: "House finch",
@@ -146,7 +133,6 @@ const petSeedData = [
     state: "NY",
     description: "Vocal and charming",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/bird1.webp" },
@@ -157,7 +143,7 @@ const petSeedData = [
   },
   {
     name: "Sunny",
-    age: 1,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Bird",
     breed: "Northern cardinal",
@@ -167,7 +153,6 @@ const petSeedData = [
     state: "NY",
     description: "Colorful and adventurous",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/bird2.webp" },
@@ -179,7 +164,7 @@ const petSeedData = [
   // rabbits
   {
     name: "Bella",
-    age: 1,
+    birthDate: getRandomDate(),
     gender: Gender.FEMALE,
     speciesName: "Rabbit",
     breed: "Netherland Dwarf rabbit",
@@ -189,7 +174,6 @@ const petSeedData = [
     state: "NY",
     description: "Colorful and adventurous",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/rabbit1.webp" },
@@ -201,7 +185,7 @@ const petSeedData = [
   // reptiles
   {
     name: "Godzilla",
-    age: 1,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Reptile",
     breed: "Iguana",
@@ -211,7 +195,6 @@ const petSeedData = [
     state: "NY",
     description: "Colorful and adventurous",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/reptile2.webp" },
@@ -222,7 +205,7 @@ const petSeedData = [
   },
   {
     name: "Donatello",
-    age: 2,
+    birthDate: getRandomDate(),
     gender: Gender.MALE,
     speciesName: "Reptile",
     breed: "Green sea turtle",
@@ -232,7 +215,6 @@ const petSeedData = [
     state: "NY",
     description: "Vocal and charming",
     listingStatus: PetListingStatus.PUBLISHED,
-    adoptionStatusName: "Available",
     petImages: {
       create: [
         { url: "/uploads/reptile1.webp" },
@@ -258,28 +240,13 @@ async function seedSpecies() {
   console.log("Seeded species");
 }
 
-async function seedAdoptionStatus() {
-  console.log("Seeding adoption status ...");
-  try {
-    for (const status of adoptionStatusData) {
-      await prisma.adoptionStatus.create({
-        data: status, // status will be { name: "Adopted" }, ID is auto-generated
-      });
-    }
-  } catch (error) {
-    console.error("Error seeding adoption status:", error);
-    throw error;
-  }
-  console.log("Seeded adoption status");
-}
-
 async function seedUsers() {
   console.log("Seeding users ...");
   try {
     const hashedPassword = await bcrypt.hash("admin123", 10);
     await prisma.user.create({
       data: {
-        name: "admin",
+        name: "ADMIN",
         password: hashedPassword,
         email: "admin@example.com",
         role: Role.ADMIN,
@@ -303,40 +270,23 @@ async function seedPets() {
     allSpecies.map(s => [s.name, s.id])
   );
 
-  // Fetch all adoption statuses and create a name-to-ID map
-  const allAdoptionStatuses = await prisma.adoptionStatus.findMany({
-    select: { id: true, name: true },
-  });
-  const adoptionStatusMap = Object.fromEntries(
-    allAdoptionStatuses.map(status => [status.name, status.id])
-  );
-
   for (const petInput of petSeedData) {
     try {
       // Destructure to separate names from the rest of the pet data
-      const { speciesName, adoptionStatusName, ...restOfPetData } = petInput;
+      const { speciesName, ...restOfPetData } = petInput;
 
       const speciesId = speciesMap[speciesName];
-      const adoptionStatusId = adoptionStatusMap[adoptionStatusName];
 
       // Basic validation: check if names were found in the maps
       if (!speciesId) {
         console.warn(`Species ID not found for name: "${speciesName}". Skipping pet: ${petInput.name}`);
         continue; // Skip this pet if species name is invalid
       }
-      if (!adoptionStatusId) {
-        console.warn(`Adoption Status ID not found for name: "${adoptionStatusName}". Skipping pet: ${petInput.name}`);
-        continue; // Skip this pet if adoption status name is invalid
-      }
-
       await prisma.pet.create({
         data: {
           ...restOfPetData, // Spread the rest of the pet data (name, age, breed, etc.)
           species: {
             connect: { id: speciesId }, // Connect using the looked-up ID
-          },
-          adoptionStatus: {
-            connect: { id: adoptionStatusId }, // Connect using the looked-up ID
           },
           petImages: petInput.petImages,
         },
@@ -353,18 +303,16 @@ async function main() {
   console.log("Starting database seeding process...");
 
   // Clear existing data in a specific order to avoid foreign key constraint errors
-  console.log("Deleting existing data (PetImage, Pet first, then User, AdoptionStatus, Species)...");
+  console.log("Deleting existing data (PetImage, Pet first, then User, Species)...");
   await prisma.petImage.deleteMany();
   await prisma.pet.deleteMany();
   await prisma.user.deleteMany();
-  await prisma.adoptionStatus.deleteMany();
   await prisma.species.deleteMany();
   console.log("Existing data deleted.");
 
   // Seed new data
   console.log("Start seeding new data...");
   await seedSpecies();
-  await seedAdoptionStatus();
   await seedUsers();
   await seedPets();
   console.log("Seeding finished successfully.");

@@ -1,6 +1,5 @@
-import EditPetForm from "@/app/ui/dashboard/pets/edit-form";
-import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
-import { fetchPetById, fetchAdoptionStatusList } from "@/app/lib/data/pets/pet.data";
+import EditPetForm from "@/app/ui/dashboard/pets/edit-pet-form";
+import { fetchPetById } from "@/app/lib/data/pets/pet.data";
 import { fetchSpecies } from "@/app/lib/data/pets/public.data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -8,42 +7,39 @@ import Link from "next/link";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import { IDParamType } from "@/app/lib/types";
 import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons/delete-pet-image";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { hasPermission } from "@/app/lib/auth/hasPermission";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
 
 interface Props {
   params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {
-  // get id from the url
-  const { id } = await params;
+  return (
+    <Authorize
+      permission={Permissions.PET_READ_DETAIL}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent params={params} />
+    </Authorize>
+  );
+};
 
-  // fetch pet from database
-  const pet = await fetchPetById(id);
-  const speciesList = await fetchSpecies();
-  const adoptionStatusList = await fetchAdoptionStatusList();
+const PageContent = async ({ params }: Props) => {
+  const { id: petId } = await params;
 
-  // if the pet is not found then return not found page
+  const pet = await fetchPetById(petId);
   if (!pet) {
     notFound();
   }
 
+  const speciesList = await fetchSpecies();
+  const canManagePet = await hasPermission(Permissions.PET_UPDATE);
+
   return (
     <main>
-      <Breadcrumbs
-        breadcrumbs={[
-          { label: "Pets", href: "/dashboard/pets" },
-          {
-            label: "Edit Pet",
-            href: `/dashboard/pets/${id}/edit`,
-            active: true,
-          },
-        ]}
-      />
-      
-      <h2 className="text-base font-semibold leading-7 text-gray-900">
-        Pet Information
-      </h2>
-
       {/* uploaded images */}
       <div>
         <span className="block text-sm font-medium leading-6 text-gray-900">
@@ -71,14 +67,13 @@ const Page = async ({ params }: Props) => {
         </div>
       </div>
 
-      {/* pet's form */}
       <EditPetForm
         pet={pet}
         speciesList={speciesList}
-        adoptionStatusList={adoptionStatusList}
+        canManagePet={canManagePet}
       />
     </main>
   );
-}
+};
 
 export default Page;

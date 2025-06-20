@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin "@tailwindcss/forms";
 
 @theme {
@@ -7,24 +7,10 @@
     from 180deg at 50% 50%,
     var(--tw-gradient-stops)
   );
-  
-  --font-opensans: var(--font-opensans), sans-serif;
 
-  @keyframes shimmer {
-    100% {
-      transform: translateX(100%);
-    }
-  }
+  --font-opensans: var(--font-opensans), sans-serif;
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -33,7 +19,7 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
-  
+
   /* This is a workaround to enable cursor-pointer for button elements */
   button:not([disabled]),
   [role="button"]:not([disabled]) {
@@ -50,5 +36,30 @@
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
     --background-end-rgb: 255, 255, 255;
+  }
+}
+
+.shimmer-animation {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-animation::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
 }

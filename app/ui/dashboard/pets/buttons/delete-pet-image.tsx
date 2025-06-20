@@ -32,8 +32,8 @@ export const DeletePetImage = ({ id }: { id: string }) => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onConfirm={handleDeleteImage}
-        actionTitle="Image Deletion"
-        itemName="image"
+        actionTitle="delete image"
+        message="Are you sure you want to delete this image? This action cannot be undone."
       />
     </>
   );

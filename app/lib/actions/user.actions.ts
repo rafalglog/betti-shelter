@@ -3,65 +3,32 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
-import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
-import { Role } from "@prisma/client";
+import { Permissions } from "@/app/lib/auth/permissions";
 import { cuidSchema } from "../zod-schemas/common.schemas";
-import { updateUserFormSchema } from "../zod-schemas/user.schemas";
-import { updateUserFormState } from "../error-messages-type";
+import { updateUserRoleFormSchema } from "../zod-schemas/user.schemas";
+import { UpdateUserFormState } from "../form-state-types";
+import { RequirePermission } from "../auth/protected-actions";
 
-export const deleteUser = async (id: string) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN]);
-  if (!hasPermission) {
-    throw new Error("Access Denied. Failed to Delete User.");
-  }
-
-  // Validate the id at runtime
-  const parsedId = cuidSchema.safeParse(id);
-  if (!parsedId.success) {
-    console.error("Invalid User ID format for deletion:", parsedId.error.flatten().formErrors.join(", "));
-    throw new Error("Invalid User ID format.");
-  }
-  const validatedId = parsedId.data;
-
-  // Delete the user
-  try {
-    await prisma.user.delete({
-      where: { id: validatedId },
-    });
-
-    // Revalidate the cache
-    revalidatePath("/dashboard/users");
-  } catch (error) {
-    console.error("Database Error: Failed to Delete User.", error);
-    throw new Error("Database Error: Failed to Delete User.");
-  }
-};
-
-export const updateUser = async (
-  id: string,
-  prevState: updateUserFormState,
+const _updateUserRole = async (
+  userId: string,
+  prevState: UpdateUserFormState,
   formData: FormData
-) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN]);
-  if (!hasPermission) {
-    throw new Error("Access Denied. Failed to Update User.");
-  }
+): Promise<UpdateUserFormState> => {
 
-  // Validate the id at runtime
-  const parsedId = cuidSchema.safeParse(id);
-  if (!parsedId.success) {
+  // Validate the userId at runtime
+  const parsedUserId = cuidSchema.safeParse(userId);
+  if (!parsedUserId.success) {
     return {
-      message: "Invalid User ID. Failed to Update User.",
+      message: "Invalid User ID format.",
     };
   }
-  const validatedId = parsedId.data;
+  const validatedUserId = parsedUserId.data;
 
   // Validate the form data using Zod
-  const validatedFields = updateUserFormSchema.safeParse({
+  const validatedFields = updateUserRoleFormSchema.safeParse({
     role: formData.get("role"),
   });
+
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -74,7 +41,7 @@ export const updateUser = async (
   // Update the user in the database
   try {
     await prisma.user.update({
-      where: { id: validatedId },
+      where: { id: validatedUserId },
       data: {
         role: role,
       },
@@ -91,3 +58,5 @@ export const updateUser = async (
   // Redirect to the users page
   redirect("/dashboard/users");
 };
+
+export const updateUserRole = RequirePermission(Permissions.MANAGE_ROLES)(_updateUserRole);

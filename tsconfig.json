@@ -33,7 +33,6 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "node_modules/.prisma/client"
   ],
   "exclude": [
     "node_modules"

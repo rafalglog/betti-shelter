@@ -9,7 +9,7 @@ export default async function PagesLayout({
   return (
     <div className="flex min-h-screen flex-col p-6 bg-slate-100/60">
       <TopNavWrapper />
-      <main className="grow mx-auto w-full max-w-304 px-4 pt-4 pb-7 bg-white rounded-sm">
+      <main className="grow mx-auto w-full max-w-7xl px-10 py-7 bg-white rounded-t-sm">
         {children}
       </main>
       <Footer />

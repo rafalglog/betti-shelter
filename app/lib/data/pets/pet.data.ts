@@ -1,54 +1,41 @@
 import { prisma } from "@/app/lib/prisma";
-import { ITEMS_PER_PAGE } from "@/app/lib/constants";
-import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
-import { AdoptionStatus, Role } from "@prisma/client";
-import { PetWithImagesPayload } from "../../types";
-import { cuidSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
+import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
+import { PetListingStatus, Role, ApplicationStatus } from "@prisma/client";
+import { FilteredPetsPayload, PetWithImagesPayload } from "../../types";
+import {
+  cuidSchema,
+  searchQuerySchema,
+} from "../../zod-schemas/common.schemas";
 import { DashboardPetsFilterSchema } from "../../zod-schemas/pet.schemas";
+import { RequirePermission } from "../../auth/protected-actions";
+import { Permissions } from "@/app/lib/auth/permissions";
 
-export const fetchPetCardData = async () => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied");
-  }
-
+const _fetchPetCardData = async () => {
   try {
-    const totalPets = await prisma.pet.count();
-
-    // Define the specific status names you want to count
-    const statusNamesToCount = ["Adopted", "Pending", "Available"];
-
-    // Fetch counts for specific statuses in a single query
-    const statusCountsData = await prisma.adoptionStatus.findMany({
-      where: {
-        name: {
-          in: statusNamesToCount,
-        },
-      },
-      select: {
-        name: true,
-        _count: {
-          select: { Pet: true },
-        },
-      },
-    });
-
-    // Initialize counts
-    let adoptedPetsCount = 0;
-    let pendingPetsCount = 0;
-    let availablePetsCount = 0;
-
-    // Map the results
-    for (const status of statusCountsData) {
-      if (status.name === "Adopted" && status._count) {
-        adoptedPetsCount = status._count.Pet;
-      } else if (status.name === "Pending" && status._count) {
-        pendingPetsCount = status._count.Pet;
-      } else if (status.name === "Available" && status._count) {
-        availablePetsCount = status._count.Pet;
-      }
-    }
+    // Run count queries in parallel for efficiency
+    const [totalPets, adoptedPetsCount, pendingPetsCount, publishedPetsCount] =
+      await Promise.all([
+        prisma.pet.count(),
+        prisma.pet.count({
+          where: {
+            adoptionApplications: {
+              some: {
+                status: ApplicationStatus.ADOPTED,
+              },
+            },
+          },
+        }),
+        prisma.pet.count({
+          where: {
+            listingStatus: PetListingStatus.PENDING_ADOPTION,
+          },
+        }),
+        prisma.pet.count({
+          where: {
+            listingStatus: PetListingStatus.PUBLISHED,
+          },
+        }),
+      ]);
 
     // add a 4 seconds delay to simulate a slow network
     // await new Promise((resolve) => setTimeout(resolve, 4000));
@@ -57,7 +44,7 @@ export const fetchPetCardData = async () => {
       totalPets,
       adoptedPetsCount,
       pendingPetsCount,
-      availablePetsCount,
+      publishedPetsCount,
     };
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -67,17 +54,18 @@ export const fetchPetCardData = async () => {
   }
 };
 
-export const fetchPetsPages = async (query: string) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
-  // Parse the query
+const _fetchPetsPages = async (query: string) => {
   const parsedQuery = searchQuerySchema.safeParse(query);
   if (!parsedQuery.success) {
-    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query.");
+    if (process.env.NODE_ENV !== "production") {
+      console.error(
+        "Zod validation error in fetchPetsPages:",
+        parsedQuery.error.flatten()
+      );
+    }
+    throw new Error(
+      parsedQuery.error.errors[0]?.message || "Invalid query format."
+    );
   }
   const validatedQuery = parsedQuery.data;
 
@@ -105,20 +93,14 @@ export const fetchPetsPages = async (query: string) => {
   }
 };
 
-export const fetchLatestPets = async () => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
+const _fetchLatestPets = async () => {
   // Get the latest pets
   try {
     const latestPets = await prisma.pet.findMany({
       select: {
         id: true,
         name: true,
-        age: true,
+        birthDate: true,
         city: true,
         state: true,
         petImages: {
@@ -147,13 +129,10 @@ export const fetchLatestPets = async () => {
 };
 
 // data for the pets table in the dashboard
-export const fetchFilteredPets = async (queryInput: string, currentPageInput: number) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
+const _fetchFilteredPets = async (
+  queryInput: string,
+  currentPageInput: number
+): Promise<FilteredPetsPayload[]> => {
   // Parse the query and currentPage
   const validatedArgs = DashboardPetsFilterSchema.safeParse({
     query: queryInput,
@@ -161,9 +140,15 @@ export const fetchFilteredPets = async (queryInput: string, currentPageInput: nu
   });
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("Validation error in fetchFilteredPets:", validatedArgs.error.flatten());
+      console.error(
+        "Zod validation error in fetchFilteredPets:",
+        validatedArgs.error.flatten()
+      );
     }
-    throw new Error("Invalid arguments for fetching filtered pets.");
+    throw new Error(
+      validatedArgs.error.errors[0]?.message ||
+        "Invalid arguments for fetching filtered pets."
+    );
   }
   const { query, currentPage } = validatedArgs.data;
 
@@ -180,14 +165,10 @@ export const fetchFilteredPets = async (queryInput: string, currentPageInput: nu
       select: {
         id: true,
         name: true,
-        age: true,
+        birthDate: true,
         city: true,
         state: true,
-        adoptionStatus: {
-          select: {
-            name: true,
-          },
-        },
+        listingStatus: true,
         species: {
           select: {
             name: true,
@@ -209,7 +190,7 @@ export const fetchFilteredPets = async (queryInput: string, currentPageInput: nu
     });
 
     // add a 4 seconds delay to simulate a slow network
-    // await new Promise((resolve) => setTimeout(resolve, 4000));
+    // await new Promise((resolve) => setTimeout(resolve, 10000));
 
     // return the pets
     return pets;
@@ -221,40 +202,22 @@ export const fetchFilteredPets = async (queryInput: string, currentPageInput: nu
   }
 };
 
-export const fetchAdoptionStatusList = async (): Promise<AdoptionStatus[]> => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
-  try {
-    const adoptionStatusList = await prisma.adoptionStatus.findMany();
-
-    // return the adoption status list
-    return adoptionStatusList;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching adoption status.", error);
-    }
-    throw new Error("Error fetching adoption status.");
-  }
-};
-
-export const fetchPetById = async (
+// Fetch a pet by its ID to show on the dashboard edit page
+const _fetchPetById = async (
   id: string
 ): Promise<PetWithImagesPayload | null> => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN, Role.STAFF]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
-  // Validate the id at runtime
+  // Validate the id
   const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
-    throw new Error("Invalid Pet ID format.");
+    if (process.env.NODE_ENV !== "production") {
+      console.error(
+        "Zod validation error in fetchPetById:",
+        parsedId.error.flatten()
+      );
+    }
+    throw new Error(
+      parsedId.error.errors[0]?.message || "Invalid Pet ID format."
+    );
   }
   const validatedId = parsedId.data;
 
@@ -278,3 +241,20 @@ export const fetchPetById = async (
     throw new Error("Error fetching pet.");
   }
 };
+
+export const fetchPetCardData = RequirePermission(
+  Permissions.PET_READ_ANALYTICS
+)(_fetchPetCardData);
+export const fetchLatestPets = RequirePermission(
+  Permissions.PET_READ_ANALYTICS
+)(_fetchLatestPets);
+
+export const fetchPetsPages = RequirePermission(Permissions.PET_READ_DETAIL)(
+  _fetchPetsPages
+);
+export const fetchFilteredPets = RequirePermission(
+  Permissions.PET_READ_DETAIL
+)(_fetchFilteredPets);
+export const fetchPetById = RequirePermission(Permissions.PET_READ_DETAIL)(
+  _fetchPetById
+);

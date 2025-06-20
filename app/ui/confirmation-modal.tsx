@@ -1,6 +1,7 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Dialog,
   DialogPanel,
@@ -15,7 +16,7 @@ interface ConfirmationModalProps {
   onClose: () => void;
   onConfirm: () => void;
   actionTitle: string;
-  itemName: string;
+  message: string;
 }
 
 export const ConfirmationModal = ({
@@ -23,15 +24,20 @@ export const ConfirmationModal = ({
   onClose,
   onConfirm,
   actionTitle,
-  itemName,
+  message
 }: ConfirmationModalProps) => {
-  return (
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const modalContent = (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        {/* Backdrop Transition */}
+      <Dialog as="div" className="relative z-[99]" onClose={onClose}>
         <TransitionChild
           as="div"
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm" 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm"
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -42,7 +48,6 @@ export const ConfirmationModal = ({
 
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
-            {/* Panel Transition */}
             <TransitionChild
               as="div"
               enter="ease-out duration-300"
@@ -61,8 +66,7 @@ export const ConfirmationModal = ({
                 </DialogTitle>
                 <div className="mt-2">
                   <p className="text-sm text-gray-600">
-                    Are you sure you want to delete this {itemName}?
-                    This action cannot be undone.
+                    {message}
                   </p>
                 </div>
                 <div className="mt-6 flex justify-end space-x-3">
@@ -86,7 +90,7 @@ export const ConfirmationModal = ({
                     )}
                     onClick={onConfirm}
                   >
-                    Delete
+                    {actionTitle.charAt(0).toUpperCase() + actionTitle.slice(1)}
                   </button>
                 </div>
               </DialogPanel>
@@ -96,4 +100,17 @@ export const ConfirmationModal = ({
       </Dialog>
     </Transition>
   );
+
+  if (!isMounted) {
+    return null;
+  }
+
+  const portalRoot = document.getElementById("modal-root");
+  if (!portalRoot) {
+    // Fallback or error handling
+    console.error("The #modal-root element was not found in the DOM.");
+    return null;
+  }
+
+  return createPortal(modalContent, portalRoot);
 };

@@ -1,47 +1,69 @@
-import Pagination from "@/app/ui/dashboard/pets/pagination";
+import Pagination from "@/app/ui/pagination";
 import Search from "@/app/ui/search";
-import PetsTable from "@/app/ui/dashboard/pets/table";
-import { PetsTableSkeleton } from "@/app/ui/skeletons";
+import { TableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import { fetchPetsPages } from "@/app/lib/data/pets/pet.data";
-import { SearchParamsType } from "@/app/lib/types";
-import { CreatePet } from "@/app/ui/dashboard/pets/buttons/create-pet";
+import {
+  fetchFilteredPets,
+  fetchPetsPages,
+} from "@/app/lib/data/pets/pet.data";
+import { FilteredPetsPayload, SearchParamsType } from "@/app/lib/types";
+import { CreatePetButton } from "@/app/ui/dashboard/pets/buttons/create-pet";
+import ReusableTable from "@/app/ui/reusable-table";
+import PageHeader from "@/app/ui/dashboard/page-header";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { hasPermission } from "@/app/lib/auth/hasPermission";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { petTableColumns } from "@/app/ui/dashboard/pets/pet-table-columns";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
+  return (
+    <Authorize
+      permission={Permissions.PET_READ_LISTING}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent searchParams={searchParams} />
+    </Authorize>
+  );
+};
+
+const PageContent = async ({ searchParams }: Props) => {
   // get the query and page number from the search params
   const { query = "", page = "1" } = await searchParams;
   const currentPage = Number(page);
 
   const totalPages = await fetchPetsPages(query);
+  const canManagePet = await hasPermission(Permissions.PET_CREATE);
 
   return (
-    <div className="w-full">
-      {/* page title */}
-      <div className="flex w-full items-center justify-between">
-        <h1 className="font-opensans text-2xl">Pets</h1>
-      </div>
-
-      {/* search bar */}
+    <div>
+      <PageHeader title="Pets" />
+      
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search pets..." />
-        <CreatePet />
+        <Search placeholder="Search pets" />
+        <CreatePetButton canManage={canManagePet} />
       </div>
 
-      {/* table of pets */}
-      <Suspense key={query + currentPage} fallback={<PetsTableSkeleton />}>
-        <PetsTable query={query} currentPage={currentPage} />
+      <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
+        <ReusableTable<FilteredPetsPayload>
+          fetchData={fetchFilteredPets}
+          query={query}
+          currentPage={currentPage}
+          columns={petTableColumns}
+          noDataMessage="No Pets found."
+          idAccessor={(app) => app.id}
+        />
       </Suspense>
 
-      {/* table pagination buttons */}
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
       </div>
     </div>
   );
-}
+};
 
 export default Page;

@@ -1,22 +1,18 @@
 import { prisma } from "@/app/lib/prisma";
-import { ITEMS_PER_PAGE } from "@/app/lib/constants";
-import { rolesWithPermission } from "@/app/lib/actions/auth.actions";
+import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { Role } from "@prisma/client";
 import { cuidSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
 import {
   FilteredUsersParamsSchema
 } from "../../zod-schemas/user.schemas";
+import { RequirePermission } from "../../auth/protected-actions";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { FilteredUsersPayload, UserByIdPayload } from "../../types";
 
-export const fetchFilteredUsers = async (
+const _fetchFilteredUsers = async (
   queryInput: string,
   currentPageInput: number
-) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
+): Promise<FilteredUsersPayload[]> => {
   // Parse the query and currentPage
   const validatedArgs = FilteredUsersParamsSchema.safeParse({
     query: queryInput,
@@ -24,9 +20,12 @@ export const fetchFilteredUsers = async (
   });
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("Validation error in fetchFilteredUsers:", validatedArgs.error.flatten());
+      console.error(
+        "Zod validation error in fetchFilteredUsers:",
+        validatedArgs.error.flatten()
+      );
     }
-    throw new Error("Invalid arguments for fetching users.");
+    throw new Error(validatedArgs.error.errors[0]?.message || "Invalid arguments for fetching users.");
   }
   const { query, currentPage } = validatedArgs.data;
 
@@ -50,6 +49,7 @@ export const fetchFilteredUsers = async (
         email: true,
         image: true,
         role: true,
+        createdAt: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -71,17 +71,17 @@ export const fetchFilteredUsers = async (
   }
 };
 
-export const fetchUserPages = async (query: string) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN]);
-  if (!hasPermission) {
-    throw new Error("Access Denied");
-  }
-
+const _fetchUserPages = async (queryInput: string): Promise<number> => {
   // Parse the query
-  const parsedQuery = searchQuerySchema.safeParse(query);
+  const parsedQuery = searchQuerySchema.safeParse(queryInput);
   if (!parsedQuery.success) {
-    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query.");
+    if (process.env.NODE_ENV !== "production") {
+      console.error(
+        "Zod validation error in fetchUserPages:",
+        parsedQuery.error.flatten()
+      );
+    }
+    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query format.");
   }
   const validatedQuery = parsedQuery.data;
 
@@ -109,18 +109,17 @@ export const fetchUserPages = async (query: string) => {
   }
 };
 
-export const fetchUserById = async (id: string) => {
-  // Check if the user has permission
-  const hasPermission = await rolesWithPermission([Role.ADMIN]);
-  if (!hasPermission) {
-    throw new Error("Access Denied.");
-  }
-
-  // Validate the id at runtime
+const _fetchUserById = async (id: string): Promise<UserByIdPayload | null> => {
+  // Validate the id
   const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    console.error(`Invalid User ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`);
-    throw new Error("Invalid User ID format.");
+    if (process.env.NODE_ENV !== "production") {
+      console.error(
+        "Zod validation error in fetchUserById:",
+        parsedId.error.flatten()
+      );
+    }
+    throw new Error(parsedId.error.errors[0]?.message || "Invalid User ID format.");
   }
   const validatedId = parsedId.data;
 
@@ -146,3 +145,7 @@ export const fetchUserById = async (id: string) => {
     throw new Error("Error fetching user.");
   }
 };
+
+export const fetchFilteredUsers = RequirePermission(Permissions.MANAGE_ROLES)(_fetchFilteredUsers);
+export const fetchUserPages = RequirePermission(Permissions.MANAGE_ROLES)(_fetchUserPages);
+export const fetchUserById = RequirePermission(Permissions.MANAGE_ROLES)(_fetchUserById);

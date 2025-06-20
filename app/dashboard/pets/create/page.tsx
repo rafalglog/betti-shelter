@@ -1,27 +1,27 @@
-import CreatePetForm from "@/app/ui/dashboard/pets/create-form";
-import Breadcrumbs from "@/app/ui/dashboard/pets/breadcrumbs";
-import { fetchAdoptionStatusList } from "@/app/lib/data/pets/pet.data";
+import CreatePetForm from "@/app/ui/dashboard/pets/pet-create-form";
 import { fetchSpecies } from "@/app/lib/data/pets/public.data";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
 
 const Page = async () => {
+  return (
+    <Authorize
+      permission={Permissions.PET_CREATE}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent />
+    </Authorize>
+  );
+};
+
+const PageContent = async () => {
   const speciesList = await fetchSpecies();
-  const adoptionStatusList = await fetchAdoptionStatusList();
 
   return (
     <main>
-      <Breadcrumbs
-        breadcrumbs={[
-          { label: "Pets", href: "/dashboard/pets" },
-          {
-            label: "Create Pet",
-            href: "/dashboard/pets/create",
-            active: true,
-          },
-        ]}
-      />
       <CreatePetForm
         speciesList={speciesList}
-        adoptionStatusList={adoptionStatusList}
       />
     </main>
   );

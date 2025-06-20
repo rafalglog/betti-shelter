@@ -1,40 +1,56 @@
-import Pagination from "@/app/ui/dashboard/pets/pagination";
+import Pagination from "@/app/ui/pagination";
 import Search from "@/app/ui/search";
-import UsersTable from "@/app/ui/dashboard/users/table";
-import { UsersTableSkeleton } from "@/app/ui/skeletons";
 import { Suspense } from "react";
-import { fetchUserPages } from "@/app/lib/data/users/user.data";
-import { SearchParamsType } from "@/app/lib/types";
+import { fetchFilteredUsers, fetchUserPages } from "@/app/lib/data/users/user.data";
+import { FilteredUsersPayload, SearchParamsType } from "@/app/lib/types";
+import ReusableTable from "@/app/ui/reusable-table";
+import PageHeader from "@/app/ui/dashboard/page-header";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { userTableColumns } from "@/app/ui/dashboard/users/users-table-columns";
+import { TableSkeleton } from "@/app/ui/skeletons";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
+  return (
+    <Authorize
+      permission={Permissions.MANAGE_ROLES}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent searchParams={searchParams} />
+    </Authorize>
+  );
+};
+
+const PageContent = async ({ searchParams }: Props) => {
   // get the query and page number from the search params
   const { query = "", page = "1" } = await searchParams;
   const currentPage = Number(page);
-
   const totalPages = await fetchUserPages(query);
 
   return (
-    <div className="w-full">
-      {/* page title */}
-      <div className="flex w-full items-center justify-between">
-        <h1 className="font-opensans text-2xl">Users</h1>
-      </div>
+    <div>
+      <PageHeader title="Users" />
 
-      {/* search bar */}
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
-        <Search placeholder="Search email..." />
+        <Search placeholder="Search email" />
       </div>
 
-      {/* table of users */}
-      <Suspense key={query + currentPage} fallback={<UsersTableSkeleton />}>
-        <UsersTable query={query} currentPage={currentPage} />
+      <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
+        <ReusableTable<FilteredUsersPayload>
+          fetchData={fetchFilteredUsers}
+          query={query}
+          currentPage={currentPage}
+          columns={userTableColumns}
+          noDataMessage="No Users found."
+          idAccessor={(app) => app.id}
+        />
       </Suspense>
 
-      {/* table pagination buttons */}
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
       </div>

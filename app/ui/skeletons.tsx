@@ -1,117 +1,108 @@
-import { HeartIcon } from "@heroicons/react/24/outline"; // Changed to outline v24 for consistency
+import { HeartIcon } from "@heroicons/react/24/outline";
 
-// Loading animation
-const shimmer =
-  "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-linear-to-r before:from-transparent before:via-white/60 before:to-transparent";
+// const shimmer =
+//   "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/60 before:to-transparent";
 
-// dashboard: skeleton for the pets table
-export const PetsTableSkeleton = () => {
+export const TableSkeleton = () => {
   return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
-      <div className="hidden border-b text-sm font-medium sm:grid grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-4 px-6 py-4 rounded-t-md">
-        <div className="text-nowrap">Name</div>
-        <div className="text-nowrap">Status</div>
-        <div className="text-nowrap">Age</div>
-        <div className="text-nowrap">Location</div>
-        <div className="text-nowrap">Species</div>
-        <div className="text-nowrap text-center">Edit</div>
-      </div>
-
-      <div className="bg-gray-100 text-sm [&>div:not(:last-child)]:border-b">
-        <PetsTableRowSkeleton />
-        <PetsTableRowSkeleton />
-        <PetsTableRowSkeleton />
-        <PetsTableRowSkeleton />
-        <PetsTableRowSkeleton />
-        <PetsTableRowSkeleton />
+    <div className="shimmer-animation">
+      <div className="mt-6 border border-gray-200 rounded-md shadow-xs overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 bg-white">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-sm" />
+              </th>
+              <th scope="col" className="px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-sm" />
+              </th>
+              <th scope="col" className="px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-sm" />
+              </th>
+              <th scope="col" className="px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-sm" />
+              </th>
+              <th scope="col" className="px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-sm" />
+              </th>
+              <th scope="col" className="px-6 py-3s">
+                <div className="h-5 w-10 bg-gray-200 rounded-sm" />
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            <TableRowSkeleton />
+            <TableRowSkeleton />
+            <TableRowSkeleton />
+            <TableRowSkeleton />
+            <TableRowSkeleton />
+            <TableRowSkeleton />
+          </tbody>
+        </table>
       </div>
     </div>
   );
 };
 
-// dashboard: skeleton for the pets table rows
-export const PetsTableRowSkeleton = () => {
+export const TableRowSkeleton = () => {
   return (
-    <div
-      className={`${shimmer} relative grid items-center grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] sm:grid-cols-[minmax(150px,1fr)_repeat(4,minmax(10px,1fr))_minmax(80px,1fr)] gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}
-    >
-      <div className="col-span-6 sm:col-span-1">
-        <div className="flex items-center space-x-2">
+    <tr className="hover:bg-gray-100/50">
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center space-x-3">
           <div className="shrink-0">
-            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+            <div className="w-8 h-8 bg-gray-200 rounded-full" />
           </div>
-          <div className="h-6 w-24 rounded-sm bg-gray-200" />
+          <div className="h-5 w-24 rounded bg-gray-200" />
         </div>
-      </div>
-      <div className="h-6 w-16 rounded-sm bg-gray-200" />
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-5 w-20 rounded bg-gray-200" />
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-5 w-12 rounded bg-gray-200" />
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-5 w-24 rounded bg-gray-200" />
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="h-5 w-16 rounded bg-gray-200" />
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <div className="flex items-center justify-center gap-x-2">
+          <div className="h-8 w-8 rounded bg-gray-200" />
+        </div>
+      </td>
+    </tr>
+  );
+};
 
-      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
-      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
-      <div className="h-6 w-9 sm:w-12 rounded-sm bg-gray-200" />
+const LatestPetsSkeletonCard = () => {
+  return (
+    <div className="shimmer-animation max-w-64 bg-white border border-gray-200 p-4 shadow-md rounded-lg flex flex-col items-center justify-start">
+      {/* Image Placeholder */}
+      <div className="w-full max-w-[224px] aspect-square mb-4 overflow-hidden rounded-md bg-gray-200" />
 
-      <div className="flex justify-end sm:justify-center gap-3 col-span-2 sm:col-span-1">
-        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
-        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
+      {/* Text Placeholders */}
+      <div className="w-full flex flex-col items-center space-y-2">
+        {/* Name Placeholder */}
+        <div className="h-6 w-3/4 bg-gray-200 rounded-md"></div>
+        {/* Age Placeholder */}
+        <div className="h-4 w-1/2 bg-gray-200 rounded-md"></div>
+        {/* Location Placeholder */}
+        <div className="h-4 w-2/3 bg-gray-200 rounded-md"></div>
       </div>
     </div>
   );
 };
-
-// dashboard: skeleton for the dashboard
-export const DashboardSkeleton = () => {
-  return (
-    <>
-      <div
-        className={`${shimmer} relative mb-4 h-8 w-36 overflow-hidden rounded-md bg-gray-100`}
-      />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-        <CardSkeleton />
-      </div>
-      <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-4 lg:grid-cols-8">
-        <LatestPetsSkeleton />
-      </div>
-    </>
-  );
-};
-
-// dashboard: skeleton for the latest pets
 export const LatestPetsSkeleton = () => {
   return (
-    <div
-      className={`${shimmer} relative flex w-full flex-col overflow-hidden md:col-span-4`}
-    >
-      <div className="mb-4 h-8 w-36 rounded-md bg-gray-100" />
-      <div className="flex grow flex-col justify-between rounded-xl bg-gray-100 p-4">
-        <div className="bg-white px-6">
-          <LatestPetRowSkeleton />
-          <LatestPetRowSkeleton />
-          <LatestPetRowSkeleton />
-          <LatestPetRowSkeleton />
-          <LatestPetRowSkeleton />
-          <div className="flex items-center pb-2 pt-6">
-            <div className="h-5 w-5 rounded-full bg-gray-200" />
-            <div className="ml-2 h-4 w-20 rounded-md bg-gray-200" />
-          </div>
-        </div>
+    <div className="flex w-full flex-col md:col-span-4">
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(160px,1fr))]">
+        <LatestPetsSkeletonCard />
+        <LatestPetsSkeletonCard />
+        <LatestPetsSkeletonCard />
+        <LatestPetsSkeletonCard />
       </div>
-    </div>
-  );
-};
-
-export const LatestPetRowSkeleton = () => {
-  return (
-    <div className="flex flex-row items-center justify-between border-b border-gray-100 py-4">
-      <div className="flex items-center">
-        <div className="mr-2 h-8 w-8 rounded-full bg-gray-200" />
-        <div className="min-w-0">
-          <div className="h-5 w-40 rounded-md bg-gray-200" />
-        </div>
-      </div>
-      <div className="mt-2 h-5 w-20 rounded-md bg-gray-200" />
-      <div className="mt-2 h-5 w-10 rounded-md bg-gray-200" />
     </div>
   );
 };
@@ -119,27 +110,26 @@ export const LatestPetRowSkeleton = () => {
 // dashboard: skeleton for the cards
 export const CardSkeleton = () => {
   return (
-    <div
-      className={`${shimmer} relative overflow-hidden rounded-xl bg-gray-100 p-2 shadow-xs`}
-    >
-      <div className="flex p-2">
-        <div className="ml-2 h-6 w-16 rounded-md bg-gray-200 text-sm font-medium" />
+    <div className="shimmer-animation rounded-xl p-2 shadow-xs bg-gray-100/20 border border-gray-200">
+      <div className="flex pl-3 pt-2">
+        {/* Title placeholder */}
+        <div className="h-4 w-20 rounded-md bg-gray-200" />
       </div>
-      <div className="flex items-center justify-center truncate rounded-xl px-4 py-8">
-        <div className="h-7 w-20 rounded-md bg-gray-200" />
+      <div className="flex justify-center items-center py-5 lg:py-8">
+        {/* Value placeholder */}
+        <div className="h-12 w-16 rounded-md bg-gray-200" />
       </div>
     </div>
   );
 };
-
 export const CardsSkeleton = () => {
   return (
-    <>
+    <div className="grid gap-6 grid-cols-2 sm:grid-cols-4">
       <CardSkeleton />
       <CardSkeleton />
       <CardSkeleton />
       <CardSkeleton />
-    </>
+    </div>
   );
 };
 
@@ -153,50 +143,7 @@ export const PaginationSkeleton = () => {
   );
 };
 
-export const UsersTableSkeleton = () => {
-  return (
-    <div className="mt-6 bg-white border border-gray-200 rounded-md shadow-xs pb-4 pt-1">
-      <div className="hidden border-b text-sm font-medium sm:grid grid-cols-4 gap-4 px-6 py-4 rounded-t-md">
-        <div className="text-nowrap col-span-2">Email</div>
-        <div className="text-nowrap">Role</div>
-        <div className="text-nowrap text-center">Edit</div>
-      </div>
-
-      <div className="bg-gray-100 text-sm [&>div:not(:last-child)]:border-b">
-        <UsersTableRowSkeleton />
-        <UsersTableRowSkeleton />
-        <UsersTableRowSkeleton />
-        <UsersTableRowSkeleton />
-        <UsersTableRowSkeleton />
-        <UsersTableRowSkeleton />
-      </div>
-    </div>
-  );
-};
-
-export const UsersTableRowSkeleton = () => {
-  return (
-    <div
-      className={`${shimmer} relative grid items-center grid-cols-4 gap-y-0 gap-4 py-4 px-6 sm:py-2 text-gray-900 hover:bg-gray-100/50`}
-    >
-      <div className="col-span-4 sm:col-span-2">
-        <div className="flex items-center space-x-2">
-          <div className="shrink-0">
-            <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-          </div>
-          <div className="h-6 w-24 rounded-sm bg-gray-200" />
-        </div>
-      </div>
-      <div className="h-6 w-16 rounded-sm bg-gray-200" />
-      <div className="flex justify-end sm:justify-center gap-3 col-span-3 sm:col-span-1">
-        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
-        <div className="h-[38px] w-[38px] rounded-sm bg-gray-200" />
-      </div>
-    </div>
-  );
-};
-
-export const FrontPetsCardSkeleton = () => {
+export const PublicPetsCardSkeleton = () => {
   return (
     <div className="mt-6 flex gap-3 flex-wrap">
       <PetCardSkeleton />
@@ -211,9 +158,7 @@ export const FrontPetsCardSkeleton = () => {
 
 export const PetCardSkeleton = () => {
   return (
-    <div
-      className={`${shimmer} relative bg-gray-100 border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center`}
-    >
+    <div className="shimmer-animation relative bg-gray-100 border border-gray-200 p-4 shadow-md rounded-md w-40 flex flex-col items-center justify-center">
       <HeartIcon className="absolute top-2 right-2 h-6 w-6 text-red-300" />
       <div>
         <div className="w-full">

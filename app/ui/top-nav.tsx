@@ -4,21 +4,15 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Transition,
 } from "@headlessui/react";
 import {
   Bars3Icon,
   LifebuoyIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
 import NavItemsRenderer from "./nav-items-renderer";
+import UserMenu from "./user-avatar";
 
 const links = [
   { name: "Home", href: "/" },
@@ -37,7 +31,10 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
   const pathname = usePathname();
 
   return (
-    <Disclosure as="nav" className="bg-gray-800 z-20 relative rounded-md data-[headlessui-state=open]:rounded-b-none">
+    <Disclosure
+      as="nav"
+      className="bg-gray-800 z-20 relative rounded-md data-[headlessui-state=open]:rounded-b-none mx-auto w-full max-w-7xl mb-4"
+    >
       {({ open, close }) => (
         <>
           <div className="mx-auto max-w-7xl px-2 md:px-6 lg:px-8">
@@ -65,7 +62,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
                 </div>
 
                 {/* top nav links */}
-                <div className="hidden md:ml-6 md:block">
+                <div className="hidden md:ml-6 md:flex md:space-x-2">
                   <NavItemsRenderer
                     links={links}
                     pathname={pathname}
@@ -77,51 +74,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
               </div>
 
               {/* user profile menu */}
-              {showUserProfile && (
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
-                  <Menu as="div" className="relative ml-3">
-                    <div>
-                      <MenuButton className="relative flex rounded-full bg-gray-800 text-sm focus:outline-hidden focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">Open user menu</span>
-                        {userImage ? (
-                          <img
-                            src={userImage}
-                            className="h-8 w-8 rounded-full"
-                            alt="User profile image"
-                          />
-                        ) : (
-                          <span className="h-8 w-8 rounded-full bg-slate-600" />
-                        )}
-                      </MenuButton>
-                    </div>
-                    <Transition
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <MenuItems className="absolute right-0 z-30 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-hidden">
-                        <MenuItem>
-                          {({ focus }) => (
-                            <button
-                              onClick={() => signOut()}
-                              className={clsx(
-                                "w-full text-left px-4 py-2 text-sm text-gray-700",
-                                focus && "bg-gray-100"
-                              )}
-                            >
-                              Sign out
-                            </button>
-                          )}
-                        </MenuItem>
-                      </MenuItems>
-                    </Transition>
-                  </Menu>
-                </div>
-              )}
+              {showUserProfile && <UserMenu userImage={userImage} />}
             </div>
           </div>
 
@@ -132,9 +85,9 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
                 links={links}
                 pathname={pathname}
                 showUserProfile={showUserProfile}
-                onLinkClick={close} // Pass the 'close' function from Disclosure
-                itemClassName="block text-base" // Mobile uses block and text-base
-                signInButtonClassName="block text-base" // Mobile uses block and text-base
+                onLinkClick={close}
+                itemClassName="block text-base"
+                signInButtonClassName="block text-base"
               />
             </div>
           </DisclosurePanel>

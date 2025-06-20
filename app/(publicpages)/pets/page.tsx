@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import Search from "../../ui/search";
-import { FrontPetsCardSkeleton } from "../../ui/skeletons";
+import { PublicPetsCardSkeleton } from "../../ui/skeletons";
 import {
   fetchPublishedPetsPagesWithCategory,
   fetchSpecies,
 } from "@/app/lib/data/pets/public.data";
-import Pagination from "@/app/ui/dashboard/pets/pagination";
+import Pagination from "@/app/ui/pagination";
 import PetGrid from "@/app/ui/publicpages/pet-grid";
 import CategoryList from "@/app/ui/publicpages/category-list";
 import { SearchParamsType } from "@/app/lib/types";
@@ -14,7 +14,6 @@ interface Props {
   searchParams: SearchParamsType;
 }
 
-// front page for the pets
 const Page = async ({ searchParams }: Props) => {
   const { page = "1", category = "", query = "" } = await searchParams;
   const speciesName = category;
@@ -30,10 +29,10 @@ const Page = async ({ searchParams }: Props) => {
   const speciesList = await fetchSpecies();
 
   return (
-    <div>
-      <div className="">
-        <div className="text-2xl">Pet List</div>
-        <div className="text-sm text-gray-500 mb-3">
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <div className="text-3xl font-medium">Pet List</div>
+        <div className="text-sm text-gray-500">
           Currently available for adoption
         </div>
       </div>
@@ -41,7 +40,7 @@ const Page = async ({ searchParams }: Props) => {
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2">
         {/* search bar */}
         <div className="w-96">
-          <Search placeholder="Search pet name..." />
+          <Search placeholder="Search pet name" />
         </div>
 
         {/* category option */}
@@ -51,7 +50,7 @@ const Page = async ({ searchParams }: Props) => {
       {/* pets card */}
       <Suspense
         key={query + currentPage + speciesName}
-        fallback={<FrontPetsCardSkeleton />}
+        fallback={<PublicPetsCardSkeleton />}
       >
         <PetGrid
           query={query}
@@ -61,7 +60,7 @@ const Page = async ({ searchParams }: Props) => {
       </Suspense>
 
       {/* Pagination buttons */}
-      <div className="mt-5 flex w-full justify-center">
+      <div className="flex justify-center">
         <Pagination totalPages={totalPages} />
       </div>
     </div>

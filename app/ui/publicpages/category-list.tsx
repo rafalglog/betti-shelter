@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Listbox,
   ListboxButton,
@@ -76,6 +77,6 @@ const CategoryList = ({ species, speciesName }: Props) => {
       </Transition>
     </Listbox>
   );
-}
+};
 
 export default CategoryList;

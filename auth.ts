@@ -21,6 +21,7 @@ declare module "next-auth" {
 
   interface Session {
     user: {
+      id: string;
       role: Role;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
@@ -44,7 +45,7 @@ declare module "next-auth/jwt" {
 }
 
 // get user from db
-async function getUser(email: string): Promise<User | undefined | null> {
+const getUser = async (email: string): Promise<User | null> => {
   try {
     const user = await prisma.user.findUnique({
       where: {
@@ -117,7 +118,13 @@ export const authConfig = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: "/sign-in",
+  },
   providers: [...authProviderConfigList.providers, credentialsConfig],
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+
+// Re-export providerMap for convenience
+export { providerMap } from "./auth.config";
