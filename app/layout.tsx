@@ -4,7 +4,7 @@ import { inter, openSans } from "./ui/fonts";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "Pet Shelter",
+  title: "Pet Shelter & internal CRM",
   description: "Find your new best friend.",
 };
 

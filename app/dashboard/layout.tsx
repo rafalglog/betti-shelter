@@ -15,7 +15,7 @@ const Layout = async ({ children }: LayoutProps) => {
   if (!session || !session.user) {
     redirect("/api/auth/signin");
   }
-  
+
   // Get user name and image
   const userImage = session?.user?.image ?? null;
 
@@ -26,21 +26,28 @@ const Layout = async ({ children }: LayoutProps) => {
 
   return (
     <div className="min-h-screen">
-      <div id="modal-root"></div> 
-      
+      <div id="modal-root"></div>
+
       {/* left side bar */}
       <div className="hidden border-r z-50 flex-col bg-white w-72 lg:z-50 lg:inset-y-0 lg:fixed lg:flex">
-        <SidebarContent links={filteredNavLinks} quickActions={filteredQuickActionLinks} />
+        <SidebarContent
+          links={filteredNavLinks}
+          quickActions={filteredQuickActionLinks}
+        />
       </div>
 
-      <DashboardTopBar userImage={userImage} links={filteredNavLinks} quickActions={filteredQuickActionLinks} />
+      <DashboardTopBar
+        userImage={userImage}
+        links={filteredNavLinks}
+        quickActions={filteredQuickActionLinks}
+      />
 
       {/* main content */}
       <main className="pb-10 pt-21 lg:pl-72">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <Breadcrumbs />
           {children}
-          </div>
+        </div>
       </main>
     </div>
   );

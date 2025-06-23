@@ -15,12 +15,25 @@ enum Role {
 }
 
 enum MedicalRecordType {
-  VACCINATION     // For recording immunizations like Rabies, DHPP, etc.
-  PROCEDURE       // For surgeries like spay/neuter, dental cleaning
-  MEDICATION      // For prescribed drugs
-  ALLERGY         // To note known allergies
-  CHECKUP         // A general vet visit or check-up
-  NOTE            // A general health-related note
+  VACCINATION // For recording immunizations like Rabies, DHPP, etc.
+  PROCEDURE // For surgeries like spay/neuter, dental cleaning
+  MEDICATION // For prescribed drugs
+  ALLERGY // To note known allergies
+  CHECKUP // A general vet visit or check-up
+  NOTE // A general health-related note
+}
+
+enum PersonType {
+  INDIVIDUAL
+  AGENCY // For shelters, rescues, vet clinics, etc.
+}
+
+enum OutcomeType {
+  ADOPTION
+  TRANSFER_OUT
+  RETURN_TO_OWNER
+  DECEASED
+  OTHER
 }
 
 enum AnimalSize {
@@ -30,10 +43,40 @@ enum AnimalSize {
   XLARGE
 }
 
+enum IntakeType {
+  OWNER_SURRENDER // OS / Return
+  STRAY
+  BORN_IN_CARE
+  TRANSFER_IN
+  SEIZE // e.g., from a legal case
+  SERVICE_IN // e.g., temporary boarding for a community member
+  ACO_IMPOUND // Animal Control impound
+}
+
+enum PetLegalStatus {
+  NONE
+  STRAY_HOLD
+  BITE_QUARANTINE
+  COURT_HOLD
+  POLICE_HOLD
+  PROTECTIVE_CUSTODY
+}
+
 enum Gender {
   MALE // Male pet
   FEMALE // Female pet
   UNKNOWN // Gender of the pet is not known or not specified
+}
+
+enum PetHealthStatus {
+  HEALTHY
+  AWAITING_VET_EXAM
+  AWAITING_TRIAGE
+  UNDER_VET_CARE
+  HOSPITALISED
+  AWAITING_SPAY_NEUTER
+  AWAITING_OTHER_SURGERY
+  RECOVERING_FROM_SURGERY
 }
 
 enum PetListingStatus {
@@ -46,6 +89,7 @@ enum PetListingStatus {
 enum ApplicationStatus {
   PENDING // Application submitted, awaiting review
   REVIEWING // Application is actively being reviewed
+  WAITLISTED // A strong application, held as a backup for a specific pet OR approved in general, waiting for a suitable pet.
   APPROVED // Application approved
   REJECTED // Application rejected
   WITHDRAWN // Application withdrawn by the user
@@ -69,80 +113,341 @@ enum LivingSituation {
   OTHER
 }
 
-model Like {
-  id String @id @default(cuid())
+enum AssociationType {
+  OWNER
+  FINDER
+  SURRENDERER
+  ADOPTER
+  FOSTER_CARER
+  VET_CONTACT
+  INTERESTED_PARTY
+  OTHER
+}
 
-  petId String @map(name: "pet_id")
-  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+enum PartnerType {
+  SHELTER
+  RESCUE_GROUP
+  VET_CLINIC
+  GOVERNMENT_AGENCY // e.g., Animal Control
+}
 
-  userId String @map(name: "user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Partner {
+  id   String      @id @default(cuid())
+  name String      @unique
+  type PartnerType
 
-  @@unique([userId, petId])
-  @@map(name: "likes")
+  // Contact Info
+  contactPerson String?
+  email         String?
+  phone         String?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+
+  // Back-relations
+  transferredInPets  Intake[]
+  transferredOutPets Outcome[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("partners")
+}
+
+model Intake {
+  id         String     @id @default(cuid())
+  intakeDate DateTime   @default(now())
+  type       IntakeType
+
+  // The pet created as a result of this intake event. A one-to-one relationship.
+  petId String @unique // Each pet can only have one intake event
+  pet   Pet    @relation(fields: [petId], references: [id])
+
+  // Optional fields depending on the intake type
+
+  // For OWNER_SURRENDER or RETURN
+  surrenderingPersonId String?
+  surrenderingPerson   Person?   @relation(name: "SurrenderedBy", fields: [surrenderingPersonId], references: [id])
+
+  // For STRAY
+  dateLost        DateTime?
+  foundAddress    String?
+  foundCity       String?
+  foundState      String?
+  foundZipCode    String?
+  foundByPersonId String?
+  foundByPerson   Person?     @relation(name: "FoundBy", fields: [foundByPersonId], references: [id])
+
+  // For TRANSFER_IN
+  sourcePartnerId String?
+  sourcePartner   Partner? @relation(fields: [sourcePartnerId], references: [id])
+
+  // General fields
+  staffMemberId String
+  staffMember   Person    @relation(name: "ProcessedBy", fields: [staffMemberId], references: [id])
+  notes         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("intakes")
+}
+
+model Outcome {
+  id          String      @id @default(cuid())
+  outcomeDate DateTime    @default(now())
+  type        OutcomeType
+
+  // The pet leaving the shelter. A one-to-one relationship.
+  petId String @unique // Each pet can only have one outcome event
+  pet   Pet    @relation(fields: [petId], references: [id])
+
+  // Optional fields depending on the outcome type
+
+  // For ADOPTION
+  adoptionApplicationId String?              @unique
+  adoptionApplication   AdoptionApplication? @relation(fields: [adoptionApplicationId], references: [id])
+
+  // For RETURN_TO_OWNER
+  ownerId String?
+  owner   Person?   @relation("ReclaimedByOwner", fields: [ownerId], references: [id])
+
+  // For TRANSFER_OUT
+  destinationPartnerId String?
+  destinationPartner   Partner? @relation(fields: [destinationPartnerId], references: [id])
+
+  // General fields
+  staffMemberId String
+  staffMember   Person    @relation(name: "ProcessedOutcome", fields: [staffMemberId], references: [id])
+  notes         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("outcomes")
 }
 
 model Pet {
-  id                   String                @id @default(cuid())
-  name                 String
-  birthDate            DateTime              @map(name: "birth_date")
-  gender               Gender
-  
-  // medicalRecords       MedicalRecord[]
+  id              String            @id @default(cuid())
+  name            String
+  birthDate       DateTime          @map(name: "birth_date")
+  gender          Gender
+  size            AnimalSize?
+  weightKg        Float?            @map(name: "weight_kg")
+  heightCm        Float?            @map(name: "height_cm")
+  city            String
+  state           String
+  description     String?
+  listingStatus   PetListingStatus  @default(DRAFT)
+  archiveReason   PetArchiveReason? /// Should only be set when listingStatus is ARCHIVED. Explains why the pet is no longer available.
+  microchipNumber String?           @unique
 
-  speciesId            String                @map(name: "species_id")
-  species              Species               @relation(fields: [speciesId], references: [id])
-  breed                String?
-  // breeds               Breed[]               @relation // Many-to-many for mixed breeds
-
-  // fosterProfileId  String?        @map(name: "foster_profile_id")
-  // fosterProfile    FosterProfile? @relation(fields: [fosterProfileId], references: [id])
-
-  weightKg             Float?                @map(name: "weight_kg")
-  heightCm             Float?                @map(name: "height_cm")
-  city                 String
-  state                String
-  description          String?
+  // Relations
+  associatedPersons PetAssociation[]
+  breeds               Breed[]
+  colors               Color[]
+  temperamentTags      TemperamentTag[]
+  petImages            PetImage[]
+  medicalRecords       MedicalRecord[]
+  notes                Note[]
+  tasks                Task[]
   likes                Like[]
   adoptionApplications AdoptionApplication[]
-  listingStatus        PetListingStatus      @default(DRAFT)
-  archiveReason        PetArchiveReason?
-  petImages            PetImage[]
-  createdAt            DateTime              @default(now()) @map(name: "created_at")
-  updatedAt            DateTime              @updatedAt @map(name: "updated_at")
+  intake               Intake?
+  Outcome              Outcome?
+  healthStatus         PetHealthStatus?
+  legalStatus          PetLegalStatus?       @default(NONE)
+  // Add isSpayedNeutered Boolean @default(false) to your Pet model.
+  //  This is a "denormalized" field that you would update to true after a 
+  // MedicalRecord for the procedure is created. It makes sorting and filtering trivial.
+
+  // denormalized flags to Pet
+  // isMixedBreed    Boolean           @default(false) // ADD THIS
+  //   isSpayedNeutered Boolean          @default(false) // ADD THIS
+
+
+  /// If the pet is currently in a foster home, this links to the active FosterProfile.
+  fosterProfileId String?        @map(name: "foster_profile_id")
+  fosterProfile   FosterProfile? @relation(fields: [fosterProfileId], references: [id])
+
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
 
   @@map(name: "pets")
 }
 
-model AdoptionApplication {
-  id                    String                     @id @default(cuid())
-  applicantName         String                     @map(name: "applicant_name")
-  applicantEmail        String                     @map(name: "applicant_email")
-  applicantPhone        String                     @map(name: "applicant_phone")
-  applicantAddressLine1 String                     @map(name: "applicant_address_line1")
-  applicantAddressLine2 String?                    @map(name: "applicant_address_line2")
-  applicantCity         String                     @map(name: "applicant_city")
-  applicantState        String                     @map(name: "applicant_state")
-  applicantZipCode      String                     @map(name: "applicant_zip_code")
-  livingSituation       LivingSituation            @map(name: "living_situation")
-  hasYard               Boolean?                   @map(name: "has_yard")
-  landlordPermission    Boolean?                   @map(name: "landlord_permission")
-  householdSize         Int                        @map(name: "household_size")
-  hasChildren           Boolean?                   @map(name: "has_children")
-  childrenAges          Int[]                      @map(name: "children_ages")
-  otherPetsDescription  String?                    @map(name: "other_pets_description")
-  petExperience         String?                    @map(name: "pet_experience")
-  reasonForAdoption     String                     @map(name: "reason_for_adoption")
-  status                ApplicationStatus          @default(PENDING)
-  internalNotes         String? // For persistent staff notes about the application as a whole
-  isPrimary             Boolean                    @default(false) @map(name: "is_primary")
-  history               ApplicationStatusHistory[]
+model Species {
+  id     String  @id @default(cuid())
+  name   String
+  breeds Breed[] // A species can have many breeds
 
-  userId String @map(name: "user_id")
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "species")
+}
+
+model Breed {
+  id        String  @id @default(cuid())
+  name      String
+  pets      Pet[]
+  speciesId String  @map(name: "species_id")
+  species   Species @relation(fields: [speciesId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, speciesId])
+  @@map(name: "breeds")
+}
+
+model Color {
+  id   String @id @default(cuid())
+  name String @unique // "Black", "White", "Brown", "Brindle", "Tabby"
+  pets Pet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "colors")
+}
+
+model TemperamentTag {
+  id   String @id @default(cuid())
+  name String @unique // "Good with kids", "Good with other dogs", "Likes cats"
+  pets Pet[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "temperament_tags")
+}
+
+model Note {
+  id      String @id @default(cuid())
+  content String
 
   petId String @map(name: "pet_id")
   pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  authorId String @map(name: "author_id")
+  author   Person   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "notes")
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  details     String?
+  isCompleted Boolean   @default(false) @map(name: "is_completed")
+  dueDate     DateTime? @map(name: "due_date")
+
+  petId String @map(name: "pet_id")
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  /// The staff member this task is assigned to. Can be null if it's a general task for any staff.
+  assigneeId String? @map(name: "assignee_id")
+  assignee   Person?   @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "tasks")
+}
+
+model MedicalRecord {
+  id           String            @id @default(cuid())
+  type         MedicalRecordType
+  title        String // e.g., "Rabies Vaccine", "Annual Checkup"
+  details      String? // Longer notes from the vet or staff
+  dateOfRecord DateTime          @map(name: "date_of_record") // The date the event occurred
+  documentUrl  String?           @map(name: "document_url") // link to a PDF or image of the vet record
+
+  petId String @map(name: "pet_id")
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map(name: "medical_records")
+}
+
+/// Stores the application and approval status for a user wanting to become a foster parent.
+model FosterProfile {
+  id        String   @id @default(cuid())
+  /// Represents a user's application and status as a foster parent.
+  /// The `isActive` flag indicates they are approved and available to take in animals;
+  /// it does NOT mean they are currently fostering a pet.
+  isActive  Boolean  @default(false) @map(name: "is_active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applicantPhone        String
+  applicantAddressLine1 String
+  applicantAddressLine2 String?
+  applicantCity         String
+  applicantState        String
+  applicantZipCode      String
+  livingSituation       LivingSituation
+  hasYard               Boolean?
+  landlordPermission    Boolean?
+  householdSize         Int
+  hasChildren           Boolean?
+  childrenAges          Int[]
+  otherPetsDescription  String?
+  experience            String? // General experience with animals
+  internalNotes         String? // For staff notes about the foster applicant
+  /// A list of all pets this user has fostered in the past or is currently fostering.
+  /// To see ONLY the currently fostered pets, query the Pet model for this fosterProfileId.
+  petsFostered          Pet[]
+
+  userId String @unique @map(name: "user_id")
+  user   Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("foster_profiles")
+}
+
+/// Represents a user's application to adopt a specific pet. This is a snapshot-in-time record.
+model AdoptionApplication {
+  id String @id @default(cuid())
+
+  // Applicant details (snapshot in time for this specific application)
+  applicantName         String  @map(name: "applicant_name")
+  applicantEmail        String  @map(name: "applicant_email")
+  applicantPhone        String  @map(name: "applicant_phone")
+  applicantAddressLine1 String  @map(name: "applicant_address_line1")
+  applicantAddressLine2 String? @map(name: "applicant_address_line2")
+  applicantCity         String  @map(name: "applicant_city")
+  applicantState        String  @map(name: "applicant_state")
+  applicantZipCode      String  @map(name: "applicant_zip_code")
+
+  // Home and lifestyle details
+  livingSituation      LivingSituation @map(name: "living_situation")
+  hasYard              Boolean?        @map(name: "has_yard")
+  landlordPermission   Boolean?        @map(name: "landlord_permission")
+  householdSize        Int             @map(name: "household_size")
+  hasChildren          Boolean?        @map(name: "has_children")
+  childrenAges         Int[]           @map(name: "children_ages")
+  otherPetsDescription String?         @map(name: "other_pets_description")
+  petExperience        String?         @map(name: "pet_experience")
+  reasonForAdoption    String          @map(name: "reason_for_adoption")
+
+  // Status and Workflow Management
+  status        ApplicationStatus          @default(PENDING)
+  internalNotes String? // For persistent staff notes about the application as a whole
+  history       ApplicationStatusHistory[]
+  outcome       Outcome?
+
+  // Relations
+  userId String @map(name: "user_id")
+  user   Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  petId  String @map(name: "pet_id")
+  pet    Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   submittedAt DateTime @default(now()) @map(name: "submitted_at")
   updatedAt   DateTime @updatedAt @map(name: "updated_at")
@@ -161,9 +466,24 @@ model ApplicationStatusHistory {
   changedAt DateTime @default(now()) @map(name: "changed_at")
 
   changedById String? @map(name: "changed_by_id")
-  changedBy   User?   @relation(fields: [changedById], references: [id], onDelete: SetNull)
+  changedBy   Person?   @relation(fields: [changedById], references: [id], onDelete: SetNull)
 
   @@map(name: "application_status_history")
+}
+
+model Like {
+  id String @id @default(cuid())
+
+  petId String @map(name: "pet_id")
+  pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  userId String @map(name: "user_id")
+  user   Person   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, petId])
+  @@map(name: "likes")
 }
 
 model PetImage {
@@ -173,17 +493,122 @@ model PetImage {
   petId String @map(name: "pet_id")
   pet   Pet    @relation(fields: [petId], references: [id], onDelete: Cascade)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map(name: "pet_images")
 }
 
-model Species {
-  id   String @id @default(cuid())
-  name String @unique
+/// Links a Person to a Pet with a specific role or context.
+model PetAssociation {
+  id             String          @id @default(cuid())
+  
+  petId          String
+  pet            Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
+  
+  personId       String
+  person         Person          @relation(fields: [personId], references: [id], onDelete: Cascade)
+  
+  type           AssociationType
+  notes          String?         
+  associatedAt   DateTime        @default(now())
 
-  Pet  Pet[]
-  // breeds Breed[] // A species can have many breeds
+  @@unique([petId, personId, type]) // Prevents creating the same association twice
+  @@map("pet_associations")
+}
 
-  @@map(name: "species")
+model Person {
+  id        String      @id @default(cuid())
+  name      String
+  type      PersonType  @default(INDIVIDUAL)
+  email     String?     @unique
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  zipCode   String?
+  
+  // A Person MIGHT have a user account for logging in.
+  user      User?
+
+  // Back-relations to all their interactions
+  fosterProfile          FosterProfile?
+  adoptionApplications   AdoptionApplication[]
+  applicationStatusHistory ApplicationStatusHistory[]
+  likes                  Like[]
+  notesAuthored          Note[]
+  tasksAssigned          Task[]
+  reclaimedPetsAsOwner   Outcome[]             @relation("ReclaimedByOwner")
+  processedOutcomes      Outcome[]             @relation("ProcessedOutcome")
+  surrenderedPets        Intake[]              @relation("SurrenderedBy")
+  foundPets              Intake[]              @relation("FoundBy")
+  processedIntakes       Intake[]              @relation("ProcessedBy")
+  petAssociations        PetAssociation[]      // For the "Associated People" feature
+
+  // financialTransactions  FinancialTransaction[]
+  // processedTransactions  FinancialTransaction[] @relation("ProcessedFinance")
+  // licenses               License[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("persons")
+}
+
+
+// model User {
+//   id            String    @id @default(cuid())
+//   name          String?
+//   password      String?
+//   email         String    @unique
+//   emailVerified DateTime? @map(name: "email_verified")
+//   image         String?
+//   role          Role      @default(USER)
+//   createdAt     DateTime  @default(now()) @map(name: "created_at")
+//   updatedAt     DateTime  @updatedAt @map(name: "updated_at")
+
+//   // Relations
+//   accounts                 Account[]
+//   likes                    Like[]
+//   adoptionApplications     AdoptionApplication[]
+//   fosterProfile            FosterProfile? // Simplified to one-to-one
+//   notes                    Note[] // Notes written by this user
+//   assignedTasks            Task[] // Tasks assigned to this user
+//   applicationStatusHistory ApplicationStatusHistory[]
+
+//   // Relations for Intake
+//   surrenderedPets  Intake[] @relation("SurrenderedBy")
+//   foundPets        Intake[] @relation("FoundBy")
+//   processedIntakes Intake[] @relation("ProcessedBy")
+
+//   // Relations for Outcome (These are the new additions)
+//   reclaimedPets     Outcome[] @relation("ReclaimedByOwner")
+//   processedOutcomes Outcome[] @relation("ProcessedOutcome")
+
+//   // Relations for Finance
+//   // financialTransactions  FinancialTransaction[]
+//   // processedTransactions  FinancialTransaction[] @relation("ProcessedFinance")
+
+//   @@map(name: "users")
+// }
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique // Kept here for Auth.js/NextAuth compatibility
+  emailVerified DateTime? @map(name: "email_verified")
+  image         String?
+  role          Role      @default(USER)
+
+  // The one-to-one link to the master Person record
+  personId      String    @unique
+  person        Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  
+  accounts      Account[]
+  
+  createdAt     DateTime  @default(now()) @map(name: "created_at")
+  updatedAt     DateTime  @updatedAt @map(name: "updated_at")
+
+  @@map(name: "users")
 }
 
 model Account {
@@ -204,83 +629,187 @@ model Account {
   @@map(name: "accounts")
 }
 
-model User {
-  id                   String                @id @default(cuid())
-  name                 String?
-  password             String?
-  email                String                @unique
-  emailVerified        DateTime?             @map(name: "email_verified")
-  image                String?
-  accounts             Account[]
-  likes                Like[]
-  role                 Role                  @default(USER)
-  adoptionApplications AdoptionApplication[]
+// // ================== Future models ==================
 
-  createdAt                DateTime                   @default(now()) @map(name: "created_at")
-  updatedAt                DateTime                   @updatedAt @map(name: "updated_at")
-  ApplicationStatusHistory ApplicationStatusHistory[]
+// // ============ Medication Scheduling & Logs ============
+// // Shelters deal with dozens of animals on different medications with varying schedules 
+// // (twice a day, every 3 days, etc.). Automating this prevents missed doses, which is critical for animal health.
+// // Using Cron Jobs
+// model MedicationSchedule {
+//   id           String    @id @default(cuid())
+//   petId        String
+//   pet          Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+//   medicationName String  // e.g., "Doxycycline 100mg"
+//   dosage       String    // e.g., "1 tablet"
+//   frequency    String    // e.g., "Twice daily", "Every 8 hours"
+//   startDate    DateTime
+//   endDate      DateTime?
+//   notes        String?
 
-  @@map(name: "users")
-}
-
-// ======= To be implemented =======
-
-// model Breed {
-//   id        String  @id @default(cuid())
-//   name      String  @unique // e.g., "Labrador Retriever", "Domestic Shorthair"
-//   speciesId String  @map(name: "species_id")
-//   species   Species @relation(fields: [speciesId], references: [id])
-//   pets      Pet[]   // The pets that have this breed
-
-//   @@map(name: "breeds")
+//   @@map("medication_schedules")
 // }
 
-// model Color {
-//   id    String @id @default(cuid())
-//   name  String @unique // "Black", "White", "Brown", "Brindle", "Tabby"
-//   pets  Pet[]
+// // ============ Behavioral Assessment Tracking ============
+// // Standardized assessments help track a pet's progress over time and provide objective data for potential adopters
+// //  (e.g., food aggression score, confidence level).
 
-//   @@map(name: "colors")
+// model BehavioralAssessment {
+//   id                 String    @id @default(cuid())
+//   petId              String
+//   pet                Pet       @relation(fields: [petId], references: [id], onDelete: Cascade)
+//   assessedById       String
+//   assessedBy         User      @relation(fields: [assessedById], references: [id])
+//   assessmentDate     DateTime  @default(now())
+
+//   // Example numeric scores (1-5)
+//   confidenceScore    Int?
+//   sociabilityScore   Int? // With other animals
+//   humanAffinityScore Int?
+//   foodAggressionScore Int?
+
+//   summaryNotes       String
+
+//   @@map("behavioral_assessments")
 // }
 
-// Temperament Tags: Similar to colors, using tags for temperament ("Good with kids", "Needs a yard", "Lap cat")
-// makes filtering much more powerful than a simple description.
-// model Tag {
-//   id    String @id @default(cuid())
-//   name  String @unique // "Good with kids", "Good with other dogs", "Likes cats"
-//   pets  Pet[]
+// // ============ Volunteer Management & Scheduling ============
+// // To manage who is coming in, when, and for what job (e.g., dog walking, cleaning, front desk). 
+// // This prevents over/under staffing of volunteers.
 
-//   @@map(name: "tags")
-// }
-
-// model FosterProfile {
+// model VolunteerJob {
 //   id          String   @id @default(cuid())
-//   userId      String   @unique @map(name: "user_id")
-//   user        User     @relation(fields: [userId], references: [id])
-//   // ... fields similar to adoption application: home situation, experience, etc.
-//   isActive    Boolean  @default(false) @map(name: "is_active")
-//   petsFostered Pet[]
-//   createdAt   DateTime @default(now())
-//   updatedAt   DateTime @updatedAt
+//   title       String   @unique // "Dog Walker", "Cat Cuddler", "Cleaning Crew"
+//   description String?
+//   shifts      Shift[]
+
+//   @@map("volunteer_jobs")
+// }
+// model Shift {
+//   id           String            @id @default(cuid())
+//   jobId        String
+//   job          VolunteerJob      @relation(fields: [jobId], references: [id])
+//   startTime    DateTime
+//   endTime      DateTime
+//   slots        Int               // Number of volunteers needed
+//   signups      VolunteerShift[]
+
+//   @@map("shifts")
+// }
+// model VolunteerShift {
+//   id           String    @id @default(cuid())
+//   volunteerId  String
+//   volunteer    User      @relation(fields: [volunteerId], references: [id])
+//   shiftId      String
+//   shift        Shift     @relation(fields: [shiftId], references: [id])
+//   checkInTime  DateTime?
+//   checkOutTime DateTime?
+//   status       String    // "Confirmed", "Cancelled", "No-Show"
+
+//   @@unique([volunteerId, shiftId])
+//   @@map("volunteer_signups")
 // }
 
-// model MedicalRecord {
-//   id            String            @id @default(cuid())
-  
-//   petId         String            @map(name: "pet_id")
-//   pet           Pet               @relation(fields: [petId], references: [id], onDelete: Cascade)
+// // ============ Donation & Financial Tracking ============ 
+// // To maintain donor records, send thank-you notes, and generate reports 
+// // for financial oversight and grant applications.
 
-//   type          MedicalRecordType // Use the enum for clear categorization
-//   title         String            // e.g., "Rabies Vaccine", "Annual Checkup"
-//   details       String?           // Longer notes from the vet or staff
-  
-//   dateOfRecord  DateTime          @map(name: "date_of_record") // The date the event occurred
+// enum DonationType {
+//   MONETARY
+//   IN_KIND // Physical item donation
+// }
+// model Donation {
+//   id            String       @id @default(cuid())
+//   amount        Float?       // For monetary donations
+//   currency      String?      @default("USD")
+//   inKindItem    String?      // e.g., "10 bags of dog food"
+//   donationType  DonationType
+//   donationDate  DateTime     @default(now())
 
-//   link to a PDF or image of the vet record
-//   documentUrl   String?           @map(name: "document_url")
+//   donorId       String?      // Donors may not always have a user account
+//   donor         User?        @relation(fields: [donorId], references: [id])
+//   donorName     String?      // For anonymous/guest donations
+//   donorEmail    String?
 
-//   createdAt     DateTime          @default(now())
-//   updatedAt     DateTime          @updatedAt
+//   notes         String?
+//   paymentIntentId String?    @unique // From Stripe or another processor
 
-//   @@map(name: "medical_records")
+//   @@map("donations")
+// }
+
+// // ============ Centralized Communications Log ============ 
+// // To provide a complete history. If an adopter calls with a question, 
+// // any staff member can look up their record and see all previous notes, emails, or calls.
+
+// enum CommunicationType {
+//   EMAIL
+//   PHONE_CALL
+//   SMS
+//   IN_PERSON
+//   NOTE
+// }
+// model CommunicationLog {
+//   id                 String            @id @default(cuid())
+//   type               CommunicationType
+//   subject            String
+//   body               String
+//   direction          String            // "Inbound" or "Outbound"
+//   communicationDate  DateTime          @default(now())
+
+//   // Links
+//   authorId           String            // The staff member who logged this
+//   author             User              @relation(fields: [authorId], references: [id])
+
+//   // You can link a communication to different entities
+//   petId              String?
+//   pet                Pet?              @relation(fields: [petId], references: [id])
+
+//   adoptionAppId      String?
+//   adoptionApplication AdoptionApplication? @relation(fields: [adoptionAppId], references: [id])
+
+//   personId           String?            // Could be a User ID for a donor, volunteer, etc.
+//   person             User?              @relation(name: "RelatedPersonComm", fields: [personId], references: [id])
+
+//   @@map("communication_logs")
+// }
+
+// enum TransactionType {
+//   DONATION
+//   ADOPTION_FEE
+//   SERVICE_FEE // e.g., microchipping
+//   REFUND
+//   OTHER
+// }
+
+// enum TransactionDirection {
+//   CREDIT // Money coming IN
+//   DEBIT  // Money going OUT (e.g., a refund)
+// }
+
+// model FinancialTransaction {
+//   id            String               @id @default(cuid())
+//   type          TransactionType
+//   direction     TransactionDirection
+//   amount        Float                // Always a positive number
+//   currency      String               @default("USD")
+//   transactionDate DateTime           @default(now())
+
+//   // Link to the person involved
+//   personId      String?
+//   person        User?                @relation(fields: [personId], references: [id])
+
+//   // Link to the adoption application if it's an adoption fee/refund
+//   adoptionApplicationId String?
+//   adoptionApplication   AdoptionApplication? @relation(fields: [adoptionApplicationId], references: [id])
+
+//   staffMemberId String
+//   staffMember   User                 @relation(name: "ProcessedFinance", fields: [staffMemberId], references: [id])
+
+//   notes           String?
+//   paymentMethod   String?            // "Cash", "Credit Card", "Check"
+//   paymentIntentId String?            @unique // From Stripe or another processor for traceability
+
+// createdAt DateTime @default(now())
+// updatedAt DateTime @updatedAt
+
+//   @@map("financial_transactions")
 // }
