@@ -4,34 +4,34 @@ import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE } from "@/app/lib/constants/constants
 
 // Validate and upload images
 export const validateAndUploadImages = async (
-  petImages: FormDataEntryValue[]
+  animalImages: FormDataEntryValue[]
 ) => {
   const imageUrlArray: string[] = [];
 
-  if (petImages.length === 0) {
+  if (animalImages.length === 0) {
     return imageUrlArray;
   }
 
-  // Validate petImages
-  for (const file of petImages) {
+  // Validate animalImages
+  for (const file of animalImages) {
     // Check if the file is an instance of File
     if (!(file instanceof File)) {
       return {
-        errors: { petImages: ["Invalid file type. Expected a file."] },
+        errors: { animalImages: ["Invalid file type. Expected a file."] },
         message: "Invalid input. Failed to Update Pet.",
       };
     }
     // Check if the file size is greater than the maximum file size
     if (file.size > MAX_FILE_SIZE) {
       return {
-        errors: { petImages: ["File is too large"] },
+        errors: { animalImages: ["File is too large"] },
         message: "Failed to Update Pet.",
       };
     }
     // Check if the file type is in the allowed mime types
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       return {
-        errors: { petImages: ["Invalid file type"] },
+        errors: { animalImages: ["Invalid file type"] },
         message: "Failed to Update Pet.",
       };
     }
@@ -39,7 +39,7 @@ export const validateAndUploadImages = async (
 
   // upload images
   try {
-    const uploadPromises = petImages.map(async (file: any) => {
+    const uploadPromises = animalImages.map(async (file: any) => {
       // Convert the file to a buffer
       const buffer = Buffer.from(await file.arrayBuffer());
       // Generate a unique filename

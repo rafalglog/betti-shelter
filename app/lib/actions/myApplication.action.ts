@@ -306,13 +306,13 @@ const _reactivateMyApplication = async (
 // Server action for the user to submit an application
 const _createMyAdoptionApp = async (
   user: SessionUser, // Injected by withAuthenticatedUser
-  petId: string, // Pet ID from the URL parameters
+  animalId: string, // Pet ID from the URL parameters
   prevState: MyAdoptionAppFormState,
   formData: FormData
 ): Promise<MyAdoptionAppFormState> => {
   const currentUserId = user.id;
 
-  const parsedPetId = cuidSchema.safeParse(petId);
+  const parsedanimalId = cuidSchema.safeParse(petId);
   if (!parsedPetId.success) {
     return {
       message: "Invalid Adoption Application ID format.",

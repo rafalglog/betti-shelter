@@ -1,4 +1,4 @@
-import { fetchPetCardData } from "@/app/lib/data/pets/pet.data";
+import { fetchPetCardData } from "@/app/lib/data/animals/animal.data";
 
 // Card component that displays the total number of pets, adopted pets, pending pets, and published pets
 const CardWrapper = async () => {

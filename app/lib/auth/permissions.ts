@@ -1,11 +1,13 @@
 export const Permissions = {
   // Pet Management
-  PET_CREATE: "pet:create",
-  PET_UPDATE: "pet:update",
-  PET_READ_ANALYTICS: "pet:read_analytics", // For pet analytics (e.g., on the main dashboard overview)
-  PET_DELETE_IMAGE: "pet:delete_image",
-  PET_READ_DETAIL: "pet:read_detail", // For viewing detailed pet information (including the edit form in read-only)
-  PET_READ_LISTING: "pet:read_listing",   // For viewing the pets list page (e.g., dashboard/pets)
+  ANIMAL_CREATE: "animal:create",
+  ANIMAL_UPDATE: "animal:update",
+  ANIMAL_READ_ANALYTICS: "animal:read_analytics", // For pet analytics (e.g., on the main dashboard overview)
+  ANIMAL_DELETE_IMAGE: "animal:delete_image",
+  ANIMAL_READ_DETAIL: "animal:read_detail", // For viewing detailed pet information (including the edit form in read-only)
+  ANIMAL_READ_LISTING: "animal:read_listing",   // For viewing the pets list page (e.g., dashboard/pets)
+
+  PARTNER_READ: "partner:read_analytics",
 
   // Application Management (for staff/admins, and volunteers for read-only)
   APPLICATIONS_READ_LISTING: "applications:read_listing", // View list of ALL user applications

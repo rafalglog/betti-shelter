@@ -3,7 +3,7 @@
 import React, { useState, Fragment } from "react";
 import Image from "next/image";
 import { PhotoIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { PetImage as PrismaPetImage } from "@prisma/client";
+import { AnimalImage as PrismaPetImage } from "@prisma/client";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import {
   Dialog,
@@ -17,11 +17,11 @@ import clsx from "clsx";
 interface PetGalleryProps {
   images: PrismaPetImage[];
   currentUserId: string | undefined;
-  petId: string;
+  animalId: string;
   isLikedByCurrentUser: boolean;
 }
 
-const PetGallery = ({ images, currentUserId, petId, isLikedByCurrentUser }: PetGalleryProps) => {
+const PetGallery = ({ images, currentUserId, animalId, isLikedByCurrentUser }: PetGalleryProps) => {
   // State to keep track of the selected image
   const [selectedImage, setSelectedImage] = useState(
     images.length > 0 ? images[0].url : ""
@@ -64,7 +64,7 @@ const PetGallery = ({ images, currentUserId, petId, isLikedByCurrentUser }: PetG
           )}
           <div className="absolute top-2 right-2 z-10">
             <LikeButton
-              petId={petId}
+              animalId={animalId}
               currentUserId={currentUserId}
               isLikedByCurrentUser={isLikedByCurrentUser}
             />

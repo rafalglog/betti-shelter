@@ -1,15 +1,15 @@
 import { getPetForApplication } from "@/app/lib/data/myApplications.data";
-import { IDParamType, PetForApplicationPayload } from "@/app/lib/types";
+import { IDParamType, AnimalForApplicationPayload } from "@/app/lib/types";
 import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import MyAdoptionAppSkeleton from "@/app/ui/dashboard/myApplication/myAdoptionApp-skeleton";
 import CreateMyAdoptionAppForm from "@/app/ui/dashboard/myApplication/create-MyAdoptionApp-form";
 
-async function AdoptionApplicationContent({ petId }: { petId: string }) {
+async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
   // Get pet data for the application 
-  const petToAdopt: PetForApplicationPayload | null =
-    await getPetForApplication(petId);
+  const petToAdopt: AnimalForApplicationPayload | null =
+    await getPetForApplication(animalId);
 
   // If no pet is found, show a 404 page 
   if (!petToAdopt) {
@@ -27,7 +27,7 @@ async function AdoptionApplicationContent({ petId }: { petId: string }) {
   }
 
   // Once data is ready and checks have passed, render the client component with the data
-  return <CreateMyAdoptionAppForm petId={petId} petToAdopt={petToAdopt} />;
+  return <CreateMyAdoptionAppForm animalId={animalId} petToAdopt={petToAdopt} />;
 }
 
 interface Props {
@@ -49,7 +49,7 @@ const Page = async ({ params }: Props) => {
         Adoption Application
       </h1>
       <Suspense fallback={<MyAdoptionAppSkeleton />}>
-        <AdoptionApplicationContent petId={id} />
+        <AdoptionApplicationContent animalId={id} />
       </Suspense>
     </main>
   );

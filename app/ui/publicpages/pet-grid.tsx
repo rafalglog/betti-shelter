@@ -1,4 +1,4 @@
-import { fetchFilteredPublishedPetsWithCategory } from "@/app/lib/data/pets/public.data";
+import { fetchFilteredPublishedPetsWithCategory } from "@/app/lib/data/animals/public.data";
 import { auth } from "@/auth";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -39,9 +39,9 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
             className="relative max-w-[224px] bg-white block hover:shadow-lg transition-shadow duration-150 ease-in-out group rounded-lg"
           >
             <div className="relative w-full aspect-square overflow-hidden rounded-lg">
-              {pet.petImages?.length > 0 ? (
+              {pet.animalImages?.length > 0 ? (
                 <Image
-                  src={pet.petImages[0].url}
+                  src={pet.animalImages[0].url}
                   alt={`Photo of ${pet.name}`}
                   fill
                   sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"
@@ -81,9 +81,9 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
           //   className="max-w-64 bg-white border border-gray-200 rounded-lg flex flex-col items-center justify-start hover:shadow-lg shadow transition-shadow duration-150 ease-in-out group"
           // >
           // <div className="relative w-full max-w-[224px] aspect-square overflow-hidden rounded-lg">
-          //     {pet.petImages && pet.petImages.length > 0 ? (
+          //     {pet.animalImages && pet.animalImages.length > 0 ? (
           //       <Image
-          //         src={pet.petImages[0].url}
+          //         src={pet.animalImages[0].url}
           //         alt={`Photo of ${pet.name}`}
           //         fill
           //         sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"
@@ -124,9 +124,9 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
           //   className="max-w-64 bg-white border border-gray-200 p-4 shadow rounded-lg flex flex-col items-center justify-start hover:shadow-lg transition-shadow duration-150 ease-in-out group"
           // >
           //   <div className="relative w-full max-w-[224px] aspect-square mb-4 overflow-hidden rounded-md">
-          //     {pet.petImages && pet.petImages.length > 0 ? (
+          //     {pet.animalImages && pet.animalImages.length > 0 ? (
           //       <Image
-          //         src={pet.petImages[0].url}
+          //         src={pet.animalImages[0].url}
           //         alt={`Photo of ${pet.name}`}
           //         fill
           //         sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"

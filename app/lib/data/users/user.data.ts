@@ -1,13 +1,14 @@
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { Role } from "@prisma/client";
-import { cuidSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
 import {
-  FilteredUsersParamsSchema
-} from "../../zod-schemas/user.schemas";
+  cuidSchema,
+  searchQuerySchema,
+} from "../../zod-schemas/common.schemas";
+import { FilteredUsersParamsSchema } from "../../zod-schemas/user.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { FilteredUsersPayload, UserByIdPayload } from "../../types";
+import { FilteredUsersPayload, TaskAssignee, UserByIdPayload } from "../../types";
 
 const _fetchFilteredUsers = async (
   queryInput: string,
@@ -25,7 +26,10 @@ const _fetchFilteredUsers = async (
         validatedArgs.error.flatten()
       );
     }
-    throw new Error(validatedArgs.error.errors[0]?.message || "Invalid arguments for fetching users.");
+    throw new Error(
+      validatedArgs.error.errors[0]?.message ||
+        "Invalid arguments for fetching users."
+    );
   }
   const { query, currentPage } = validatedArgs.data;
 
@@ -81,7 +85,9 @@ const _fetchUserPages = async (queryInput: string): Promise<number> => {
         parsedQuery.error.flatten()
       );
     }
-    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query format.");
+    throw new Error(
+      parsedQuery.error.errors[0]?.message || "Invalid query format."
+    );
   }
   const validatedQuery = parsedQuery.data;
 
@@ -119,7 +125,9 @@ const _fetchUserById = async (id: string): Promise<UserByIdPayload | null> => {
         parsedId.error.flatten()
       );
     }
-    throw new Error(parsedId.error.errors[0]?.message || "Invalid User ID format.");
+    throw new Error(
+      parsedId.error.errors[0]?.message || "Invalid User ID format."
+    );
   }
   const validatedId = parsedId.data;
 
@@ -146,6 +154,59 @@ const _fetchUserById = async (id: string): Promise<UserByIdPayload | null> => {
   }
 };
 
-export const fetchFilteredUsers = RequirePermission(Permissions.MANAGE_ROLES)(_fetchFilteredUsers);
-export const fetchUserPages = RequirePermission(Permissions.MANAGE_ROLES)(_fetchUserPages);
-export const fetchUserById = RequirePermission(Permissions.MANAGE_ROLES)(_fetchUserById);
+const _fetchTaskAssigneeList = async (): Promise<TaskAssignee[]> => {
+  try {
+    const assignees = await prisma.person.findMany({
+      where: {
+        // Filter based on the role of the associated User
+        user: {
+          role: {
+            in: [Role.STAFF, Role.ADMIN, Role.VOLUNTEER],
+          },
+        },
+      },
+      select: {
+        id: true,    // The Person's ID is what you'll use for assigneeId
+        name: true,
+        email: true,
+        user: {      // You can select the user's image if needed
+          select: {
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        name: "asc",
+      },
+    });
+
+    // Map the result to a flat structure for your form's dropdown/list
+    const mappedList = assignees.map(person => ({
+      id: person.id,
+      name: person.name,
+      email: person.email,
+      image: person.user?.image, // Safely access the optional image
+    }));
+
+    return mappedList;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching assignee list:", error);
+    }
+    throw new Error("Failed to fetch assignee list.");
+  }
+};
+
+export const fetchTaskAssigneeList = RequirePermission(Permissions.ANIMAL_CREATE)(
+  _fetchTaskAssigneeList
+);
+
+export const fetchFilteredUsers = RequirePermission(Permissions.MANAGE_ROLES)(
+  _fetchFilteredUsers
+);
+export const fetchUserPages = RequirePermission(Permissions.MANAGE_ROLES)(
+  _fetchUserPages
+);
+export const fetchUserById = RequirePermission(Permissions.MANAGE_ROLES)(
+  _fetchUserById
+);

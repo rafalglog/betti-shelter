@@ -10,8 +10,8 @@ export interface NavItem {
 // All possible navigation links with their required permissions
 export const navItems: readonly NavItem[] = [
   { href: "/", label: "Home", iconName: "HomeIcon" },
-  { href: "/dashboard", label: "Dashboard", iconName: "ChartPieIcon", permission: Permissions.PET_READ_ANALYTICS  },
-  { href: "/dashboard/pets", label: "Pets", iconName: "ListBulletIcon", permission: Permissions.PET_READ_LISTING },
+  { href: "/dashboard", label: "Dashboard", iconName: "ChartPieIcon", permission: Permissions.ANIMAL_READ_ANALYTICS  },
+  { href: "/dashboard/pets", label: "Pets", iconName: "ListBulletIcon", permission: Permissions.ANIMAL_READ_LISTING },
   {
     href: "/dashboard/applications",
     label: "Review Applications",
@@ -28,5 +28,5 @@ export const navItems: readonly NavItem[] = [
 ];
 
 export const quickActionItems: readonly NavItem[] = [
-  { href: "/dashboard/pets/create", label: "Create Pet", iconName: "PlusCircleIcon", permission: Permissions.PET_CREATE },
+  { href: "/dashboard/pets/create", label: "Create Pet", iconName: "PlusCircleIcon", permission: Permissions.ANIMAL_CREATE },
 ];

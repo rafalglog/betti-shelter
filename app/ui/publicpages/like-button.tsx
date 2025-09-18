@@ -1,20 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { togglePetLike } from "@/app/lib/actions/pet.actions";
+import { togglePetLike } from "@/app/lib/actions/animal.actions";
 import { HeartIcon as OutlineHeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as SolidHeartIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import LoginPromptModal from "../login-prompt-modal";
 
 interface LikeButtonProps {
-  petId: string;
+  animalId: string;
   currentUserId: string | undefined;
   isLikedByCurrentUser: boolean;
 }
 
 const LikeButton = ({
-  petId,
+  animalId,
   currentUserId,
   isLikedByCurrentUser,
 }: LikeButtonProps) => {
@@ -28,7 +28,7 @@ const LikeButton = ({
     }
 
     startTransition(() => {
-      togglePetLike(petId);
+      togglePetLike(animalId);
     });
   };
 

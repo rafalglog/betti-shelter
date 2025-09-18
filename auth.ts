@@ -17,12 +17,14 @@ declare module "next-auth" {
    */
   interface User {
     role: Role;
+    personId: string;
   }
 
   interface Session {
     user: {
       id: string;
       role: Role;
+      personId: string;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -35,12 +37,14 @@ declare module "next-auth" {
 declare module "@auth/core/adapters" {
   interface AdapterUser {
     role: Role;
+    personId: string;
   }
 }
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
     role: Role;
+    personId: string;
   }
 }
 
@@ -57,7 +61,7 @@ const getUser = async (email: string): Promise<User | null> => {
     console.error("Failed to fetch user:", error);
     throw new Error("Failed to fetch user.");
   }
-}
+};
 
 // credentials setup for admin email/password login
 const credentialsConfig = Credentials({
@@ -102,19 +106,47 @@ export const authConfig = {
   adapter: PrismaAdapter(prisma),
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role;
+      // If the token already has the data, just return it.
+      if (token.personId) {
+        return token;
+      }
+
+      // This runs only on initial sign-in.
+      if (token.sub) {
+        // Step 1: Fetch the user from the database to get their personId.
+        const existingUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+        });
+
+        if (existingUser) {
+          // Step 2: Now that you have the personId, fetch the person.
+          const person = await prisma.person.findUnique({
+            where: { id: existingUser.personId }, // Use the ID from the user
+            select: { name: true },
+          });
+
+          // Step 3: Populate the token with all the necessary data.
+          token.personId = existingUser.personId;
+          token.role = existingUser.role;
+          if (person) {
+            token.name = person.name;
+          }
+        }
       }
       return token;
     },
+
     async session({ session, token }) {
-      if (token.sub) {
-        session.user.id = token.sub;
+      if (token) {
+        session.user.id = token.sub as string;
+        session.user.role = token.role as Role;
+        session.user.personId = token.personId as string;
+        session.user.name = token.name as string;
       }
-      session.user.role = token.role;
       return session;
     },
   },
+
   session: {
     strategy: "jwt",
   },

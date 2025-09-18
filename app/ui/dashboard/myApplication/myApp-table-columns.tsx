@@ -14,9 +14,9 @@ export const appTableColumns: ColumnDef<FilteredMyApplicationPayload>[] = [
     cell: (app) => (
       <div className="flex items-center space-x-3">
         <div className="shrink-0">
-          {app.pet.petImages[0].url ? (
+          {app.pet.animalImages[0].url ? (
             <Image
-              src={app.pet.petImages[0].url}
+              src={app.pet.animalImages[0].url}
               className="h-8 w-8 rounded-full object-cover"
               width={32}
               height={32}

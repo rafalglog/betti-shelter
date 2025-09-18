@@ -4,7 +4,7 @@ import { PublicPetsCardSkeleton } from "../../ui/skeletons";
 import {
   fetchPublishedPetsPagesWithCategory,
   fetchSpecies,
-} from "@/app/lib/data/pets/public.data";
+} from "@/app/lib/data/animals/public.data";
 import Pagination from "@/app/ui/pagination";
 import PetGrid from "@/app/ui/publicpages/pet-grid";
 import CategoryList from "@/app/ui/publicpages/category-list";

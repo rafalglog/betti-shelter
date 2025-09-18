@@ -1,21 +1,21 @@
-import { FilteredPetsPayload } from "@/app/lib/types";
+import { FilteredAnimalsPayload } from "@/app/lib/types";
 import { ColumnDef } from "../../reusable-table";
 import Image from "next/image";
 import { CameraIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { PetListingStatus } from "@prisma/client";
+import { AnimalListingStatus } from "@prisma/client";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
 import { EditButton } from "../edit-button";
 
-export const petTableColumns: ColumnDef<FilteredPetsPayload>[] = [
+export const petTableColumns: ColumnDef<FilteredAnimalsPayload>[] = [
   {
     header: "Name",
     cell: (pet) => (
       <div className="flex items-center space-x-3">
         <div className="shrink-0">
-          {pet.petImages && pet.petImages[0]?.url ? (
+          {pet.animalImages && pet.animalImages[0]?.url ? (
             <Image
-              src={pet.petImages[0].url}
+              src={pet.animalImages[0].url}
               className="h-8 w-8 rounded-full object-cover"
               width={32}
               height={32}
@@ -39,11 +39,11 @@ export const petTableColumns: ColumnDef<FilteredPetsPayload>[] = [
       <span className={clsx(
         "inline-flex rounded-full px-2 text-xs font-semibold capitalize leading-5",
         {
-          [PetListingStatus.PUBLISHED]: "bg-green-100 text-green-800",
-          [PetListingStatus.PENDING_ADOPTION]: "bg-yellow-100 text-yellow-800",
-          [PetListingStatus.DRAFT]: "bg-blue-100 text-blue-800",
-          [PetListingStatus.ARCHIVED]: "bg-gray-100 text-gray-800",
-          // [PetListingStatus.ADOPTED]: "bg-purple-100 text-purple-800",
+          [AnimalListingStatus.PUBLISHED]: "bg-green-100 text-green-800",
+          [AnimalListingStatus.PENDING_ADOPTION]: "bg-yellow-100 text-yellow-800",
+          [AnimalListingStatus.DRAFT]: "bg-blue-100 text-blue-800",
+          [AnimalListingStatus.ARCHIVED]: "bg-gray-100 text-gray-800",
+          // [AnimalListingStatus.ADOPTED]: "bg-purple-100 text-purple-800",
         }[pet.listingStatus] ?? "bg-gray-100 text-gray-800"
       )}>
         {pet.listingStatus.toString().toLowerCase().replace("_", " ")}

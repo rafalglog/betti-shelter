@@ -5,16 +5,16 @@ import {
   INITIAL_FORM_STATE,
   MyAdoptionAppFormState,
 } from "@/app/lib/form-state-types";
-import { PetForApplicationPayload } from "@/app/lib/types";
+import { AnimalForApplicationPayload } from "@/app/lib/types";
 import { createMyAdoptionApp } from "@/app/lib/actions/myApplication.action";
 import MyApplicationForm from "./myApplication-form";
 
 interface Props {
-  petId: string; // Route param
-  petToAdopt: PetForApplicationPayload;
+  animalId: string; // Route param
+  petToAdopt: AnimalForApplicationPayload;
 }
 
-const CreateMyAdoptionAppForm = ({ petId, petToAdopt }: Props) => {
+const CreateMyAdoptionAppForm = ({ animalId, petToAdopt }: Props) => {
   const createMyAdoptionAppWithPetId = createMyAdoptionApp.bind(null, petId);
 
   const [state, formAction, isPending] = useActionState<

@@ -5,6 +5,7 @@ import {
   differenceInWeeks,
   differenceInDays,
   addYears,
+  formatDistanceToNowStrict,
 } from "date-fns";
 
 interface calculateAgeStringProps {
@@ -104,7 +105,7 @@ export function formatDateToLongString(date: Date): string {
 }
 
 /**
- * Formats a date input (string, Date, undefined, or null) into a "MMM d, yyyy" string.
+ * Formats a date input (string, Date, undefined, or null) into a "MMM d, yyyy" string  (e.g., "Jan 15, 2023").
  * Returns "N/A" for null/undefined inputs and "Invalid Date" for invalid date values.
  *
  * @param dateInput The date input to format. Can be a string, Date object, undefined, or null.
@@ -119,6 +120,32 @@ export const formatDateOrNA = (dateInput: string | Date | undefined | null): str
     return format(dateInput, 'MMM d, yyyy');
   } catch (error) {
     console.error("Error formatting date:", error);
+    return "Invalid Date";
+  }
+};
+
+/**
+ * Formats a date to a "time ago" string in a simple format.
+ * e.g., "5 minutes ago", "2 hours ago", "3 days ago".
+ * @param {string | Date | undefined | null} dateInput - The date to format.
+ * @returns {string} A string representing the time elapsed, or "N/A" for invalid input.
+ */
+export const formatTimeAgo = (dateInput: string | Date | undefined | null): string => {
+  if (dateInput === null || dateInput === undefined) {
+    return "N/A";
+  }
+
+  try {
+    const date = new Date(dateInput);
+
+    // Check for invalid date
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
+
+    return formatDistanceToNowStrict(date, { addSuffix: true });
+  } catch (error) {
+    console.error("Error formatting time ago:", error);
     return "Invalid Date";
   }
 };

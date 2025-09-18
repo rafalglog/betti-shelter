@@ -1,12 +1,17 @@
-import { Prisma } from "@prisma/client";
+import { AssessmentOutcome, AssessmentType, FieldType, Prisma } from "@prisma/client";
 
 export type SearchParamsType = Promise<{ [key: string]: string | undefined }>;
 export type IDParamType = Promise<{ id: string }>;
 
 // Type for the pet object when images are included
-export type PetWithImagesPayload = Prisma.PetGetPayload<{
+export type AnimalByIDPayload = Prisma.AnimalGetPayload<{
   include: {
-    petImages: true;
+    animalImages: true;
+    breeds: {
+      include: {
+        species: true;
+      };
+    };
   };
 }>;
 
@@ -19,7 +24,7 @@ export type ActionResult = {
 // This type is based on the data structure returned by `fetchApplicationById`.
 export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
   include: {
-    pet: {
+    animal: {
       select: {
         id: true;
         name: true;
@@ -36,7 +41,7 @@ export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
 
 // Type for the pet object returned by getPetForApplication
 // This includes basic pet details and a minimal list of adoption applications
-export type PetForApplicationPayload = Prisma.PetGetPayload<{
+export type AnimalForApplicationPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
@@ -62,7 +67,7 @@ export type FilteredUsersPayload = Prisma.UserGetPayload<{
 }>;
 
 // Type for the filtered pets returned by _fetchFilteredPets
-export type FilteredPetsPayload = Prisma.PetGetPayload<{
+export type FilteredAnimalsPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
@@ -70,17 +75,10 @@ export type FilteredPetsPayload = Prisma.PetGetPayload<{
     city: true;
     state: true;
     listingStatus: true;
-    species: {
-      select: {
-        name: true;
-      };
-    };
-    petImages: {
-      select: {
-        url: true;
-      };
-      take: 1;
-    };
+    sex: true;
+    size: true;
+    breeds: { select: { name: true } };
+    animalImages: { select: { url: true }; take: 1 };
   };
 }>;
 
@@ -100,7 +98,7 @@ export type FilteredMyApplicationPayload =
               name: true;
             };
           };
-          petImages: {
+          animalImages: {
             select: {
               url: true;
             };
@@ -123,21 +121,21 @@ export type FilteredApplicationsPayload = Prisma.AdoptionApplicationGetPayload<{
     status: true;
     submittedAt: true;
     isPrimary: true;
-    pet: {
-      select: {
-        name: true;
-        species: {
-          select: {
-            name: true;
-          };
-        };
-      };
-    };
-    user: {
-      select: {
-        image: true;
-      };
-    };
+    // animal: {
+    //   select: {
+    //     name: true;
+    //     species: {
+    //       select: {
+    //         name: true;
+    //       };
+    //     };
+    //   };
+    // };
+    // user: {
+    //   select: {
+    //     image: true;
+    //   };
+    // };
   };
 }>;
 
@@ -149,3 +147,65 @@ export type UserByIdPayload = Prisma.UserGetPayload<{
     role: true;
   };
 }>;
+
+export type PartnerPayload = Prisma.PartnerGetPayload<{
+  select: {
+    id: true;
+    name: true;
+  };
+}>;
+
+export type TaskAssignee = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null | undefined;
+};
+
+export type ColorPayload = Prisma.ColorGetPayload<{
+  select: {
+    id: true;
+    name: true;
+  };
+}>;
+
+export type SpeciesPayload = Prisma.SpeciesGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    breeds: {
+      select: {
+        id: true;
+        name: true;
+      };
+    };
+  };
+}>;
+
+export interface TemplateField {
+  id: string;
+  label: string;
+  fieldType: FieldType;
+  placeholder: string | null;
+  options: string[];
+  isRequired: boolean;
+  order: number;
+  suggestionRules?: Record<string, { title: string; category: string }> | null;
+}
+
+// export interface AssessmentTemplate {
+//   id: string;
+//   name: string;
+//   type: AssessmentType;
+//   allowCustomFields: boolean;
+//   templateFields: TemplateField[];
+// }
+
+export interface AssessmentFormData {
+  animalId: string;
+  templateId: string;
+  overallOutcome?: AssessmentOutcome;
+  summary?: string;
+  customFields?: TemplateField[]; // Add this line
+  [key: string]: any; // For dynamic field values
+}

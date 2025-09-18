@@ -10,7 +10,7 @@ import { RequirePermission } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 import {
   ApplicationStatus,
-  PetListingStatus,
+  AnimalListingStatus,
   PetArchiveReason,
   Prisma,
 } from "@prisma/client";
@@ -40,7 +40,7 @@ const _staffUpdateAdoptionApp = async (
   try {
     existingApplication = await prisma.adoptionApplication.findUnique({
       where: { id: validatedAdoptionAppId },
-      select: { status: true, petId: true, isPrimary: true },
+      select: { status: true, animalId: true, isPrimary: true },
     });
     if (!existingApplication) {
       return { message: "Adoption Application not found." };
@@ -130,11 +130,11 @@ const _staffUpdateAdoptionApp = async (
     await prisma.$transaction(async (tx) => {
       if (
         applicationUpdateData.isPrimary === true &&
-        existingApplication.petId
+        existingApplication.animalId
       ) {
         await tx.adoptionApplication.updateMany({
           where: {
-            petId: existingApplication.petId,
+            animalId: existingApplication.animalId,
             id: { not: validatedAdoptionAppId },
             isPrimary: true,
           },
@@ -151,7 +151,7 @@ const _staffUpdateAdoptionApp = async (
       const intendedIsPrimary = validatedFields.data.isPrimary;
 
       if (
-        existingApplication.petId &&
+        existingApplication.animalId &&
         newStatus !== ApplicationStatus.ADOPTED
       ) {
         // If an application is (or becomes) primary and approved, pet -> PENDING_ADOPTION.
@@ -160,8 +160,8 @@ const _staffUpdateAdoptionApp = async (
           intendedFinalStatus === ApplicationStatus.APPROVED
         ) {
           await tx.pet.update({
-            where: { id: existingApplication.petId },
-            data: { listingStatus: PetListingStatus.PENDING_ADOPTION },
+            where: { id: existingApplication.animalId },
+            data: { listingStatus: AnimalListingStatus.PENDING_ADOPTION },
           });
         }
         // If a previously primary and approved application is no longer effectively reserving the pet,
@@ -177,8 +177,8 @@ const _staffUpdateAdoptionApp = async (
             intendedFinalStatus === ApplicationStatus.APPROVED
           ) {
             await tx.pet.update({
-              where: { id: existingApplication.petId },
-              data: { listingStatus: PetListingStatus.PUBLISHED },
+              where: { id: existingApplication.animalId },
+              data: { listingStatus: AnimalListingStatus.PUBLISHED },
             });
           }
           // Status changes from APPROVED to WITHDRAWN or REJECTED (isPrimary might also be changing).
@@ -188,8 +188,8 @@ const _staffUpdateAdoptionApp = async (
               newStatus === ApplicationStatus.REJECTED)
           ) {
             await tx.pet.update({
-              where: { id: existingApplication.petId },
-              data: { listingStatus: PetListingStatus.PUBLISHED },
+              where: { id: existingApplication.animalId },
+              data: { listingStatus: AnimalListingStatus.PUBLISHED },
             });
           }
         }
@@ -198,11 +198,11 @@ const _staffUpdateAdoptionApp = async (
 
       if (newStatus === ApplicationStatus.ADOPTED) {
         const pet = await tx.pet.findUnique({
-          where: { id: existingApplication.petId },
+          where: { id: existingApplication.animalId },
           select: { listingStatus: true },
         });
 
-        if (pet?.listingStatus === PetListingStatus.ARCHIVED) {
+        if (pet?.listingStatus === AnimalListingStatus.ARCHIVED) {
           throw new Error(
             "This pet has already been adopted or is otherwise no longer available."
           );
@@ -210,9 +210,9 @@ const _staffUpdateAdoptionApp = async (
 
         // Update Pet's Status to ARCHIVED
         await tx.pet.update({
-          where: { id: existingApplication.petId },
+          where: { id: existingApplication.animalId },
           data: {
-            listingStatus: PetListingStatus.ARCHIVED,
+            listingStatus: AnimalListingStatus.ARCHIVED,
             archiveReason: PetArchiveReason.ADOPTED_INTERNAL,
           },
         });
@@ -220,7 +220,7 @@ const _staffUpdateAdoptionApp = async (
         // Find and reject other applications for the same pet
         const otherAppsToReject = await tx.adoptionApplication.findMany({
           where: {
-            petId: existingApplication.petId,
+            animalId: existingApplication.animalId,
             id: { not: validatedAdoptionAppId },
             status: {
               in: [

@@ -4,10 +4,10 @@ import { cuidSchema, searchQuerySchema } from "../zod-schemas/common.schemas";
 import {
   AdoptionApplicationPayload,
   FilteredMyApplicationPayload,
-  PetForApplicationPayload,
+  AnimalForApplicationPayload,
 } from "../types";
 import { DashboardPetsFilterSchema } from "../zod-schemas/pet.schemas";
-import { PetListingStatus } from "@prisma/client";
+import { AnimalListingStatus } from "@prisma/client";
 import { SessionUser, withAuthenticatedUser } from "../auth/protected-actions";
 
 const _fetchMyApplicationPages = async (
@@ -110,7 +110,7 @@ const _fetchFilteredMyApplications = async (
                 name: true,
               },
             },
-            petImages: {
+            animalImages: {
               select: {
                 url: true,
               },
@@ -191,7 +191,7 @@ const _fetchMyAppById = async (
 const _getPetForApplication = async (
   user: SessionUser,
   petId: string // Pet ID
-): Promise<PetForApplicationPayload | null> => {
+): Promise<AnimalForApplicationPayload | null> => {
 
   const userId = user.id;
 
@@ -212,7 +212,7 @@ const _getPetForApplication = async (
     const pet = await prisma.pet.findFirst({
       where: {
         id: validatedPetId,
-        listingStatus: PetListingStatus.PUBLISHED,
+        listingStatus: AnimalListingStatus.PUBLISHED,
       },
       select: {
         id: true,

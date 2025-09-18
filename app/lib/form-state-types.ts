@@ -1,23 +1,44 @@
 export const INITIAL_FORM_STATE = { message: null, errors: {} };
 
-// Error messages for creating a pet form
-export type PetFormState = {
+// Error messages for animal form
+export type AnimalFormState = {
   message?: string | null;
   errors?: {
-    name?: string[];
-    birthDate?: string[];
-    gender?: string[];
-    speciesId?: string[];
+    petName?: string[];
+    species?: string[];
     breed?: string[];
-    weightKg?: string[];
-    heightCm?: string[];
-    city?: string[];
-    state?: string[];
-    description?: string[];
-    listingStatus?: string[];
-    petImages?: string[];
+    primaryColor?: string[];
+    sex?: string[];
+    size?: string[];
+    estimatedBirthDate?: string[];
+    healthStatus?: string[];
+    microchipNumber?: string[];
+    intakeType?: string[];
+    intakeDate?: string[];
+    staffMemberId?: string[];
+    sourcePartnerId?: string[];
+    foundAddress?: string[];
+    foundCity?: string[];
+    foundState?: string[];
+    surrenderingPersonName?: string[];
+    surrenderingPersonPhone?: string[];
+    notes?: string[];
   };
 };
+
+export interface AnimalTaskFormState {
+  message?: string | null;
+  errors?: {
+    title?: string[];
+    details?: string[];
+    status?: string[];
+    category?: string[];
+    priority?: string[];
+    dueDate?: string[];
+    animalId?: string[];
+    assigneeId?: string[];
+  };
+}
 
 // Error messages for application form
 export interface MyAdoptionAppFormState {

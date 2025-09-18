@@ -11,9 +11,10 @@ const userPermissions = [
 // Permissions for the volunteer role
 const volunteerPermissions = [
   ...userPermissions, // Volunteers inherit base user permissions
-  Permissions.PET_READ_ANALYTICS, // Volunteers can view pet analytics
-  Permissions.PET_READ_LISTING,   // Volunteers can view the list of pets
-  Permissions.PET_READ_DETAIL,    // Volunteers can view detailed pet information (read-only)
+  Permissions.PARTNER_READ, // Volunteers can read partners
+  Permissions.ANIMAL_READ_ANALYTICS, // Volunteers can view pet analytics
+  Permissions.ANIMAL_READ_LISTING,   // Volunteers can view the list of pets
+  Permissions.ANIMAL_READ_DETAIL,    // Volunteers can view detailed pet information (read-only)
   Permissions.APPLICATIONS_READ_LISTING, // Volunteers can view the list of all user applications (read-only)
   Permissions.APPLICATIONS_READ_DETAIL,  // Volunteers can view detailed application information (read-only)
 ] as const;
@@ -21,9 +22,9 @@ const volunteerPermissions = [
 // Staff inherits all USER permissions and gets additional ones
 const staffPermissions = [
   ...volunteerPermissions,
-  Permissions.PET_CREATE,
-  Permissions.PET_UPDATE, 
-  Permissions.PET_DELETE_IMAGE,
+  Permissions.ANIMAL_CREATE,
+  Permissions.ANIMAL_UPDATE, 
+  Permissions.ANIMAL_DELETE_IMAGE,
   Permissions.APPLICATIONS_MANAGE_STATUS, // Staff can manage the status of applications
 ] as const;
 

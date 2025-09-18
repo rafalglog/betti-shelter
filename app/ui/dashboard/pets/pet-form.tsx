@@ -4,11 +4,11 @@ import { PhotoIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { startTransition, useState } from "react";
 import { Species } from "@prisma/client";
 import clsx from "clsx";
-import { PetWithImagesPayload } from "@/app/lib/types";
-import { PetFormState } from "@/app/lib/form-state-types";
+import { AnimalByIDPayload } from "@/app/lib/types";
+import { AnimalFormState } from "@/app/lib/form-state-types";
 import {
   ALLOWED_MIME_TYPES,
-  GENDER_VALUES,
+  SEX_VALUES,
   LISTING_STATUS_VALUES,
   MAX_FILE_SIZE,
 } from "@/app/lib/constants/constants";
@@ -25,11 +25,11 @@ import FormTextArea from "../../forms/form-textarea";
 import FormHeader from "../../forms/form-header";
 
 interface PetFormProps {
-  state: PetFormState;
+  state: AnimalFormState;
   formAction: (payload: FormData) => void;
   isPending: boolean;
   speciesList: Species[];
-  pet?: PetWithImagesPayload;
+  pet?: AnimalByIDPayload;
   canManagePet?: boolean;
 }
 
@@ -89,7 +89,7 @@ const PetForm = ({
     // Append the files to the form data
     files.forEach((file) => {
       if (file && file.size > 0) {
-        formData.append(`petImages`, file);
+        formData.append(`animalImages`, file);
       }
     });
 
@@ -122,11 +122,11 @@ const PetForm = ({
             className="sm:col-span-2"
             label="Gender"
             id="gender"
-            defaultValue={pet?.gender || GENDER_VALUES[0]}
+            defaultValue={pet?.sex || SEX_VALUES[0]}
             canManage={canManagePet}
             errors={state.errors?.gender}
           >
-            {GENDER_VALUES.map((gender) => (
+            {SEX_VALUES.map((gender) => (
               <option key={gender} value={gender}>
                 {gender.toLowerCase()}
               </option>
@@ -159,11 +159,11 @@ const PetForm = ({
             canManage={canManagePet}
             errors={state.errors?.heightCm}
           />
-          <FormSelect
+          {/* <FormSelect
             className="sm:col-span-3"
             label="Species"
             id="speciesId"
-            defaultValue={pet?.speciesId || ""}
+            defaultValue={pet?. || ""}
             canManage={canManagePet}
             errors={state.errors?.speciesId}
           >
@@ -172,8 +172,8 @@ const PetForm = ({
                 {species.name}
               </option>
             ))}
-          </FormSelect>
-          <FormInput
+          </FormSelect> */}
+          {/* <FormInput
             className="sm:col-span-3"
             label="Breed"
             id="breed"
@@ -181,7 +181,7 @@ const PetForm = ({
             defaultValue={pet?.breed || ""}
             canManage={canManagePet}
             errors={state.errors?.breed}
-          />
+          /> */}
           <FormInput
             className="sm:col-span-3"
             label="City"
@@ -305,7 +305,7 @@ const PetForm = ({
             ))}
           </div>
         {/* image errors */}
-        <FieldError id="petImages-error" errors={state.errors?.petImages} />
+        <FieldError id="animalImages-error" errors={state.errors?.animalImages} />
         </div>
 
         <FormButtonWrapper id="users" errors={state.message}>

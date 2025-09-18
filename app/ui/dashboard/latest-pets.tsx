@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { fetchLatestPets } from "@/app/lib/data/pets/pet.data";
+import { fetchLatestPets } from "@/app/lib/data/animals/animal.data";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
@@ -19,9 +19,9 @@ const LatestPets = async () => {
               className="max-w-64 bg-white border border-gray-200 p-4 shadow rounded-lg flex flex-col items-center justify-start hover:shadow-lg transition-shadow duration-150 ease-in-out group"
             >
               <div className="relative w-full max-w-[224px] aspect-square mb-4 overflow-hidden rounded-md">
-                {pet.petImages && pet.petImages.length > 0 ? (
+                {pet.animalImages && pet.animalImages.length > 0 ? (
                   <Image
-                    src={pet.petImages[0].url}
+                    src={pet.animalImages[0].url}
                     alt={`Photo of ${pet.name}`}
                     fill
                     sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"

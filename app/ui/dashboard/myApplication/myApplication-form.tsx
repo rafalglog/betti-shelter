@@ -8,7 +8,7 @@ import {
 } from "@/app/lib/constants/constants";
 import {
   AdoptionApplicationPayload,
-  PetForApplicationPayload,
+  AnimalForApplicationPayload,
 } from "@/app/lib/types";
 import { MyAdoptionAppFormState } from "@/app/lib/form-state-types";
 import AppPetMessage from "./app-pet-message";
@@ -36,7 +36,7 @@ interface Props {
   formAction: (payload: FormData) => void;
   isPending: boolean;
   myApplication?: AdoptionApplicationPayload;
-  petToAdopt?: PetForApplicationPayload; // For creating a new application
+  petToAdopt?: AnimalForApplicationPayload; // For creating a new application
   petId?: string;
 }
 

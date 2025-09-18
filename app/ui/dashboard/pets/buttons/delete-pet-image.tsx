@@ -1,7 +1,7 @@
 "use client"
 
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { deletePetImage } from "@/app/lib/actions/pet.actions";
+import { deletePetImage } from "@/app/lib/actions/animal.actions";
 import { useState } from "react";
 import { ConfirmationModal } from "@/app/ui/confirmation-modal";
 

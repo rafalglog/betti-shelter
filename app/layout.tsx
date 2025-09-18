@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { inter, openSans } from "./ui/fonts";
-import { Toaster } from "react-hot-toast";
+import { inter, openSans, fontgeist } from "./ui/fonts";
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Pet Shelter & internal CRM",
@@ -15,9 +15,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} ${openSans.variable}`}>
+      <body className={`${fontgeist.className} ${openSans.variable} antialiased`}>
         {children}
-        <Toaster position="bottom-center" reverseOrder={false} />
+        <Toaster />
       </body>
     </html>
   );

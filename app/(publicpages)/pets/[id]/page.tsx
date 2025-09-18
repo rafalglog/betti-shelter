@@ -1,4 +1,4 @@
-import { fetchPublicPagePetById } from "@/app/lib/data/pets/public.data";
+import { fetchPublicPagePetById } from "@/app/lib/data/animals/public.data";
 import { IDParamType } from "@/app/lib/types";
 import {
   calculateAgeString,
@@ -15,72 +15,71 @@ interface Props {
 }
 
 const Page = async ({ params }: Props) => {
-  const { id: petId } = await params;
+  const { id: animalId } = await params;
 
   const session = await auth();
   const currentUserId = session?.user?.id;
 
-  const pet = await fetchPublicPagePetById(petId);
-  if (!pet) {
+  const animal = await fetchPublicPagePetById(animalId);
+  if (!animal) {
     notFound();
   }
 
   // Calculate age string
   const ageString = calculateAgeString({
-    birthDate: pet.birthDate,
+    birthDate: animal.birthDate,
     simple: true,
   });
 
   // Format birth date for display using the utility function
-  const formattedBirthDate = formatDateToLongString(pet.birthDate);
+  const formattedBirthDate = formatDateToLongString(animal.birthDate);
 
   const currentUserHasActiveApplication =
     currentUserId &&
-    pet.adoptionApplications?.some((app) => app.userId === currentUserId);
+    animal.adoptionApplications?.some((app) => app.userId === currentUserId);
 
-  const isLikedByCurrentUser = pet.likes && pet.likes.length > 0;
+  const isLikedByCurrentUser = animal.likes && animal.likes.length > 0;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 lg:gap-y-0">
       <PetGallery
-        images={pet.petImages}
+        images={animal.animalImages}
         currentUserId={currentUserId}
-        petId={pet.id}
+        animalId={animal.id}
         isLikedByCurrentUser={isLikedByCurrentUser}
       />
 
-      {/* pet details */}
       <div className="flex flex-col space-y-5">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-800">{pet.name}</h1>
+          <h1 className="text-3xl font-semibold text-gray-800">{animal.name}</h1>
           <p className="text-sm text-gray-500 mt-1 flex items-center">
             <MapPinIcon className="size-5 inline mr-1 text-red-400" />
-            {pet.city}, {pet.state}
+            {animal.city}, {animal.state}
           </p>
         </div>
 
         <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-200">
-          <PetCardDetail label="Species" value={pet.species.name} />
+          <PetCardDetail label="Species" value={animal.species.name} />
           <PetCardDetail label="Age" value={ageString} />
           <PetCardDetail label="Date of Birth" value={formattedBirthDate} />
-          <PetCardDetail label="Weight" value={pet.weightKg} unit="kg" />
-          <PetCardDetail label="Height" value={pet.heightCm} unit="cm" />
+          <PetCardDetail label="Weight" value={animal.weightKg} unit="kg" />
+          <PetCardDetail label="Height" value={animal.heightCm} unit="cm" />
         </div>
 
-        {pet.description && (
+        {animal.description && (
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-medium text-gray-700 text-lg mb-2">
-              About {pet.name}
+              About {animal.name}
             </h3>
             <p className="text-gray-600 whitespace-pre-wrap leading-relaxed">
-              {pet.description}
+              {animal.description}
             </p>
           </div>
         )}
 
         <div className="pt-2">
           {
-            pet.listingStatus === "PENDING_ADOPTION" ? (
+            animal.listingStatus === "PENDING_ADOPTION" ? (
               <div className="block w-full sm:w-auto text-center bg-yellow-500 text-white px-8 py-3 rounded-md font-semibold text-lg shadow-sm cursor-not-allowed">
                 Pending Adoption
               </div>
@@ -94,7 +93,7 @@ const Page = async ({ params }: Props) => {
               </Link>
             ) : (
               <Link
-                href={`${petId}/adopt`}
+                href={`${animalId}/adopt`}
                 className="block w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
               >
                 Adopt

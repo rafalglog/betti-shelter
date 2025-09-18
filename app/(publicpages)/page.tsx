@@ -1,6 +1,6 @@
 import Link from "next/link";
 import WelcomeImage from "../ui/publicpages/welcome-image";
-import { fetchLatestPublicPets } from "../lib/data/pets/public.data";
+import { fetchLatestPublicAnimals } from "../lib/data/animals/public.data";
 import Image from "next/image";
 import { shimmer, toBase64 } from "../lib/utils/image-loading-placeholder";
 import { calculateAgeString } from "../lib/utils/date-utils";
@@ -120,30 +120,30 @@ const Page = () => {
 };
 
 const LatestPetsContent = async () => {
-  const latestPets = await fetchLatestPublicPets();
+  const latestAnimals = await fetchLatestPublicAnimals();
 
   const session = await auth();
   const currentUserId = session?.user?.id;
 
   return (
     <div className="mt-6 grid gap-4 gap-y-14 grid-cols-[repeat(auto-fit,minmax(theme('spacing.40'),1fr))]">
-      {latestPets.map((pet) => {
-        const isLikedByCurrentUser = !!(currentUserId && pet.likes?.length > 0);
+      {latestAnimals.map((animal) => {
+        const isLikedByCurrentUser = !!(currentUserId && animal.likes?.length > 0);
         const ageString = calculateAgeString({
-          birthDate: pet.birthDate,
+          birthDate: animal.birthDate,
           simple: true,
         });
         return (
           <Link
-            href={`/pets/${pet.id}`}
-            key={pet.id}
+            href={`/pets/${animal.id}`}
+            key={animal.id}
             className="relative max-w-[224px] bg-white block hover:shadow-lg transition-shadow duration-150 ease-in-out group rounded-lg"
           >
             <div className="relative w-full aspect-square overflow-hidden rounded-lg">
-              {pet.petImages?.length > 0 ? (
+              {animal.animalImages?.length > 0 ? (
                 <Image
-                  src={pet.petImages[0].url}
-                  alt={`Photo of ${pet.name}`}
+                  src={animal.animalImages[0].url}
+                  alt={`Photo of ${animal.name}`}
                   fill
                   sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"
                   placeholder={`data:image/svg+xml;base64,${toBase64(
@@ -160,13 +160,13 @@ const LatestPetsContent = async () => {
 
             <div className="absolute bottom-[-26px] left-2 right-2">
               <div className="text-sm flex flex-col px-4 py-2 bg-white shadow-lg rounded-lg relative">
-                <span className="font-semibold w-full">{pet.name}</span>
+                <span className="font-semibold w-full">{animal.name}</span>
                 <div className="text-xs text-gray-500">
-                  <span>{`${ageString} • ${pet.city}`}</span>
+                  <span>{`${ageString} • ${animal.city}`}</span>
                 </div>
                 <div className="absolute -top-4 right-2 z-10">
                   <LikeButton
-                    petId={pet.id}
+                    animalId={animal.id}
                     currentUserId={currentUserId}
                     isLikedByCurrentUser={isLikedByCurrentUser}
                   />
@@ -182,7 +182,7 @@ const LatestPetsContent = async () => {
           //   {/* Consider using Next/Image for optimized images */}
           //   {/* eslint-disable-next-line @next/next/no-img-element */}
           //   <Image
-          //     src={`${pet.petImages[0].url}`}
+          //     src={`${pet.animalImages[0].url}`}
           //     width={300}
           //     height={200}
           //     placeholder={`data:image/svg+xml;base64,${toBase64(

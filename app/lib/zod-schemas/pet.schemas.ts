@@ -1,7 +1,19 @@
 import { z } from "zod";
-import { Gender, PetListingStatus } from "@prisma/client";
+import {
+  Sex,
+  AnimalHealthStatus,
+  IntakeType,
+  TaskStatus,
+  TaskCategory,
+  TaskPriority,
+  NoteCategory,
+} from "@prisma/client";
 import { US_STATES } from "@/app/lib/constants/us-states";
-import { currentPageSchema, searchQuerySchema } from "./common.schemas";
+import {
+  cuidSchema,
+  currentPageSchema,
+  searchQuerySchema,
+} from "./common.schemas";
 
 // Reusable schema for speciesName
 const speciesNameSchema = z
@@ -23,6 +35,20 @@ export const PublishedPetsFilterSchema = z.object({
 export const DashboardPetsFilterSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
+  listingStatus: z.string().optional(),
+  sex: z.string().optional(),
+  pageSize: z.number(),
+  sort: z.string().optional(),
+});
+
+export const DashboardTasksFilterSchema = z.object({
+  query: searchQuerySchema,
+  currentPage: currentPageSchema,
+  category: z.string().optional(),
+  status: z.string().optional(),
+  pageSize: z.number(),
+  sort: z.string().optional(),
+  animalId: cuidSchema,
 });
 
 const stateCodes = US_STATES.map((state) => state.code) as [
@@ -30,54 +56,204 @@ const stateCodes = US_STATES.map((state) => state.code) as [
   ...string[]
 ];
 
-// Schema for the pet form
-export const PetFormSchema = z.object({
-  name: z.string().min(1, { message: "Name cannot be empty." }),
-  birthDate: z.coerce
-    .date({
-      required_error: "Please select a date of birth.",
-      invalid_type_error: "That's not a valid date!",
-    })
-    .max(new Date(), { message: "Date of birth cannot be in the future." }),
-  gender: z.nativeEnum(Gender, {
-    required_error: "Please select a gender.",
-    invalid_type_error: "Invalid gender selected.",
-  }),
-  speciesId: z
-    .string({ required_error: "Please select a species." })
-    .cuid({ message: "Please select a valid species." }),
-  breed: z.preprocess(
-    (val) => (String(val).trim() === "" ? undefined : String(val).trim()),
-    z
+// Schema for the animal form
+
+// export const AnimalFormSchema = z.object({
+//   name: z.string().min(1, { message: "Name cannot be empty." }),
+//   birthDate: z.coerce
+//     .date({
+//       required_error: "Please select a date of birth.",
+//       invalid_type_error: "That's not a valid date!",
+//     })
+//     .max(new Date(), { message: "Date of birth cannot be in the future." }),
+//   sex: z.nativeEnum(Sex, {
+//     required_error: "Please select a sex.",
+//     invalid_type_error: "Invalid sex selected.",
+//   }),
+//   size: z.nativeEnum(AnimalSize).optional(),
+
+//   // Updated to handle multiple breeds
+//   breedIds: z
+//     .array(z.string().cuid({ message: "Invalid breed ID." }))
+//     .min(1, { message: "Please select at least one breed." }),
+
+//   // Updated to handle multiple colors
+//   colorIds: z
+//     .array(z.string().cuid({ message: "Invalid color ID." }))
+//     .min(1, { message: "Please select at least one color." }),
+
+//   weightKg: z.preprocess(
+//     (val) => (String(val).trim() === "" ? undefined : Number(val)),
+//     z
+//       .number()
+//       .positive({ message: "Weight must be a positive number." })
+//       .optional()
+//   ),
+// heightCm: z.preprocess(
+//   (val) => (String(val).trim() === "" ? undefined : Number(val)),
+//   z
+//     .number()
+//     .positive({ message: "Height must be a positive number." })
+//     .optional()
+// ),
+//   city: z.string().min(1, { message: "City cannot be empty." }),
+
+// // Updated to a string, with an optional enum for frontend validation
+// state: z.string().refine((val) => stateCodes.includes(val as typeof stateCodes[number]), {
+//   message: "Invalid state selected. Please select a valid US state.",
+// }),
+
+//   description: z.string().optional(),
+//   listingStatus: z.nativeEnum(AnimalListingStatus, {
+//     required_error: "Please select a listing status.",
+//   }),
+//   microchipNumber: z.string().optional(),
+//   healthStatus: z.nativeEnum(AnimalHealthStatus).optional(),
+//   legalStatus: z.nativeEnum(AnimalLegalStatus).optional(),
+
+//   // This field was commented in your schema but is a common denormalized field.
+//   // Kept here for form validation.
+//   isSpayedNeutered: z.boolean().default(false),
+
+//   archiveReason: z.nativeEnum(AnimalArchiveReason).optional().nullable(),
+// });
+
+export const IntakeFormSchema = z
+  .object({
+    animalName: z.string().min(1, { message: "Animal name is required." }),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    species: z.string().cuid({ message: "A valid species ID is required." }),
+    description: z.string().optional(),
+    breed: z
       .string()
-      .min(1, {
-        message: "Breed must contain at least 1 character if provided.",
-      })
+      .cuid({ message: "A valid primary breed ID is required." }),
+    primaryColor: z
+      .string()
+      .cuid({ message: "A valid primary color ID is required." }),
+    sex: z.nativeEnum(Sex, { required_error: "Sex is required." }),
+    weightKg: z.coerce
+      .number({ invalid_type_error: "Weight must be a number." })
+      .positive({ message: "Weight must be a positive number." })
       .optional()
-  ),
-  weightKg: z.preprocess(
-    (val) => (String(val).trim() === "" ? undefined : Number(val)),
-    z
-      .number()
-      .positive({ message: "Weight must be a positive number if provided." })
+      .or(z.literal("")),
+    heightCm: z.coerce
+      .number({ invalid_type_error: "Height must be a number." })
+      .positive({ message: "Height must be a positive number." })
       .optional()
-  ),
-  heightCm: z.preprocess(
-    (val) => (String(val).trim() === "" ? undefined : Number(val)),
-    z
-      .number()
-      .positive({ message: "Height must be a positive number if provided." })
-      .optional()
-  ),
-  city: z.string().min(1, { message: "City cannot be empty." }),
-  state: z.enum(stateCodes, {
-    required_error: "State is required.",
-    invalid_type_error:
-      "Invalid state selected. Please select a valid US state.",
-  }),
-  description: z.string().optional(),
-  listingStatus: z.nativeEnum(PetListingStatus, {
-    required_error: "Please select a listing status.",
-    invalid_type_error: "Invalid listing status selected.",
-  }),
+      .or(z.literal("")),
+    estimatedBirthDate: z.coerce.date({
+      required_error: "Estimated birth date is required.",
+    }),
+    healthStatus: z.nativeEnum(AnimalHealthStatus, {
+      required_error: "Health status is required.",
+    }),
+    microchipNumber: z.string().optional(),
+
+    // Intake Details
+    intakeType: z.nativeEnum(IntakeType, {
+      required_error: "Intake type is required.",
+    }),
+    intakeDate: z.coerce
+      .date({ required_error: "Intake date is required." })
+      .max(new Date(), { message: "Intake date cannot be in the future." }),
+    notes: z.string().optional(),
+
+    sourcePartnerId: z.string().cuid().optional(),
+    foundAddress: z.string().optional(),
+    foundCity: z.string().optional(),
+    foundState: z.string().optional(),
+    surrenderingPersonName: z.string().optional(),
+    surrenderingPersonPhone: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.intakeType === "TRANSFER_IN" && !data.sourcePartnerId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Source partner is required for transfers.",
+        path: ["sourcePartnerId"],
+      });
+    }
+
+    if (data.intakeType === "OWNER_SURRENDER" && !data.surrenderingPersonName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Surrenderer's name is required for owner surrenders.",
+        path: ["surrenderingPersonName"],
+      });
+    }
+
+    if (data.intakeType === "STRAY") {
+      if (!data.foundAddress) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Address is required for strays.",
+          path: ["foundAddress"],
+        });
+      }
+      if (!data.foundCity) {
+        ctx.addIssue({
+          code: "custom",
+          message: "City is required for strays.",
+          path: ["foundCity"],
+        });
+      }
+      if (!data.foundState) {
+        ctx.addIssue({
+          code: "custom",
+          message: "State is required for strays.",
+          path: ["foundState"],
+        });
+      } else if (!stateCodes.includes(data.foundState)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please select a valid US state.",
+          path: ["foundState"],
+        });
+      }
+    }
+  });
+
+export const TaskFormSchema = z
+  .object({
+    title: z.string().min(1, { message: "Title is required." }),
+    details: z.string().optional(),
+    status: z.nativeEnum(TaskStatus).optional(),
+    category: z.nativeEnum(TaskCategory, {
+      required_error: "Category is required.",
+    }),
+    priority: z.nativeEnum(TaskPriority).optional(),
+    dueDate: z.coerce.date().optional(), // Coerce to a date, keep it optional
+    assigneeId: z
+      .string()
+      .cuid({ message: "Valid assignee ID is required." })
+      .optional(),
+  })
+  .refine(
+    (data) => {
+      // If a due date is provided, it must not be in the past.
+      if (data.dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Set to the beginning of today
+        return data.dueDate >= today;
+      }
+      // If no due date is provided, the validation passes.
+      return true;
+    },
+    {
+      message: "Due date cannot be in the past.",
+      path: ["dueDate"], // Specify which field the error message applies to
+    }
+  );
+
+export const NoteFormSchema = z.object({
+  category: z.nativeEnum(NoteCategory),
+  content: z.string().min(1, { message: "Content cannot be empty." }),
+});
+
+
+export const assessmentFieldSchema = z.object({
+  fieldName: z.string().min(1, "Field name cannot be empty."),
+  fieldValue: z.string().min(1, "Field value cannot be empty."),
+  notes: z.string().optional(),
 });
