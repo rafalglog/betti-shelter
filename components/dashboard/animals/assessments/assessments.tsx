@@ -76,7 +76,7 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId }: Props) => {
           <Button asChild>
               <Link href={`/dashboard/animals/${animalId}/assessments/create`}>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Create First Assessment
+                Create Assessment
               </Link>
             </Button>
         </CardAction>

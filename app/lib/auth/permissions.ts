@@ -7,6 +7,13 @@ export const Permissions = {
   ANIMAL_READ_DETAIL: "animal:read_detail", // For viewing detailed pet information (including the edit form in read-only)
   ANIMAL_READ_LISTING: "animal:read_listing",   // For viewing the pets list page (e.g., dashboard/pets)
 
+  // Animal Assessment Permissions
+  ANIMAL_ASSESSMENT_CREATE: "animal_assessment:create",
+  ANIMAL_ASSESSMENT_UPDATE: "animal_assessment:update",
+  ANIMAL_ASSESSMENT_READ_DETAIL: "animal_assessment:read_detail",
+  ANIMAL_ASSESSMENT_READ_LISTING: "animal_assessment:read_listing",
+  ANIMAL_ASSESSMENT_DELETE: "animal_assessment:delete",
+
   PARTNER_READ: "partner:read_analytics",
 
   // Application Management (for staff/admins, and volunteers for read-only)

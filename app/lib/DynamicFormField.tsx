@@ -1,7 +1,5 @@
-// in @/app/lib/DynamicFormField.tsx
-
 import React from "react";
-import { Control, Controller, FieldErrors } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FieldType } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -12,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -30,32 +27,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface DynamicFormFieldProps {
   field: TemplateField;
   control: Control<any>;
-  errors: FieldErrors<any>;
 }
 
-export function DynamicFormField({ field, control, errors }: DynamicFormFieldProps) {
-  const renderField = (onChange: (value: any) => void, value: any) => {
+export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
+  const renderInput = (controllerField: any) => {
     switch (field.fieldType) {
       case FieldType.TEXT:
         return (
           <Input
-            type="text"
-            placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-            onChange={(e) => onChange(e.target.value)}
-            value={value || ""}
+            placeholder={
+              field.placeholder || `Enter ${field.label.toLowerCase()}`
+            }
+            {...controllerField}
           />
         );
       case FieldType.TEXTAREA:
         return (
           <Textarea
-            placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `Enter ${field.label.toLowerCase()}`
+            }
             rows={3}
-            onChange={(e) => onChange(e.target.value)}
-            value={value || ""}
+            {...controllerField}
           />
         );
       case FieldType.NUMBER:
@@ -63,16 +67,23 @@ export function DynamicFormField({ field, control, errors }: DynamicFormFieldPro
           <Input
             type="number"
             placeholder={field.placeholder || "0"}
-            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : "")}
-            value={value || ""}
+            {...controllerField}
+            onChange={(e) => controllerField.onChange(e.target.value === '' ? '' : Number(e.target.value))}
           />
         );
       case FieldType.SELECT:
         return (
-          <Select onValueChange={onChange} value={value || ""}>
-            <SelectTrigger>
-              <SelectValue placeholder={field.placeholder || "Select an option"} />
-            </SelectTrigger>
+          <Select
+            onValueChange={controllerField.onChange}
+            defaultValue={controllerField.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue
+                  placeholder={field.placeholder || "Select an option"}
+                />
+              </SelectTrigger>
+            </FormControl>
             <SelectContent>
               {field.options?.map((option) => (
                 <SelectItem key={option} value={option}>
@@ -84,73 +95,98 @@ export function DynamicFormField({ field, control, errors }: DynamicFormFieldPro
         );
       case FieldType.RADIO:
         return (
-          <RadioGroup onValueChange={onChange} value={value || ""} className="mt-2">
+          <RadioGroup
+            onValueChange={controllerField.onChange}
+            defaultValue={controllerField.value}
+            className="mt-2"
+          >
             {field.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-2">
-                <RadioGroupItem value={option} id={`${field.id}-${option}`} />
-                <Label htmlFor={`${field.id}-${option}`}>{option}</Label>
-              </div>
+              <FormItem key={option} className="flex items-center space-x-2">
+                <FormControl>
+                  <RadioGroupItem value={option} id={`${field.id}-${option}`} />
+                </FormControl>
+                <FormLabel htmlFor={`${field.id}-${option}`} className="font-normal">
+                  {option}
+                </FormLabel>
+              </FormItem>
             ))}
           </RadioGroup>
         );
       case FieldType.CHECKBOX:
         return (
-           <div className="flex items-center space-x-2 h-10">
-            <Checkbox
-              id={field.id}
-              checked={value || false}
-              onCheckedChange={onChange}
-            />
-            <Label htmlFor={field.id} className="font-normal">
+          <div className="flex items-center space-x-2 h-10">
+            <FormControl>
+              <Checkbox
+                checked={controllerField.value}
+                onCheckedChange={controllerField.onChange}
+                id={field.id}
+              />
+            </FormControl>
+            <FormLabel htmlFor={field.id} className="font-normal">
               {field.label}
-            </Label>
+            </FormLabel>
           </div>
         );
       case FieldType.DATE:
         return (
           <Popover>
             <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !value && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {value ? format(new Date(value), "PPP") : <span>Pick a date</span>}
-              </Button>
+              <FormControl>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !controllerField.value && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {controllerField.value ? (
+                    format(new Date(controllerField.value), "PPP")
+                  ) : (
+                    <span>Pick a date</span>
+                  )}
+                </Button>
+              </FormControl>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0">
               <Calendar
                 mode="single"
-                selected={value ? new Date(value) : undefined}
-                onSelect={onChange}
-                initialFocus
+                selected={
+                  controllerField.value ? new Date(controllerField.value) : undefined
+                }
+                onSelect={controllerField.onChange}
+                autoFocus
               />
             </PopoverContent>
           </Popover>
         );
       default:
-        return <Input type="text" value={value || ""} onChange={onChange} />;
+        return <Input type="text" {...controllerField} />;
     }
   };
 
   return (
-    <div className="w-full">
-      {field.fieldType !== FieldType.CHECKBOX && (
-        <Label className="mb-2 block">
-          {field.label}
-          {field.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </Label>
+    <FormField
+      control={control}
+      name={field.id}
+      render={({ field: controllerField }) => (
+        <FormItem>
+          {/* Checkbox label is rendered inside the switch case */}
+          {field.fieldType !== FieldType.CHECKBOX && (
+            <FormLabel>
+              {field.label}
+              {field.isRequired && <span className="text-red-500 ml-1">*</span>}
+            </FormLabel>
+          )}
+          {/* We render the input inside a FormControl for non-checkbox/radio types */}
+          {field.fieldType !== FieldType.CHECKBOX && field.fieldType !== FieldType.RADIO ? (
+            <FormControl>{renderInput(controllerField)}</FormControl>
+          ) : (
+             renderInput(controllerField)
+          )}
+          <FormMessage />
+        </FormItem>
       )}
-      <Controller
-        name={field.id}
-        control={control}
-        render={({ field: controllerField }) => (
-          renderField(controllerField.onChange, controllerField.value)
-        )}
-      />
-    </div>
+    />
   );
 }

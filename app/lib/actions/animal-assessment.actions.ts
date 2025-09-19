@@ -1,130 +1,112 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { createDynamicSchema } from "../dynamicFormSchema";
-import { AssessmentFormData, TemplateField } from "../types";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import {
-  RequirePermission,
-  SessionUser,
-  withAuthenticatedUser,
-} from "../auth/protected-actions";
+import { TemplateField } from "../types";
+import { withAuthenticatedUser, SessionUser, RequirePermission } from "../auth/protected-actions";
+import { Permissions } from "@/app/lib/auth/permissions";
 
-
-export interface AnimalNoteFormState {
+// Define a state for the form action
+export interface AssessmentFormState {
   message?: string | null;
-  errors?: {
-    intake?: string[];
-    content?: string[];
-  };
+  errors?: Record<string, string[] | undefined>;
 }
 
-// const _createAnimalAssessment = async (
-//   user: SessionUser, // Injected by withAuthenticatedUser
-//   animalId: string,
-//   prevState: AnimalNoteFormState,
-//   formData: FormData
-// ): Promise<AnimalNoteFormState> => {
-  
-// }
+// Internal action wrapped for authentication
+async function _createAssessment(
+  user: SessionUser, // Injected by withAuthenticatedUser
+  prevState: AssessmentFormState,
+  formData: FormData
+): Promise<AssessmentFormState> {
+  const assessorId = user.personId;
+  const data = Object.fromEntries(formData.entries());
 
+  // Basic fields needed to find the template and create the schema
+  const animalId = data.animalId as string;
+  const templateId = data.templateId as string;
 
-export async function createAssessment(data: AssessmentFormData) {
-  const session = await auth();
-  if (!session || !session.user || !session.user.id) {
-    throw new Error("Unauthorized: You must be logged in.");
+  if (!animalId || !templateId) {
+    return { message: "Missing animal or template ID." };
   }
-  const assessorIdSession = session.user.personId;
 
   try {
-    const animal = await prisma.animal.findUnique({
-      where: { id: data.animalId },
-    });
-    if (!animal) throw new Error("Animal not found");
-
+    // Fetch the template to build the dynamic schema
     const template = await prisma.assessmentTemplate.findUnique({
-      where: { id: data.templateId },
+      where: { id: templateId },
       include: { templateFields: true },
     });
+
     if (!template) {
-      throw new Error("Assessment template not found");
+      return { message: "Assessment template not found" };
     }
 
-    const allFields: TemplateField[] = [
-      ...(template.templateFields as TemplateField[]),
-      ...(data.customFields || []),
-    ];
+    const allFields: TemplateField[] = template.templateFields as TemplateField[];
     const schema = createDynamicSchema(allFields);
 
-    const {
-      animalId,
-      templateId,
-      overallOutcome,
-      summary,
-      customFields,
-      ...fieldData
-    } = data;
+    // Validate the form data against the dynamic schema
+    const validatedFields = schema.safeParse(data);
 
-    const validatedData = schema.parse(fieldData);
+    if (!validatedFields.success) {
+      console.log(validatedFields.error.flatten().fieldErrors);
+      return {
+        errors: validatedFields.error.flatten().fieldErrors,
+        message: "Missing or invalid fields. Failed to create assessment.",
+      };
+    }
 
-    const assessment = await prisma.assessment.create({
+    // On successful validation, create the assessment in the database
+    const { overallOutcome, summary } = validatedFields.data;
+
+    await prisma.assessment.create({
       data: {
         animalId,
         templateId,
-        assessorId: assessorIdSession,
+        assessorId: assessorId,
         overallOutcome,
         summary,
         fields: {
-          create: Object.entries(validatedData)
-            .filter(([key]) => !key.endsWith("_notes"))
+          create: Object.entries(validatedFields.data)
+            .filter(([key]) => !key.endsWith("_notes")) // Exclude notes fields from this mapping
             .filter(
               ([_, value]) =>
                 value !== undefined && value !== null && value !== ""
-            )
+            ) // Correctly filter out only truly empty values
             .map(([fieldId, value]) => {
               const fieldDefinition = allFields.find((f) => f.id === fieldId);
               return {
                 fieldName: fieldDefinition?.label || fieldId,
-                fieldValue: String(value),
-                notes: validatedData[`${fieldId}_notes`] || null,
+                fieldValue: String(value), // Convert all values to string for the DB
+                notes: validatedFields.data[`${fieldId}_notes`] || null,
               };
             }),
         },
       },
-      include: {
-        fields: true,
-        assessor: true,
-        template: true,
-      },
     });
 
+    // Create an activity log entry
     await prisma.animalActivityLog.create({
       data: {
         animalId,
         activityType: "ASSESSMENT_COMPLETED",
-        changedById: assessorIdSession,
+        changedById: assessorId,
         changeSummary: `${template.name} assessment completed with outcome: ${
           overallOutcome || "Not specified"
         }`,
       },
     });
-    revalidatePath(`/animals/${animalId}/assessments`);
-    revalidatePath(`/animals/${animalId}`);
-
-    redirect(`/animals/${animalId}/assessments`);
   } catch (error) {
     console.error("Error creating assessment:", error);
-    throw new Error("Failed to create assessment");
+    return { message: "Database Error: Failed to create assessment." };
   }
+
+  // Revalidate paths and redirect on success
+  revalidatePath(`/dashboard/animals/${animalId}/assessments`);
+  revalidatePath(`/dashboard/animals/${animalId}`);
+  redirect(`/dashboard/animals/${animalId}/assessments`);
 }
 
-// // Export the wrapped, protected server actions
-// export const createAssessment = withAuthenticatedUser(
-//   RequirePermission(Permissions.ANIMAL_UPDATE)(_createAssessment)
-// );
-
-// export const updateAnimalAssessment = RequirePermission(Permissions.ANIMAL_UPDATE)(
-//   _updateAnimalAssessment
-// );
+export const createAssessment = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_ASSESSMENT_CREATE)(_createAssessment)
+);
