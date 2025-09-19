@@ -1,7 +1,35 @@
-import React from 'react';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
-import { FieldType } from '@prisma/client';
-import { TemplateField } from './types';
+// in @/app/lib/DynamicFormField.tsx
+
+import React from "react";
+import { Control, Controller, FieldErrors } from "react-hook-form";
+import { FieldType } from "@prisma/client";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { TemplateField } from "./types";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DynamicFormFieldProps {
   field: TemplateField;
@@ -14,124 +42,115 @@ export function DynamicFormField({ field, control, errors }: DynamicFormFieldPro
     switch (field.fieldType) {
       case FieldType.TEXT:
         return (
-          <input
+          <Input
             type="text"
             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             onChange={(e) => onChange(e.target.value)}
-            value={value || ''}
+            value={value || ""}
           />
         );
-      
       case FieldType.TEXTAREA:
         return (
-          <textarea
+          <Textarea
             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             rows={3}
             onChange={(e) => onChange(e.target.value)}
-            value={value || ''}
+            value={value || ""}
           />
         );
-      
       case FieldType.NUMBER:
         return (
-          <input
+          <Input
             type="number"
-            placeholder={field.placeholder || '0'}
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : '')}
-            value={value || ''}
+            placeholder={field.placeholder || "0"}
+            onChange={(e) => onChange(e.target.value ? Number(e.target.value) : "")}
+            value={value || ""}
           />
         );
-      
       case FieldType.SELECT:
         return (
-          <select 
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            onChange={(e) => onChange(e.target.value)}
-            value={value || ''}
-          >
-            <option value="">Select an option</option>
-            {field.options?.map(option => (
-              <option key={option} value={option}>{option}</option>
-            ))}
-          </select>
+          <Select onValueChange={onChange} value={value || ""}>
+            <SelectTrigger>
+              <SelectValue placeholder={field.placeholder || "Select an option"} />
+            </SelectTrigger>
+            <SelectContent>
+              {field.options?.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         );
-      
       case FieldType.RADIO:
         return (
-          <div className="space-y-2">
-            {field.options?.map(option => (
-              <label key={option} className="flex items-center">
-                <input
-                  type="radio"
-                  value={option}
-                  checked={value === option}
-                  onChange={(e) => onChange(e.target.value)}
-                  className="mr-2"
-                />
-                {option}
-              </label>
+          <RadioGroup onValueChange={onChange} value={value || ""} className="mt-2">
+            {field.options?.map((option) => (
+              <div key={option} className="flex items-center space-x-2">
+                <RadioGroupItem value={option} id={`${field.id}-${option}`} />
+                <Label htmlFor={`${field.id}-${option}`}>{option}</Label>
+              </div>
             ))}
-          </div>
+          </RadioGroup>
         );
-      
       case FieldType.CHECKBOX:
         return (
-          <label className="flex items-center">
-            <input 
-              type="checkbox" 
-              className="mr-2"
+           <div className="flex items-center space-x-2 h-10">
+            <Checkbox
+              id={field.id}
               checked={value || false}
-              onChange={(e) => onChange(e.target.checked)}
+              onCheckedChange={onChange}
             />
-            {field.label}
-          </label>
+            <Label htmlFor={field.id} className="font-normal">
+              {field.label}
+            </Label>
+          </div>
         );
-      
       case FieldType.DATE:
         return (
-          <input
-            type="date"
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            onChange={(e) => onChange(e.target.value ? new Date(e.target.value) : '')}
-            value={value ? new Date(value).toISOString().split('T')[0] : ''}
-          />
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !value && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {value ? format(new Date(value), "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={value ? new Date(value) : undefined}
+                onSelect={onChange}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         );
-      
       default:
-        return (
-          <input 
-            type="text" 
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            onChange={(e) => onChange(e.target.value)}
-            value={value || ''}
-          />
-        );
+        return <Input type="text" value={value || ""} onChange={onChange} />;
     }
   };
 
   return (
-    <div className="mb-4">
+    <div className="w-full">
       {field.fieldType !== FieldType.CHECKBOX && (
-        <label className="block text-sm font-medium mb-2 text-gray-700">
+        <Label className="mb-2 block">
           {field.label}
           {field.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </label>
+        </Label>
       )}
       <Controller
         name={field.id}
         control={control}
         render={({ field: controllerField }) => (
-          <div>
-            {renderField(controllerField.onChange, controllerField.value)}
-          </div>
+          renderField(controllerField.onChange, controllerField.value)
         )}
       />
-      {/* {errors[field.id] && (
-        <p className="text-red-500 text-sm mt-1">{errors[field.id]?.message}</p>
-      )} */}
     </div>
   );
 }

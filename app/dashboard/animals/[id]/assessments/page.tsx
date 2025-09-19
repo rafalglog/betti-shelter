@@ -1,13 +1,6 @@
 import { getAnimalAssessments } from "@/app/lib/data/animals/animal-assessment.data";
 import { IDParamType } from "@/app/lib/types";
 import AnimalAssessmentsTab from "@/components/dashboard/animals/assessments/assessments";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 
 interface Props {
   params: IDParamType;

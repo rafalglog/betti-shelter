@@ -843,11 +843,6 @@ model TemplateField {
   isRequired  Boolean  @default(true)
   order       Int // To control the display order in the form
 
-  // Store suggestion rules as a JSON object.
-  // Maps an option value to a suggested task.
-  // e.g., { "Anxious": { "title": "Consult for anxiety", "category": "BEHAVIORAL" }}
-  suggestionRules Json?
-
   @@map("assessment_template_fields")
 }
 

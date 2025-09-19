@@ -190,7 +190,6 @@ export interface TemplateField {
   options: string[];
   isRequired: boolean;
   order: number;
-  suggestionRules?: Record<string, { title: string; category: string }> | null;
 }
 
 // export interface AssessmentTemplate {
@@ -206,6 +205,6 @@ export interface AssessmentFormData {
   templateId: string;
   overallOutcome?: AssessmentOutcome;
   summary?: string;
-  customFields?: TemplateField[]; // Add this line
+  customFields?: TemplateField[];
   [key: string]: any; // For dynamic field values
 }

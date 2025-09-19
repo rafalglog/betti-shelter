@@ -6,6 +6,30 @@ import { createDynamicSchema } from "../dynamicFormSchema";
 import { AssessmentFormData, TemplateField } from "../types";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import {
+  RequirePermission,
+  SessionUser,
+  withAuthenticatedUser,
+} from "../auth/protected-actions";
+
+
+export interface AnimalNoteFormState {
+  message?: string | null;
+  errors?: {
+    intake?: string[];
+    content?: string[];
+  };
+}
+
+// const _createAnimalAssessment = async (
+//   user: SessionUser, // Injected by withAuthenticatedUser
+//   animalId: string,
+//   prevState: AnimalNoteFormState,
+//   formData: FormData
+// ): Promise<AnimalNoteFormState> => {
+  
+// }
+
 
 export async function createAssessment(data: AssessmentFormData) {
   const session = await auth();

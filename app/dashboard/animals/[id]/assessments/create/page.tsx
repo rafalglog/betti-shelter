@@ -1,10 +1,18 @@
-import { Suspense } from 'react';
-import { notFound, redirect } from 'next/navigation';
-import { prisma } from '@/app/lib/prisma';
-import { AssessmentFormData, IDParamType } from '@/app/lib/types';
-import { auth } from '@/auth';
-import { getAssessmentTemplates } from '@/app/lib/data/animals/animal-assessment.data';
-import { AssessmentForm } from '@/components/dashboard/animals/assessments/assessment-form';
+import { Suspense } from "react";
+import { notFound, redirect } from "next/navigation";
+import { prisma } from "@/app/lib/prisma";
+import { AssessmentFormData, IDParamType } from "@/app/lib/types";
+import { auth } from "@/auth";
+import { getAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
+import { AssessmentForm } from "@/components/dashboard/animals/assessments/assessment-form";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Props {
   params: IDParamType;
@@ -12,31 +20,22 @@ interface Props {
 
 export default async function NewAssessmentPage({ params }: Props) {
   const { id: animalId } = await params;
-  
-  const templates = await getAssessmentTemplates();
-  
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              New Assessment
-            </h1>
-            <p className="mt-2 text-gray-600">
-              Create a new assessment using one of the available templates.
-            </p>
-          </div>
-          
-          <Suspense fallback={<div>Loading assessment form...</div>}>
-            <AssessmentForm
-              animalId={animalId}
-              templates={templates}
-              />
 
-          </Suspense>
-        </div>
-      </div>
-    </div>
+  const templates = await getAssessmentTemplates();
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>New Assessment</CardTitle>
+        <CardDescription>
+          Create a new assessment using one of the available templates.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback={<div>Loading assessment form...</div>}>
+          <AssessmentForm animalId={animalId} templates={templates} />
+        </Suspense>
+      </CardContent>
+    </Card>
   );
 }

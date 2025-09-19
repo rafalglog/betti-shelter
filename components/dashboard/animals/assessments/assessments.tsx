@@ -25,112 +25,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
+import { AnimalAssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentOutcome } from "@prisma/client";
 import { formatDateToLongString } from "@/app/lib/utils/date-utils";
 import { formatSingleEnumOption } from "@/app/lib/utils/enum-formatter";
 import Link from "next/link";
-
-// --- MOCK DATA ---
-// In a real app, this would come from your API (e.g., `trpc.animal.getAssessments.useQuery()`)
-// const mockAssessments = [
-//   {
-//     id: "asmt_1",
-//     type: "INTAKE_BEHAVIORAL",
-//     date: "2025-07-10T14:00:00.000Z",
-//     assessor: { name: "Dr. Jane Doe" },
-//     overallOutcome: "GOOD",
-//     summary:
-//       "Fido is a friendly and energetic dog. He showed no signs of aggression and was curious about his new environment. He pulls a bit on the leash but is responsive to commands.",
-//     fields: [
-//       {
-//         id: "f1",
-//         fieldName: "Reaction to Handling",
-//         fieldValue: "Tolerant",
-//         notes: "Allowed petting all over, including paws and ears.",
-//       },
-//       {
-//         id: "f2",
-//         fieldName: "Food Guarding",
-//         fieldValue: "None Observed",
-//         notes: null,
-//       },
-//       {
-//         id: "f3",
-//         fieldName: "Leash Manners",
-//         fieldValue: "Pulls Heavily",
-//         notes: "Responds to corrections but gets easily excited.",
-//       },
-//       {
-//         id: "f4",
-//         fieldName: "Toy Aggression",
-//         fieldValue: "None Observed",
-//         notes: "Happily shared a ball.",
-//       },
-//     ],
-//     deletedAt: null,
-//   },
-//   {
-//     id: "asmt_2",
-//     type: "DAILY_MONITORING",
-//     date: "2025-07-11T09:30:00.000Z",
-//     assessor: { name: "John Smith" },
-//     overallOutcome: "NEEDS_ATTENTION",
-//     summary:
-//       "Noticed some slight limping on the rear left leg this morning. Seems hesitant to put full weight on it. Otherwise, normal appetite and mood.",
-//     fields: [
-//       {
-//         id: "f5",
-//         fieldName: "Appetite",
-//         fieldValue: "Normal",
-//         notes: "Ate all of his breakfast.",
-//       },
-//       {
-//         id: "f6",
-//         fieldName: "Mobility",
-//         fieldValue: "Limping (Rear Left)",
-//         notes: "Should be checked by a vet.",
-//       },
-//       {
-//         id: "f7",
-//         fieldName: "Kennel Condition",
-//         fieldValue: "Clean",
-//         notes: null,
-//       },
-//     ],
-//     deletedAt: null,
-//   },
-//   {
-//     id: "asmt_3",
-//     type: "INTAKE_MEDICAL",
-//     date: "2025-07-09T11:00:00.000Z",
-//     assessor: { name: "Dr. Evelyn Reed" },
-//     overallOutcome: "POOR",
-//     summary:
-//       "Animal is underweight and has a moderate skin infection on its back. Also has a grade 2/6 heart murmur. Requires immediate vet care.",
-//     fields: [
-//       {
-//         id: "f8",
-//         fieldName: "Body Condition Score",
-//         fieldValue: "2/9 (Underweight)",
-//         notes: "Ribs and spine prominent.",
-//       },
-//       {
-//         id: "f9",
-//         fieldName: "Dermatology",
-//         fieldValue: "Moderate pyoderma",
-//         notes: "Located on the dorsal lumbar region.",
-//       },
-//       {
-//         id: "f10",
-//         fieldName: "Cardiology",
-//         fieldValue: "Grade 2/6 Systolic Murmur",
-//         notes: "Best heard on the left side.",
-//       },
-//     ],
-//     deletedAt: null,
-//   },
-// ];
 
 const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
   switch (outcome) {
@@ -148,11 +47,10 @@ const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
 };
 
 interface Props {
-  animalAssessments: AssessmentPayload[];
+  animalAssessments: AnimalAssessmentPayload[];
   animalId: string;
 }
 
-// --- THE MAIN COMPONENT ---
 const AnimalAssessmentsTab = ({ animalAssessments, animalId }: Props) => {
   const handleEdit = (assessmentId: string) => {
     console.log(`Opening modal to edit assessment: ${assessmentId}`);
@@ -193,7 +91,7 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId }: Props) => {
                   <AccordionTrigger className="flex-1 text-left hover:no-underline">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="font-semibold text-primary">
-                        {formatSingleEnumOption(assessment.type)}
+                        {assessment.template && formatSingleEnumOption(assessment.template.type)}
                       </span>
                       <span className="text-muted-foreground text-sm whitespace-nowrap">
                         on {formatDateToLongString(assessment.date)}

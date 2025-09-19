@@ -29,7 +29,17 @@ export async function getAssessmentTemplates(): Promise<AssessmentTemplateWithFi
   }
 }
 
-export async function getAnimalAssessments(animalId: string) {
+export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
+  include: {
+    fields: true;
+    assessor: true;
+    template: true;
+  };
+}>;
+
+export async function getAnimalAssessments(
+  animalId: string,
+): Promise<AnimalAssessmentPayload[]> {
   try {
     const assessments = await prisma.assessment.findMany({
       where: { animalId },
