@@ -5,32 +5,36 @@ import {
   cuidSchema,
   currentPageSchema,
 } from "../../zod-schemas/common.schemas";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { RequirePermission } from "../../auth/protected-actions";
 
 export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
   include: {
     templateFields: {
-      orderBy: { order: 'asc' }
-    }
-  }
+      orderBy: { order: "asc" };
+    };
+  };
 }>;
 
 const ASSESSMENTS_PER_PAGE = 5;
 
-export async function getAssessmentTemplates(): Promise<AssessmentTemplateWithFields[]> {
+// Renamed to indicate it's the internal, unprotected function
+async function _getAssessmentTemplates(): Promise<
+  AssessmentTemplateWithFields[]
+> {
   try {
     const templates = await prisma.assessmentTemplate.findMany({
       include: {
         templateFields: {
-          orderBy: { order: 'asc' }
-        }
+          orderBy: { order: "asc" },
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: "asc" },
     });
-    
     return templates;
   } catch (error) {
-    console.error('Error fetching assessment templates:', error);
-    throw new Error("Could not fetch assessment templates from the database.")
+    console.error("Error fetching assessment templates:", error);
+    throw new Error("Could not fetch assessment templates from the database.");
   }
 }
 
@@ -51,14 +55,15 @@ export const DashboardAssessmentsFilterSchema = z.object({
   showDeleted: z.boolean().optional(),
 });
 
-export async function fetchFilteredAnimalAssessments(
+// Renamed to indicate it's the internal, unprotected function
+const _fetchFilteredAnimalAssessments = async (
   animalId: string,
   currentPageInput: number,
   typeInput: string | undefined,
   outcomeInput: string | undefined,
   sortInput: string | undefined,
   showDeletedInput: boolean = false
-): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> {
+): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> => {
   // Validate and parse inputs
   const validatedArgs = DashboardAssessmentsFilterSchema.safeParse({
     currentPage: currentPageInput,
@@ -68,7 +73,6 @@ export async function fetchFilteredAnimalAssessments(
     sort: sortInput,
     showDeleted: showDeletedInput,
   });
-
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
       console.error(
@@ -80,14 +84,12 @@ export async function fetchFilteredAnimalAssessments(
   }
 
   const { currentPage, type, outcome, sort, showDeleted } = validatedArgs.data;
-
   // Determine the sorting order, defaulting to newest first
   const orderBy: Prisma.AssessmentOrderByWithRelationInput = (() => {
     if (!sort) return { date: "desc" };
     const [id, dir] = sort.split(".");
     return { [id]: dir === "desc" ? "desc" : "asc" };
   })();
-
   // Construct the 'where' clause based on filters
   const whereClause: Prisma.AssessmentWhereInput = {
     animalId: animalId,
@@ -101,10 +103,8 @@ export async function fetchFilteredAnimalAssessments(
     }),
     ...(showDeleted ? {} : { deletedAt: null }),
   };
-
   try {
     const offset = (currentPage - 1) * ASSESSMENTS_PER_PAGE;
-
     const [totalCount, assessments] = await prisma.$transaction([
       prisma.assessment.count({ where: whereClause }),
       prisma.assessment.findMany({
@@ -119,16 +119,16 @@ export async function fetchFilteredAnimalAssessments(
         skip: offset,
       }),
     ]);
-
     const totalPages = Math.ceil(totalCount / ASSESSMENTS_PER_PAGE);
     return { assessments, totalPages };
   } catch (error) {
     console.error("Error fetching animal assessments:", error);
     throw new Error("Error fetching animal assessments.");
   }
-}
+};
 
-export const fetchAnimalAssessmentById = async (
+// Renamed to indicate it's the internal, unprotected function
+const _fetchAnimalAssessmentById = async (
   id: string
 ): Promise<AnimalAssessmentPayload | null> => {
   try {
@@ -148,3 +148,15 @@ export const fetchAnimalAssessmentById = async (
     throw new Error(`Error fetching assessment with ID ${id}.`);
   }
 };
+
+export const fetchAnimalAssessmentById = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
+)(_fetchAnimalAssessmentById);
+
+export const getAssessmentTemplates = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
+)(_getAssessmentTemplates);
+
+export const fetchFilteredAnimalAssessments = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
+)(_fetchFilteredAnimalAssessments);

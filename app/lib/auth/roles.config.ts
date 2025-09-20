@@ -19,7 +19,6 @@ const volunteerPermissions = [
   Permissions.APPLICATIONS_READ_DETAIL,  // Volunteers can view detailed application information (read-only)
 
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL,
-  Permissions.ANIMAL_ASSESSMENT_READ_LISTING,
 ] as const;
 
 // Staff inherits all USER permissions and gets additional ones
@@ -34,7 +33,6 @@ const staffPermissions = [
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL,
   Permissions.ANIMAL_ASSESSMENT_UPDATE,
   Permissions.ANIMAL_ASSESSMENT_DELETE,
-  Permissions.ANIMAL_ASSESSMENT_READ_LISTING,
 ] as const;
 
 // Admin inherits all STAFF permissions

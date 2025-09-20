@@ -11,8 +11,12 @@ export const Permissions = {
   ANIMAL_ASSESSMENT_CREATE: "animal_assessment:create",
   ANIMAL_ASSESSMENT_UPDATE: "animal_assessment:update",
   ANIMAL_ASSESSMENT_READ_DETAIL: "animal_assessment:read_detail",
-  ANIMAL_ASSESSMENT_READ_LISTING: "animal_assessment:read_listing",
   ANIMAL_ASSESSMENT_DELETE: "animal_assessment:delete",
+
+  // Animal Note Permissions
+  ANIMAL_NOTE_CREATE: "animal_note:create",
+  ANIMAL_NOTE_UPDATE: "animal_note:update",
+  ANIMAL_NOTE_DELETE: "animal_note:delete",
 
   PARTNER_READ: "partner:read_analytics",
 

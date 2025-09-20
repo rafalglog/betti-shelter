@@ -5,11 +5,9 @@ import {
   currentPageSchema,
 } from "../../zod-schemas/common.schemas";
 import z from "zod";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { RequirePermission } from "../../auth/protected-actions";
 
-/**
- * Defines the shape of the data returned for each note,
- * selecting specific fields from the Note model and its related author.
- */
 export type FilteredNotePayload = Prisma.NoteGetPayload<{
   select: {
     id: true;
@@ -27,9 +25,6 @@ export type FilteredNotePayload = Prisma.NoteGetPayload<{
   };
 }>;
 
-/**
- * Zod schema for validating the filters used in the animal notes dashboard.
- */
 export const DashboardNotesFilterSchema = z.object({
   currentPage: currentPageSchema,
   animalId: cuidSchema,
@@ -37,19 +32,9 @@ export const DashboardNotesFilterSchema = z.object({
   sort: z.string().optional(),
   showDeleted: z.boolean().optional(),
 });
-
 const NOTES_PER_PAGE = 10;
 
-/**
- * Fetches a paginated and filtered list of notes for a specific animal.
- *
- * @param currentPageInput - The current page number for pagination.
- * @param categoryInput - A comma-separated string of categories to filter by.
- * @param sortInput - The sorting criteria (e.g., "createdAt.desc").
- * @param inputAnimalId - The ID of the animal whose notes are being fetched.
- * @returns A promise that resolves to an object containing the list of notes and the total number of pages.
- */
-export const fetchFilteredAnimalNotes = async (
+const _fetchFilteredAnimalNotes = async (
   currentPageInput: number,
   categoryInput: string | undefined,
   sortInput: string | undefined,
@@ -64,7 +49,6 @@ export const fetchFilteredAnimalNotes = async (
     animalId: inputAnimalId,
     showDeleted,
   });
-
   // If validation fails, log the error and throw an exception
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
@@ -80,14 +64,12 @@ export const fetchFilteredAnimalNotes = async (
   }
 
   const { currentPage, category, sort, animalId, showDeleted: includeDeleted } = validatedArgs.data;
-
   // Determine the sorting order for the query, defaulting to newest first
   const orderBy: Prisma.NoteOrderByWithRelationInput = (() => {
     if (!sort) return { createdAt: "desc" };
     const [id, dir] = sort.split(".");
     return { [id]: dir === "desc" ? "desc" : "asc" };
   })();
-
   // Construct the 'where' clause for the Prisma query based on filters
   const whereClause: Prisma.NoteWhereInput = {
     animalId: animalId,
@@ -96,11 +78,9 @@ export const fetchFilteredAnimalNotes = async (
     }),
     ...(includeDeleted ? {} : { deletedAt: null }),
   };
-
   try {
     // Calculate the offset for pagination
     const offset = (currentPage - 1) * NOTES_PER_PAGE;
-
     // Use a transaction to fetch the total count and the notes data in one go
     const [totalCount, notes] = await prisma.$transaction([
       prisma.note.count({ where: whereClause }),
@@ -125,10 +105,8 @@ export const fetchFilteredAnimalNotes = async (
         skip: offset, // Skip records for pagination
       }),
     ]);
-
     // Calculate the total number of pages
     const totalPages = Math.ceil(totalCount / NOTES_PER_PAGE);
-
     return { notes, totalPages };
   } catch (error) {
     // Catch and handle any database errors
@@ -147,7 +125,8 @@ export type FetchAnimalNoteByIdPayload = Prisma.NoteGetPayload<{
   };
 }>;
 
-export const fetchAnimalNoteById = async (
+// Renamed: Internal function is now prefixed with an underscore
+const _fetchAnimalNoteById = async (
   id: string
 ): Promise<FetchAnimalNoteByIdPayload | null> => {
   try {
@@ -159,7 +138,6 @@ export const fetchAnimalNoteById = async (
         content: true,
       },
     });
-
     return note;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -168,3 +146,12 @@ export const fetchAnimalNoteById = async (
     throw new Error(`Error fetching note with ID ${id}.`);
   }
 };
+
+// Added: Export the protected version of the function
+export const fetchAnimalNoteById = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalNoteById);
+
+export const fetchFilteredAnimalNotes = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchFilteredAnimalNotes);
