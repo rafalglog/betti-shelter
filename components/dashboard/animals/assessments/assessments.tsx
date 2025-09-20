@@ -30,8 +30,14 @@ import {
 import { AnimalAssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentOutcome } from "@prisma/client";
 import { formatDateToLongString } from "@/app/lib/utils/date-utils";
-import { formatSingleEnumOption } from "@/app/lib/utils/enum-formatter";
+import {
+  formatSingleEnumOption,
+  assessmentOutcomeOptions,
+  assessmentTypeOptions,
+} from "@/app/lib/utils/enum-formatter";
 import Link from "next/link";
+import { ServerSideFacetedFilter } from "@/components/dashboard/notes/server-side-faceted-filter";
+import { ServerSideSort } from "@/components/dashboard/notes/server-side-sort";
 
 const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
   switch (outcome) {
@@ -54,7 +60,11 @@ interface Props {
   totalPages: number;
 }
 
-const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props) => {
+const AnimalAssessmentsTab = ({
+  animalAssessments,
+  animalId,
+  totalPages,
+}: Props) => {
   const handleEdit = (assessmentId: string) => {
     console.log(`Opening modal to edit assessment: ${assessmentId}`);
     // Open a Dialog/Modal with the form pre-filled with this assessment's data
@@ -62,10 +72,6 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props
 
   const handleSoftDelete = (assessmentId: string) => {
     console.log(`Soft deleting assessment: ${assessmentId}`);
-    // This would trigger a mutation:
-    // softDeleteAssessment.mutate({ assessmentId });
-    // This would update the `deletedAt` field in the database.
-    alert(`In a real app, this would soft delete assessment ${assessmentId}.`);
   };
 
   return (
@@ -77,12 +83,33 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props
         </CardDescription>
         <CardAction>
           <Button asChild>
-              <Link href={`/dashboard/animals/${animalId}/assessments/create`}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create Assessment
-              </Link>
-            </Button>
+            <Link href={`/dashboard/animals/${animalId}/assessments/create`}>
+              Create Assessment
+            </Link>
+          </Button>
         </CardAction>
+
+        {/* Filter and Sort Controls */}
+        <div className="mt-4 flex flex-row flex-wrap items-center gap-3">
+          <ServerSideFacetedFilter
+            title="Type"
+            paramKey="type"
+            options={assessmentTypeOptions}
+          />
+          <ServerSideFacetedFilter
+            title="Outcome"
+            paramKey="outcome"
+            options={assessmentOutcomeOptions}
+          />
+          <ServerSideSort
+            paramKey="sort"
+            placeholder="Select order"
+            options={[
+              { label: "Newest First", value: "date.desc" },
+              { label: "Oldest First", value: "date.asc" },
+            ]}
+          />
+        </div>
       </CardHeader>
 
       <CardContent>
@@ -94,7 +121,8 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props
                   <AccordionTrigger className="flex-1 text-left hover:no-underline">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="font-semibold text-primary">
-                        {assessment.template && formatSingleEnumOption(assessment.template.type)}
+                        {assessment.template &&
+                          formatSingleEnumOption(assessment.template.type)}
                       </span>
                       <span className="text-muted-foreground text-sm whitespace-nowrap">
                         on {formatDateToLongString(assessment.date)}
@@ -190,15 +218,10 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props
           </Accordion>
         ) : (
           <div className="text-center py-12 border-2 border-dashed rounded-lg">
-            <p className="text-muted-foreground">
-              No assessments have been recorded for this animal yet.
+            <p className="font-semibold text-lg">No Matching Assessments Found</p>
+            <p className="text-sm mt-1 text-muted-foreground">
+              Try adjusting your filters or creating a new assessment.
             </p>
-            <Button asChild className="mt-2">
-              <Link href={`/dashboard/animals/${animalId}/assessments/create`}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create First Assessment
-              </Link>
-            </Button>
           </div>
         )}
       </CardContent>

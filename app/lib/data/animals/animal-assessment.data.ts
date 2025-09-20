@@ -1,5 +1,10 @@
 import { prisma } from "@/app/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, AssessmentType, AssessmentOutcome } from "@prisma/client";
+import z from "zod";
+import {
+  cuidSchema,
+  currentPageSchema,
+} from "../../zod-schemas/common.schemas";
 
 export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
   include: {
@@ -37,37 +42,85 @@ export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
   };
 }>;
 
+export const DashboardAssessmentsFilterSchema = z.object({
+  currentPage: currentPageSchema,
+  animalId: cuidSchema,
+  type: z.string().optional(),
+  outcome: z.string().optional(),
+  sort: z.string().optional(),
+});
+
 export async function fetchFilteredAnimalAssessments(
   animalId: string,
-  currentPage: number,
+  currentPageInput: number,
+  typeInput: string | undefined,
+  outcomeInput: string | undefined,
+  sortInput: string | undefined
 ): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> {
+  // Validate and parse inputs
+  const validatedArgs = DashboardAssessmentsFilterSchema.safeParse({
+    currentPage: currentPageInput,
+    animalId: animalId,
+    type: typeInput,
+    outcome: outcomeInput,
+    sort: sortInput,
+  });
+
+  if (!validatedArgs.success) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error(
+        "Zod validation error in fetchFilteredAnimalAssessments:",
+        validatedArgs.error.flatten()
+      );
+    }
+    throw new Error("Invalid arguments for fetching filtered assessments.");
+  }
+
+  const { currentPage, type, outcome, sort } = validatedArgs.data;
+
+  // Determine the sorting order, defaulting to newest first
+  const orderBy: Prisma.AssessmentOrderByWithRelationInput = (() => {
+    if (!sort) return { date: "desc" };
+    const [id, dir] = sort.split(".");
+    return { [id]: dir === "desc" ? "desc" : "asc" };
+  })();
+
+  // Construct the 'where' clause based on filters
+  const whereClause: Prisma.AssessmentWhereInput = {
+    animalId: animalId,
+    ...(type && {
+      template: {
+        type: { in: type.split(",") as AssessmentType[] },
+      },
+    }),
+    ...(outcome && {
+      overallOutcome: { in: outcome.split(",") as AssessmentOutcome[] },
+    }),
+  };
+
   try {
-    // Calculate the offset for the database query
     const offset = (currentPage - 1) * ASSESSMENTS_PER_PAGE;
 
-    // Use a transaction to get the count and the data in one database call
     const [totalCount, assessments] = await prisma.$transaction([
-      prisma.assessment.count({ where: { animalId } }),
+      prisma.assessment.count({ where: whereClause }),
       prisma.assessment.findMany({
-        where: { animalId },
+        where: whereClause,
         include: {
           fields: true,
           assessor: true,
           template: true,
         },
-        orderBy: { date: "desc" },
+        orderBy: orderBy,
         take: ASSESSMENTS_PER_PAGE,
         skip: offset,
       }),
     ]);
 
-    // Calculate the total number of pages
     const totalPages = Math.ceil(totalCount / ASSESSMENTS_PER_PAGE);
-
     return { assessments, totalPages };
   } catch (error) {
     console.error("Error fetching animal assessments:", error);
-    throw new Error("Could not fetch animal assessments from the database.");
+    throw new Error("Error fetching animal assessments.");
   }
 }
 

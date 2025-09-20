@@ -1,4 +1,16 @@
-import { IntakeType, Sex, AnimalHealthStatus, AnimalListingStatus, AnimalSize, TaskCategory, TaskStatus, TaskPriority, NoteCategory, CharacteristicCategory, AssessmentOutcome } from '@prisma/client';
+import {
+  IntakeType,
+  Sex,
+  AnimalHealthStatus,
+  AnimalListingStatus,
+  AnimalSize,
+  TaskCategory,
+  TaskStatus,
+  TaskPriority,
+  NoteCategory,
+  AssessmentOutcome,
+  AssessmentType,
+} from "@prisma/client";
 
 /**
  * Formats a Prisma enum's string values for display.
@@ -55,13 +67,16 @@ export const formatSingleEnumOption = (type: string) => {
 
 export const formattedIntakeTypes = formatEnumForDisplay(IntakeType);
 export const formattedSexes = formatEnumForDisplay(Sex);
-export const formattedPetHealthStatuses = formatEnumForDisplay(AnimalHealthStatus);
+export const formattedPetHealthStatuses =
+  formatEnumForDisplay(AnimalHealthStatus);
 
 export const intakeTypeOptions = formatEnumAsOptions(IntakeType);
 export const animalSexOptions = formatEnumAsOptions(Sex);
 export const animalSizeOptions = formatEnumAsOptions(AnimalSize);
-export const animalHealthStatusOptions = formatEnumAsOptions(AnimalHealthStatus);
-export const animalListingStatusOptions = formatEnumAsOptions(AnimalListingStatus);
+export const animalHealthStatusOptions =
+  formatEnumAsOptions(AnimalHealthStatus);
+export const animalListingStatusOptions =
+  formatEnumAsOptions(AnimalListingStatus);
 
 export const TaskCategoryOptions = formatEnumAsOptions(TaskCategory);
 export const TaskStatusOptions = formatEnumAsOptions(TaskStatus);
@@ -70,3 +85,4 @@ export const TaskPriorityOptions = formatEnumAsOptions(TaskPriority);
 export const noteCategoryOptions = formatEnumAsOptions(NoteCategory);
 
 export const assessmentOutcomeOptions = formatEnumAsOptions(AssessmentOutcome);
+export const assessmentTypeOptions = formatEnumAsOptions(AssessmentType);
