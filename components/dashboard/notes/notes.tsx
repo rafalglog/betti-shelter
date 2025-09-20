@@ -26,7 +26,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Label } from "@/components/ui/label";
 import { NoteCategory } from "@prisma/client";
 import { FilteredNotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { noteCategoryOptions } from "@/app/lib/utils/enum-formatter";

@@ -182,23 +182,16 @@ export type SpeciesPayload = Prisma.SpeciesGetPayload<{
   };
 }>;
 
+export type FieldOption = string | { value: string; label: string };
 export interface TemplateField {
   id: string;
   label: string;
   fieldType: FieldType;
   placeholder: string | null;
-  options: string[];
+  options: FieldOption[];
   isRequired: boolean;
   order: number;
 }
-
-// export interface AssessmentTemplate {
-//   id: string;
-//   name: string;
-//   type: AssessmentType;
-//   allowCustomFields: boolean;
-//   templateFields: TemplateField[];
-// }
 
 export interface AssessmentFormData {
   animalId: string;

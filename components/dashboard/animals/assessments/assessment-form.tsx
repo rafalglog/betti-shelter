@@ -1,29 +1,25 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  startTransition,
-} from "react";
+import React, { useState, useEffect, startTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldType } from "@prisma/client";
+import { FieldType, AssessmentType } from "@prisma/client";
 import { DynamicFormField } from "@/app/lib/DynamicFormField";
 import { createDynamicSchema } from "@/app/lib/dynamicFormSchema";
 import { TemplateField } from "@/app/lib/types";
 import { createAssessment } from "@/app/lib/actions/animal-assessment.actions";
 import { AssessmentTemplateWithFields } from "@/app/lib/data/animals/animal-assessment.data";
-import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Form,
+  FormControl,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -35,6 +31,7 @@ import { toast } from "sonner";
 import { useActionState } from "react";
 import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import Link from "next/link";
+import { assessmentOutcomeOptions } from "@/app/lib/utils/enum-formatter";
 
 interface AssessmentFormProps {
   animalId: string;
@@ -50,7 +47,7 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
   const [selectedTemplate, setSelectedTemplate] =
     useState<AssessmentTemplateWithFields | null>(() => {
       return (
-        templates.find((t) => t.name === "Daily Monitoring") ||
+        templates.find((t) => t.type === AssessmentType.DAILY_MONITORING) ||
         templates[0] ||
         null
       );
@@ -60,27 +57,35 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
     ? selectedTemplate.templateFields
     : [];
 
+  // Dynamically generate default values
+  const generateDefaultValues = (fields: TemplateField[]) => {
+    const defaultVals: { [key: string]: any } = {
+      overallOutcome: "",
+      summary: "",
+    };
+
+    fields.forEach((field) => {
+      // Checkboxes must default to a boolean, others can be an empty string
+      defaultVals[field.id] =
+        field.fieldType === FieldType.CHECKBOX ? false : "";
+      defaultVals[`${field.id}_notes`] = "";
+    });
+
+    return defaultVals;
+  };
+
   // Rename useForm result to 'form' for clarity
   const form = useForm<any>({
     resolver: zodResolver(createDynamicSchema(allFields)),
-    defaultValues: {},
+    defaultValues: generateDefaultValues(allFields),
   });
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setError, // Get setError from useForm
-  } = useForm<any>({
-    resolver: zodResolver(createDynamicSchema(allFields)),
-    defaultValues: {},
-  });
+  const { control, reset, setError } = form;
 
-  // Reset the form when the template changes
   useEffect(() => {
-    reset({});
-  }, [selectedTemplate, reset]);
+    // When the template changes, reset the form with the new structure
+    reset(generateDefaultValues(allFields));
+  }, [allFields, reset]);
 
   // Handle form errors from the server action
   useEffect(() => {
@@ -139,101 +144,84 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleFormSubmit)}
-        className="space-y-6"
-      >
-        <Card>
-          <CardHeader className="flex-row items-center justify-between">
-            <div>
-              <CardTitle>{selectedTemplate.name}</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Type: {selectedTemplate.type}
-              </p>
-            </div>
-            <div className="w-1/3">
-              <Label htmlFor="template-switcher" className="sr-only">
-                Switch Template
-              </Label>
-              <Select
-                value={selectedTemplate.id}
-                onValueChange={handleTemplateChange}
-              >
+      <form onSubmit={form.handleSubmit(handleFormSubmit)}>
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
+          {/* Template Selector */}
+          <FormItem className="col-span-full">
+            <FormLabel htmlFor="template-switcher">
+              Assessment Template
+            </FormLabel>
+            <Select
+              value={selectedTemplate.id}
+              onValueChange={handleTemplateChange}
+            >
+              <FormControl>
                 <SelectTrigger id="template-switcher">
-                  <SelectValue />
+                  <SelectValue placeholder="Select a template" />
                 </SelectTrigger>
-                <SelectContent>
-                  {templates.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-        </Card>
+              </FormControl>
+              <SelectContent>
+                {templates.map((template) => (
+                  <SelectItem key={template.id} value={template.id}>
+                    {template.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Assessment Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {allFields.map((field) => (
-              <div
-                key={field.id}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start py-2"
-              >
-                <DynamicFormField
-                  field={field}
-                  control={form.control}
-                />
-                <div className="w-full">
-                  {field.fieldType !== FieldType.CHECKBOX && (
-                    <Label className="mb-2 block">Optional Notes</Label>
-                  )}
-                  <Controller
-                    name={`${field.id}_notes`}
-                    control={control}
-                    render={({ field: controllerField }) => (
-                      <Input
-                        {...controllerField}
-                        value={controllerField.value || ""}
-                        placeholder="Add a note..."
-                      />
-                    )}
-                  />
-                </div>
+          <Separator className="col-span-full" />
+
+          {/* Dynamic fields from the template */}
+          {allFields.map((field) => (
+            <React.Fragment key={field.id}>
+              <div className="md:col-span-2">
+                <DynamicFormField field={field} control={form.control} />
               </div>
-            ))}
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Final Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+              <div className="md:col-span-4">
+                {field.fieldType !== FieldType.CHECKBOX && (
+                  <FormLabel
+                    htmlFor={`${field.id}_notes`}
+                    className="mb-2 block"
+                  >
+                    Optional Notes
+                  </FormLabel>
+                )}
+                <Controller
+                  name={`${field.id}_notes`}
+                  control={control}
+                  render={({ field: controllerField }) => (
+                    <Input
+                      {...controllerField}
+                      id={`${field.id}_notes`}
+                      placeholder="Add a note..."
+                      value={controllerField.value || ""}
+                    />
+                  )}
+                />
+              </div>
+            </React.Fragment>
+          ))}
+
+          <div className="md:col-span-2">
+            {/* Summary fields */}
             <DynamicFormField
               field={{
                 id: "overallOutcome",
                 label: "Overall Outcome",
                 fieldType: FieldType.SELECT,
                 isRequired: false,
-                options: [
-                  "EXCELLENT",
-                  "GOOD",
-                  "FAIR",
-                  "POOR",
-                  "NEEDS_ATTENTION",
-                  "MONITOR",
-                  "NOT_APPLICABLE",
-                ],
+                options: assessmentOutcomeOptions,
                 order: 999,
                 placeholder: null,
               }}
               control={form.control}
             />
+          </div>
+
+          <div className="col-span-full">
             <DynamicFormField
               field={{
                 id: "summary",
@@ -246,8 +234,10 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
               }}
               control={form.control}
             />
-          </CardContent>
-          <CardFooter className="flex justify-end space-x-2">
+          </div>
+
+          {/* Form Actions */}
+          <div className="col-span-full flex justify-end space-x-2 pt-4">
             <Button
               asChild
               variant="outline"
@@ -261,8 +251,8 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
             <Button type="submit" disabled={isPending}>
               {isPending ? "Submitting..." : "Submit Assessment"}
             </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       </form>
     </Form>
   );

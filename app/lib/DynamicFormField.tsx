@@ -1,6 +1,5 @@
 import React from "react";
 import { Control } from "react-hook-form";
-import { FieldType } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -34,11 +33,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { FieldType } from "@prisma/client";
 
 interface DynamicFormFieldProps {
   field: TemplateField;
   control: Control<any>;
 }
+
+type Option = string | { value: string; label: string };
 
 export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
   const renderInput = (controllerField: any) => {
@@ -50,6 +52,7 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
               field.placeholder || `Enter ${field.label.toLowerCase()}`
             }
             {...controllerField}
+            value={controllerField.value || ""}
           />
         );
       case FieldType.TEXTAREA:
@@ -60,6 +63,7 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
             }
             rows={3}
             {...controllerField}
+            value={controllerField.value || ""}
           />
         );
       case FieldType.NUMBER:
@@ -68,61 +72,76 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
             type="number"
             placeholder={field.placeholder || "0"}
             {...controllerField}
+            value={controllerField.value ?? ""}
             onChange={(e) => controllerField.onChange(e.target.value === '' ? '' : Number(e.target.value))}
           />
         );
-      case FieldType.SELECT:
+      case FieldType.SELECT: {
+        const options: Option[] = field.options || [];
         return (
           <Select
             onValueChange={controllerField.onChange}
-            defaultValue={controllerField.value}
+            value={controllerField.value || ""}
           >
             <FormControl>
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={field.placeholder || "Select an option"}
                 />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              {field.options?.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
+              {options.map((option) => {
+                const isString = typeof option === "string";
+                const value = isString ? option : option.value;
+                const label = isString ? option : option.label;
+                return (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         );
-      case FieldType.RADIO:
+      }
+      case FieldType.RADIO: {
+        const options: Option[] = field.options || [];
         return (
           <RadioGroup
             onValueChange={controllerField.onChange}
-            defaultValue={controllerField.value}
+            value={controllerField.value || ""}
             className="mt-2"
           >
-            {field.options?.map((option) => (
-              <FormItem key={option} className="flex items-center space-x-2">
-                <FormControl>
-                  <RadioGroupItem value={option} id={`${field.id}-${option}`} />
-                </FormControl>
-                <FormLabel htmlFor={`${field.id}-${option}`} className="font-normal">
-                  {option}
-                </FormLabel>
-              </FormItem>
-            ))}
+            {options.map((option) => {
+              const isString = typeof option === "string";
+              const value = isString ? option : option.value;
+              const label = isString ? option : option.label;
+              return (
+                <FormItem key={value} className="flex items-center space-x-2">
+                  <FormControl>
+                    <RadioGroupItem value={value} id={`${field.id}-${value}`} />
+                  </FormControl>
+                  <FormLabel htmlFor={`${field.id}-${value}`}>
+                    {label}
+                  </FormLabel>
+                </FormItem>
+              );
+            })}
           </RadioGroup>
         );
+      }
       case FieldType.CHECKBOX:
         return (
           <div className="flex items-center space-x-2 h-10">
             <FormControl>
               <Checkbox
-                checked={controllerField.value}
+                checked={!!controllerField.value}
                 onCheckedChange={controllerField.onChange}
                 id={field.id}
               />
             </FormControl>
-            <FormLabel htmlFor={field.id} className="font-normal">
+            <FormLabel htmlFor={field.id}>
               {field.label}
             </FormLabel>
           </div>
@@ -161,7 +180,13 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
           </Popover>
         );
       default:
-        return <Input type="text" {...controllerField} />;
+        return (
+          <Input 
+            type="text" 
+            {...controllerField}
+            value={controllerField.value || ""} 
+          />
+        );
     }
   };
 
@@ -171,14 +196,12 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
       name={field.id}
       render={({ field: controllerField }) => (
         <FormItem>
-          {/* Checkbox label is rendered inside the switch case */}
           {field.fieldType !== FieldType.CHECKBOX && (
             <FormLabel>
               {field.label}
               {field.isRequired && <span className="text-red-500 ml-1">*</span>}
             </FormLabel>
           )}
-          {/* We render the input inside a FormControl for non-checkbox/radio types */}
           {field.fieldType !== FieldType.CHECKBOX && field.fieldType !== FieldType.RADIO ? (
             <FormControl>{renderInput(controllerField)}</FormControl>
           ) : (
@@ -190,3 +213,4 @@ export function DynamicFormField({ field, control }: DynamicFormFieldProps) {
     />
   );
 }
+

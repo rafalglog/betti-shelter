@@ -856,9 +856,6 @@ model AnimalActivityLog {
   changedById String
   changedBy   Person @relation(fields: [changedById], references: [id])
 
-  // This is the key field. It will store a human-readable summary.
-  // For PostgreSQL, you could even use the `Json` type here for more structured data.
-  // But a formatted string is perfectly fine and database-agnostic.
   changeSummary String?
 
   changedAt DateTime @default(now())

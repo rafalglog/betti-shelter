@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FieldType } from "@prisma/client";
+import { FieldType, AssessmentOutcome } from "@prisma/client";
 import { TemplateField } from "./types";
 
 export function createDynamicSchema(fields: TemplateField[]) {
@@ -55,15 +55,7 @@ export function createDynamicSchema(fields: TemplateField[]) {
 
   // Add overall outcome and summary fields
   schemaFields.overallOutcome = z
-    .enum([
-      "EXCELLENT",
-      "GOOD",
-      "FAIR",
-      "POOR",
-      "NEEDS_ATTENTION",
-      "MONITOR",
-      "NOT_APPLICABLE",
-    ])
+    .enum(Object.values(AssessmentOutcome) as [string, ...string[]]) // 👈 Use the enum values
     .optional();
   schemaFields.summary = z.string().optional();
 

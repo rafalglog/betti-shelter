@@ -1,13 +1,9 @@
 import { Suspense } from "react";
-import { notFound, redirect } from "next/navigation";
-import { prisma } from "@/app/lib/prisma";
-import { AssessmentFormData, IDParamType } from "@/app/lib/types";
-import { auth } from "@/auth";
+import { IDParamType } from "@/app/lib/types";
 import { getAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentForm } from "@/components/dashboard/animals/assessments/assessment-form";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
