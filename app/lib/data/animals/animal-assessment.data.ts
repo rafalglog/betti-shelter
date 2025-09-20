@@ -35,10 +35,30 @@ export async function getAssessmentTemplates(): Promise<AssessmentTemplateWithFi
 }
 
 export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
-  include: {
-    fields: true;
-    assessor: true;
-    template: true;
+  select: {
+    id: true;
+    date: true;
+    overallOutcome: true;
+    summary: true;
+    deletedAt: true;
+    fields: {
+      select: {
+        id: true;
+        fieldName: true;
+        fieldValue: true;
+        notes: true;
+      };
+    };
+    assessor: {
+      select: {
+        name: true;
+      };
+    };
+    template: {
+      select: {
+        type: true;
+      };
+    };
   };
 }>;
 
@@ -48,6 +68,7 @@ export const DashboardAssessmentsFilterSchema = z.object({
   type: z.string().optional(),
   outcome: z.string().optional(),
   sort: z.string().optional(),
+  showDeleted: z.boolean().optional(),
 });
 
 export async function fetchFilteredAnimalAssessments(
@@ -55,7 +76,8 @@ export async function fetchFilteredAnimalAssessments(
   currentPageInput: number,
   typeInput: string | undefined,
   outcomeInput: string | undefined,
-  sortInput: string | undefined
+  sortInput: string | undefined,
+  showDeletedInput: boolean = false
 ): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> {
   // Validate and parse inputs
   const validatedArgs = DashboardAssessmentsFilterSchema.safeParse({
@@ -64,6 +86,7 @@ export async function fetchFilteredAnimalAssessments(
     type: typeInput,
     outcome: outcomeInput,
     sort: sortInput,
+    showDeleted: showDeletedInput,
   });
 
   if (!validatedArgs.success) {
@@ -76,7 +99,7 @@ export async function fetchFilteredAnimalAssessments(
     throw new Error("Invalid arguments for fetching filtered assessments.");
   }
 
-  const { currentPage, type, outcome, sort } = validatedArgs.data;
+  const { currentPage, type, outcome, sort, showDeleted } = validatedArgs.data;
 
   // Determine the sorting order, defaulting to newest first
   const orderBy: Prisma.AssessmentOrderByWithRelationInput = (() => {
@@ -96,6 +119,7 @@ export async function fetchFilteredAnimalAssessments(
     ...(outcome && {
       overallOutcome: { in: outcome.split(",") as AssessmentOutcome[] },
     }),
+    ...(showDeleted ? {} : { deletedAt: null }),
   };
 
   try {
@@ -105,10 +129,22 @@ export async function fetchFilteredAnimalAssessments(
       prisma.assessment.count({ where: whereClause }),
       prisma.assessment.findMany({
         where: whereClause,
-        include: {
-          fields: true,
-          assessor: true,
-          template: true,
+        select: {
+          id: true,
+          date: true,
+          overallOutcome: true,
+          summary: true,
+          deletedAt: true,
+          fields: {
+            select: {
+              id: true,
+              fieldName: true,
+              fieldValue: true,
+              notes: true,
+            },
+          },
+          assessor: { select: { name: true } },
+          template: { select: { type: true } },
         },
         orderBy: orderBy,
         take: ASSESSMENTS_PER_PAGE,

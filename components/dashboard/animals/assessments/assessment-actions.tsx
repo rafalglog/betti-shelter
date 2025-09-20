@@ -1,0 +1,90 @@
+"use client";
+
+import { useTransition } from "react";
+import { Edit, MoreHorizontal, Trash2, Undo2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AnimalAssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
+import {
+  deleteAnimalAssessment,
+  restoreAnimalAssessment,
+} from "@/app/lib/actions/animal-assessment.actions";
+import { toast } from "sonner";
+
+interface AssessmentActionsProps {
+  assessment: AnimalAssessmentPayload;
+  animalId: string;
+}
+
+export function AssessmentActions({
+  assessment,
+  animalId,
+}: AssessmentActionsProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const onRestore = () => {
+    startTransition(() => {
+      restoreAnimalAssessment(assessment.id, animalId).then((data) => {
+        if (data?.message) {
+          toast.success(data.message);
+        }
+      });
+    });
+  };
+
+  const onSoftDelete = () => {
+    startTransition(() => {
+      deleteAnimalAssessment(assessment.id, animalId).then((data) => {
+        if (data?.message) {
+          toast.success(data.message, {
+            action: {
+              label: "Undo",
+              onClick: () => onRestore(),
+            },
+          });
+        }
+      });
+    });
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 flex-shrink-0"
+        >
+          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+          <span className="sr-only">More options</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem disabled>
+          <Edit className="mr-2 h-4 w-4" />
+          <span>Edit (coming soon)</span>
+        </DropdownMenuItem>
+        {assessment.deletedAt ? (
+          <DropdownMenuItem onClick={onRestore} disabled={isPending}>
+            <Undo2 className="mr-2 h-4 w-4" />
+            <span>Restore</span>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            onClick={onSoftDelete}
+            disabled={isPending}
+            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            <span>Delete</span>
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}

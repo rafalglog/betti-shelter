@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { MoreHorizontal, Edit, Trash2, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SimplePagination } from "@/components/dashboard/pagination";
 import {
@@ -11,12 +10,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import {
   Card,
@@ -38,6 +31,8 @@ import {
 import Link from "next/link";
 import { ServerSideFacetedFilter } from "@/components/dashboard/notes/server-side-faceted-filter";
 import { ServerSideSort } from "@/components/dashboard/notes/server-side-sort";
+import { ServerSideSwitch } from "@/components/dashboard/notes/server-side-switch";
+import { AssessmentActions } from "./assessment-actions";
 
 const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
   switch (outcome) {
@@ -109,6 +104,7 @@ const AnimalAssessmentsTab = ({
               { label: "Oldest First", value: "date.asc" },
             ]}
           />
+          <ServerSideSwitch paramKey="showDeleted" label="Show Deleted" />
         </div>
       </CardHeader>
 
@@ -143,33 +139,10 @@ const AnimalAssessmentsTab = ({
                   </AccordionTrigger>
 
                   <div className="pl-2 mt-2 self-start">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 flex-shrink-0"
-                        >
-                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                          <span className="sr-only">More options</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onSelect={() => handleEdit(assessment.id)}
-                        >
-                          <Edit className="mr-2 h-4 w-4" />
-                          <span>Edit</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onSelect={() => handleSoftDelete(assessment.id)}
-                          className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <AssessmentActions
+                      assessment={assessment}
+                      animalId={animalId}
+                    />
                   </div>
                 </div>
 

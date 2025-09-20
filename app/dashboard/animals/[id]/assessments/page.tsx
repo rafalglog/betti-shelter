@@ -10,16 +10,18 @@ interface Props {
 const Page = async ({ params, searchParams }: Props) => {
   const { id: animalId } = await params;
 
-  const { page = "1", type, outcome, sort } = await searchParams;
+  const { page = "1", type, outcome, sort, showDeleted } = await searchParams;
 
   const currentPage = Number(page);
+  const includeDeleted = showDeleted === "true";
 
   const { assessments, totalPages } = await fetchFilteredAnimalAssessments(
     animalId,
     currentPage,
     type,
     outcome,
-    sort
+    sort,
+    includeDeleted
   );
 
   return (

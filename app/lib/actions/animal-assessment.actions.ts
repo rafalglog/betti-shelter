@@ -5,8 +5,13 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { createDynamicSchema } from "../dynamicFormSchema";
 import { TemplateField } from "../types";
-import { withAuthenticatedUser, SessionUser, RequirePermission } from "../auth/protected-actions";
+import {
+  withAuthenticatedUser,
+  SessionUser,
+  RequirePermission,
+} from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { cuidSchema } from "../zod-schemas/common.schemas";
 
 // Define a state for the form action
 export interface AssessmentFormState {
@@ -42,7 +47,8 @@ async function _createAssessment(
       return { message: "Assessment template not found" };
     }
 
-    const allFields: TemplateField[] = template.templateFields as TemplateField[];
+    const allFields: TemplateField[] =
+      template.templateFields as TemplateField[];
     const schema = createDynamicSchema(allFields);
 
     // Validate the form data against the dynamic schema
@@ -110,3 +116,68 @@ async function _createAssessment(
 export const createAssessment = withAuthenticatedUser(
   RequirePermission(Permissions.ANIMAL_ASSESSMENT_CREATE)(_createAssessment)
 );
+
+const _deleteAnimalAssessment = async (
+  assessmentId: string,
+  animalId: string
+) => {
+  const parsedAssessmentId = cuidSchema.safeParse(assessmentId);
+  if (!parsedAssessmentId.success) {
+    throw new Error("Invalid assessment ID format.");
+  }
+
+  try {
+    await prisma.assessment.update({
+      where: {
+        id: parsedAssessmentId.data,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+    revalidatePath(`/dashboard/animals/${animalId}/assessments`);
+    return { message: "Assessment deleted successfully." };
+  } catch (error) {
+    console.error("Database Error deleting assessment:", error);
+    return {
+      message: "Database Error: Failed to delete assessment.",
+    };
+  }
+};
+
+const _restoreAnimalAssessment = async (
+  assessmentId: string,
+  animalId: string
+) => {
+  const parsedAssessmentId = cuidSchema.safeParse(assessmentId);
+  if (!parsedAssessmentId.success) {
+    throw new Error("Invalid assessment ID format.");
+  }
+
+  try {
+    await prisma.assessment.update({
+      where: {
+        id: parsedAssessmentId.data,
+      },
+      data: {
+        deletedAt: null,
+      },
+    });
+
+    revalidatePath(`/dashboard/animals/${animalId}/assessments`);
+    return { message: "Assessment restored successfully." };
+  } catch (error) {
+    console.error("Database Error restoring assessment:", error);
+    return {
+      message: "Database Error: Failed to restore assessment.",
+    };
+  }
+};
+
+export const deleteAnimalAssessment = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_DELETE
+)(_deleteAnimalAssessment);
+
+export const restoreAnimalAssessment = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_DELETE
+)(_restoreAnimalAssessment);

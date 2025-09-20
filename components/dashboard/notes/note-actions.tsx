@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,7 +55,6 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
       });
     });
   };
-
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
