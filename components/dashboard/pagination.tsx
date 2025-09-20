@@ -15,7 +15,7 @@ interface Props {
   totalPages: number;
 }
 
-export function NotesPagination({ totalPages }: Props) {
+export function SimplePagination({ totalPages }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;

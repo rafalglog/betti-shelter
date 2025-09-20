@@ -3,6 +3,7 @@
 import React from "react";
 import { MoreHorizontal, Edit, Trash2, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SimplePagination } from "@/components/dashboard/pagination";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +23,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -49,9 +51,10 @@ const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
 interface Props {
   animalAssessments: AnimalAssessmentPayload[];
   animalId: string;
+  totalPages: number;
 }
 
-const AnimalAssessmentsTab = ({ animalAssessments, animalId }: Props) => {
+const AnimalAssessmentsTab = ({ animalAssessments, animalId, totalPages }: Props) => {
   const handleEdit = (assessmentId: string) => {
     console.log(`Opening modal to edit assessment: ${assessmentId}`);
     // Open a Dialog/Modal with the form pre-filled with this assessment's data
@@ -199,6 +202,9 @@ const AnimalAssessmentsTab = ({ animalAssessments, animalId }: Props) => {
           </div>
         )}
       </CardContent>
+      <CardFooter>
+        <SimplePagination totalPages={totalPages} />
+      </CardFooter>
     </Card>
   );
 };

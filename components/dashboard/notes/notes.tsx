@@ -35,7 +35,7 @@ import { ServerSideSort } from "./server-side-sort";
 import { NoteForm } from "./note-form";
 import { NoteActions } from "./note-actions";
 import { ServerSideSwitch } from "./server-side-switch";
-import { NotesPagination } from "../pagination";
+import { SimplePagination } from "../pagination";
 
 export const noteCategoryColors: Record<NoteCategory, string> = {
   [NoteCategory.BEHAVIORAL]: "bg-blue-100 text-blue-800 border-blue-200",
@@ -177,7 +177,7 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
           </div>
         </CardContent>
         <CardFooter>
-          <NotesPagination totalPages={totalPages} />
+          <SimplePagination totalPages={totalPages} />
         </CardFooter>
       </Card>
     </>

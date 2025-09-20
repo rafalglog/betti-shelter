@@ -1,19 +1,28 @@
-import { getAnimalAssessments } from "@/app/lib/data/animals/animal-assessment.data";
-import { IDParamType } from "@/app/lib/types";
+import { fetchFilteredAnimalAssessments } from "@/app/lib/data/animals/animal-assessment.data";
+import { IDParamType, SearchParamsType } from "@/app/lib/types";
 import AnimalAssessmentsTab from "@/components/dashboard/animals/assessments/assessments";
 
 interface Props {
   params: IDParamType;
+  searchParams: SearchParamsType;
 }
 
-const Page = async ({ params }: Props) => {
+const Page = async ({ params, searchParams }: Props) => {
   const { id: animalId } = await params;
 
-  const animalAssessments = await getAnimalAssessments(animalId);
+  const { page = "1" } = await searchParams;
+
+  const currentPage = Number(page);
+
+  const { assessments, totalPages } = await fetchFilteredAnimalAssessments(
+    animalId,
+    currentPage
+  );
 
   return (
     <AnimalAssessmentsTab
-      animalAssessments={animalAssessments}
+      animalAssessments={assessments}
+      totalPages={totalPages}
       animalId={animalId}
     />
   );

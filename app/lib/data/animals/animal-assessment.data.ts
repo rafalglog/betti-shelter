@@ -1,7 +1,5 @@
 import { prisma } from "@/app/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { cuidSchema } from "../../zod-schemas/common.schemas";
-import z from "zod";
 
 export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
   include: {
@@ -10,6 +8,8 @@ export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
     }
   }
 }>;
+
+const ASSESSMENTS_PER_PAGE = 5;
 
 export async function getAssessmentTemplates(): Promise<AssessmentTemplateWithFields[]> {
   try {
@@ -37,24 +37,37 @@ export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
   };
 }>;
 
-export async function getAnimalAssessments(
+export async function fetchFilteredAnimalAssessments(
   animalId: string,
-): Promise<AnimalAssessmentPayload[]> {
+  currentPage: number,
+): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> {
   try {
-    const assessments = await prisma.assessment.findMany({
-      where: { animalId },
-      include: {
-        fields: true,
-        assessor: true,
-        template: true
-      },
-      orderBy: { date: 'desc' }
-    });
-    
-    return assessments;
+    // Calculate the offset for the database query
+    const offset = (currentPage - 1) * ASSESSMENTS_PER_PAGE;
+
+    // Use a transaction to get the count and the data in one database call
+    const [totalCount, assessments] = await prisma.$transaction([
+      prisma.assessment.count({ where: { animalId } }),
+      prisma.assessment.findMany({
+        where: { animalId },
+        include: {
+          fields: true,
+          assessor: true,
+          template: true,
+        },
+        orderBy: { date: "desc" },
+        take: ASSESSMENTS_PER_PAGE,
+        skip: offset,
+      }),
+    ]);
+
+    // Calculate the total number of pages
+    const totalPages = Math.ceil(totalCount / ASSESSMENTS_PER_PAGE);
+
+    return { assessments, totalPages };
   } catch (error) {
-    console.error('Error fetching animal assessments:', error);
-    return [];
+    console.error("Error fetching animal assessments:", error);
+    throw new Error("Could not fetch animal assessments from the database.");
   }
 }
 
