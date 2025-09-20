@@ -4,11 +4,27 @@ import React, { useState, useEffect, startTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldType, AssessmentType } from "@prisma/client";
-import { DynamicFormField } from "@/app/lib/DynamicFormField";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useActionState } from "react";
+import Link from "next/link";
+
+import {
+  createAssessment,
+  updateAnimalAssessment,
+} from "@/app/lib/actions/animal-assessment.actions";
+import {
+  AnimalAssessmentPayload,
+  AssessmentTemplateWithFields,
+} from "@/app/lib/data/animals/animal-assessment.data";
 import { createDynamicSchema } from "@/app/lib/dynamicFormSchema";
+import { DynamicFormField } from "@/app/lib/DynamicFormField";
+import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { TemplateField } from "@/app/lib/types";
-import { createAssessment } from "@/app/lib/actions/animal-assessment.actions";
-import { AssessmentTemplateWithFields } from "@/app/lib/data/animals/animal-assessment.data";
+import { assessmentOutcomeOptions } from "@/app/lib/utils/enum-formatter";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,9 +32,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -27,25 +40,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "sonner";
-import { useActionState } from "react";
-import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
-import Link from "next/link";
-import { assessmentOutcomeOptions } from "@/app/lib/utils/enum-formatter";
+import { Separator } from "@/components/ui/separator";
 
 interface AssessmentFormProps {
   animalId: string;
   templates: AssessmentTemplateWithFields[];
+  assessment?: AnimalAssessmentPayload; // Optional: If provided, form is in "edit" mode
+  onFormSubmit?: () => void; // Optional: Callback to run on successful submission
 }
 
-export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
+export function AssessmentForm({
+  animalId,
+  templates,
+  assessment,
+  onFormSubmit,
+}: AssessmentFormProps) {
+  const isEditMode = !!assessment;
+
+  const action = isEditMode
+    ? updateAnimalAssessment.bind(null, assessment.id, animalId)
+    : createAssessment;
+
   const [state, formAction, isPending] = useActionState(
-    createAssessment,
+    action,
     INITIAL_FORM_STATE
   );
 
   const [selectedTemplate, setSelectedTemplate] =
     useState<AssessmentTemplateWithFields | null>(() => {
+      if (isEditMode) {
+        return templates.find((t) => t.id === assessment.template?.id) || null;
+      }
       return (
         templates.find((t) => t.type === AssessmentType.DAILY_MONITORING) ||
         templates[0] ||
@@ -57,76 +82,99 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
     ? selectedTemplate.templateFields
     : [];
 
-  // Dynamically generate default values
-  const generateDefaultValues = (fields: TemplateField[]) => {
-    const defaultVals: { [key: string]: any } = {
-      overallOutcome: "",
-      summary: "",
-    };
+  const generateDefaultValues = (
+    fields: TemplateField[],
+    currentAssessment?: AnimalAssessmentPayload
+  ) => {
+    const defaultVals: { [key: string]: any } = {};
 
-    fields.forEach((field) => {
-      // Checkboxes must default to a boolean, others can be an empty string
-      defaultVals[field.id] =
-        field.fieldType === FieldType.CHECKBOX ? false : "";
-      defaultVals[`${field.id}_notes`] = "";
-    });
-
+    if (currentAssessment) {
+      // Edit mode: Populate with existing data
+      defaultVals.overallOutcome = currentAssessment.overallOutcome || "";
+      defaultVals.summary = currentAssessment.summary || "";
+      currentAssessment.fields.forEach((savedField) => {
+        const templateField = fields.find(
+          (f) => f.label === savedField.fieldName
+        );
+        if (templateField) {
+          let value: any = savedField.fieldValue;
+          if (templateField.fieldType === FieldType.NUMBER) {
+            value = value !== null ? Number(value) : "";
+          } else if (templateField.fieldType === FieldType.CHECKBOX) {
+            value = value === "true";
+          }
+          defaultVals[templateField.id] = value;
+          defaultVals[`${templateField.id}_notes`] = savedField.notes || "";
+        }
+      });
+    } else {
+      // Create mode: Set empty defaults
+      defaultVals.overallOutcome = "";
+      defaultVals.summary = "";
+      fields.forEach((field) => {
+        defaultVals[field.id] =
+          field.fieldType === FieldType.CHECKBOX ? false : "";
+        defaultVals[`${field.id}_notes`] = "";
+      });
+    }
     return defaultVals;
   };
 
-  // Rename useForm result to 'form' for clarity
   const form = useForm<any>({
     resolver: zodResolver(createDynamicSchema(allFields)),
-    defaultValues: generateDefaultValues(allFields),
+    defaultValues: generateDefaultValues(allFields, assessment),
   });
 
   const { control, reset, setError } = form;
 
   useEffect(() => {
-    // When the template changes, reset the form with the new structure
-    reset(generateDefaultValues(allFields));
-  }, [allFields, reset]);
+    if (!isEditMode) {
+      reset(generateDefaultValues(allFields));
+    }
+  }, [allFields, reset, isEditMode]);
 
-  // Handle form errors from the server action
   useEffect(() => {
+    if (state.message && !state.errors) {
+      toast.success(state.message);
+      if (onFormSubmit) onFormSubmit();
+    }
     if (state.message && state.errors) {
       toast.error(state.message);
     }
     if (state.errors) {
       for (const [key, value] of Object.entries(state.errors)) {
         if (value) {
-          setError(key as any, {
-            type: "server",
-            message: value.join(", "),
-          });
+          setError(key as any, { type: "server", message: value.join(", ") });
         }
       }
     }
-  }, [state, setError]);
+  }, [state, setError, onFormSubmit]);
 
   const handleTemplateChange = (templateId: string) => {
-    const template = templates.find((t) => t.id === templateId);
-    setSelectedTemplate(template || null);
+    if (!isEditMode) {
+      const template = templates.find((t) => t.id === templateId);
+      setSelectedTemplate(template || null);
+    }
   };
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = (data: any) => {
     if (!selectedTemplate) return;
 
     const formData = new FormData();
     formData.append("animalId", animalId);
     formData.append("templateId", selectedTemplate.id);
 
-    // Append all form data to FormData object
     for (const key in data) {
       const value = data[key];
       if (value !== null && value !== undefined) {
-        formData.append(key, value);
+        formData.append(key, String(value));
       }
     }
 
     startTransition(() => {
       formAction(formData);
     });
+    
   };
 
   if (!selectedTemplate) {
@@ -146,7 +194,6 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleFormSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
-          {/* Template Selector */}
           <FormItem className="col-span-full">
             <FormLabel htmlFor="template-switcher">
               Assessment Template
@@ -154,6 +201,7 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
             <Select
               value={selectedTemplate.id}
               onValueChange={handleTemplateChange}
+              disabled={isEditMode}
             >
               <FormControl>
                 <SelectTrigger id="template-switcher">
@@ -173,13 +221,11 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
 
           <Separator className="col-span-full" />
 
-          {/* Dynamic fields from the template */}
           {allFields.map((field) => (
             <React.Fragment key={field.id}>
               <div className="md:col-span-2">
                 <DynamicFormField field={field} control={form.control} />
               </div>
-
               <div className="md:col-span-4">
                 {field.fieldType !== FieldType.CHECKBOX && (
                   <FormLabel
@@ -206,7 +252,6 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
           ))}
 
           <div className="md:col-span-2">
-            {/* Summary fields */}
             <DynamicFormField
               field={{
                 id: "overallOutcome",
@@ -215,7 +260,7 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
                 isRequired: false,
                 options: assessmentOutcomeOptions,
                 order: 999,
-                placeholder: null,
+                placeholder: "Select an outcome",
               }}
               control={form.control}
             />
@@ -236,20 +281,37 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
             />
           </div>
 
-          {/* Form Actions */}
           <div className="col-span-full flex justify-end space-x-2 pt-4">
-            <Button
-              asChild
-              variant="outline"
-              type="button"
-              disabled={isPending}
-            >
-              <Link href={`/dashboard/animals/${animalId}/assessments`}>
+            {onFormSubmit ? (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={isPending}
+                onClick={onFormSubmit}
+              >
                 Cancel
-              </Link>
-            </Button>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant="outline"
+                type="button"
+                disabled={isPending}
+              >
+                <Link href={`/dashboard/animals/${animalId}/assessments`}>
+                  Cancel
+                </Link>
+              </Button>
+            )}
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Submitting..." : "Submit Assessment"}
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isPending
+                ? isEditMode
+                  ? "Updating..."
+                  : "Creating..."
+                : isEditMode
+                ? "Update Assessment"
+                : "Create Assessment"}
             </Button>
           </div>
         </div>
@@ -257,3 +319,4 @@ export function AssessmentForm({ animalId, templates }: AssessmentFormProps) {
     </Form>
   );
 }
+

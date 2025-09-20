@@ -145,14 +145,6 @@ const _updateAnimalNote = async (
   };
 };
 
-export const createAnimalNote = withAuthenticatedUser(
-  RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimalNote)
-);
-
-export const updateAnimalNote = RequirePermission(Permissions.ANIMAL_UPDATE)(
-  _updateAnimalNote
-);
-
 const _deleteAnimalNote = async (noteId: string, animalId: string) => {
   const parsedNoteId = cuidSchema.safeParse(noteId);
   if (!parsedNoteId.success) {
@@ -210,4 +202,12 @@ export const deleteAnimalNote = RequirePermission(Permissions.ANIMAL_CREATE)(
 
 export const restoreAnimalNote = RequirePermission(Permissions.ANIMAL_CREATE)(
   _restoreAnimalNote
+);
+
+export const createAnimalNote = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimalNote)
+);
+
+export const updateAnimalNote = RequirePermission(Permissions.ANIMAL_UPDATE)(
+  _updateAnimalNote
 );

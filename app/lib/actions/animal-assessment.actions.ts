@@ -20,11 +20,11 @@ export interface AssessmentFormState {
 }
 
 // Internal action wrapped for authentication
-async function _createAssessment(
+const _createAssessment = async (
   user: SessionUser, // Injected by withAuthenticatedUser
   prevState: AssessmentFormState,
   formData: FormData
-): Promise<AssessmentFormState> {
+): Promise<AssessmentFormState> => {
   const assessorId = user.personId;
   const data = Object.fromEntries(formData.entries());
 
@@ -111,11 +111,89 @@ async function _createAssessment(
   revalidatePath(`/dashboard/animals/${animalId}/assessments`);
   revalidatePath(`/dashboard/animals/${animalId}`);
   redirect(`/dashboard/animals/${animalId}/assessments`);
-}
+};
 
-export const createAssessment = withAuthenticatedUser(
-  RequirePermission(Permissions.ANIMAL_ASSESSMENT_CREATE)(_createAssessment)
-);
+const _updateAnimalAssessment = async(
+  assessmentId: string,
+  animalId: string,
+  prevState: AssessmentFormState,
+  formData: FormData
+): Promise<AssessmentFormState> => {
+  const parsedAssessmentId = cuidSchema.safeParse(assessmentId);
+  if (!parsedAssessmentId.success) {
+    return { message: "Invalid assessment ID format." };
+  }
+  const parsedAnimalId = cuidSchema.safeParse(animalId);
+  if (!parsedAnimalId.success) {
+    return { message: "Invalid animal ID format." };
+  }
+
+  const assessment = await prisma.assessment.findUnique({
+    where: { id: assessmentId },
+    select: { templateId: true },
+  });
+
+  if (!assessment || !assessment.templateId) {
+    return { message: "Original assessment or its template not found." };
+  }
+
+  const template = await prisma.assessmentTemplate.findUnique({
+    where: { id: assessment.templateId },
+    include: { templateFields: true },
+  });
+
+  if (!template) {
+    return { message: "Assessment template not found" };
+  }
+
+  const allFields: TemplateField[] = template.templateFields as TemplateField[];
+  const schema = createDynamicSchema(allFields);
+  const data = Object.fromEntries(formData.entries());
+
+  const validatedFields = schema.safeParse(data);
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to update assessment.",
+    };
+  }
+
+  const { overallOutcome, summary } = validatedFields.data;
+
+  try {
+    await prisma.assessment.update({
+      where: { id: assessmentId },
+      data: {
+        overallOutcome,
+        summary,
+        fields: {
+          deleteMany: { assessmentId: assessmentId }, // Delete all old fields
+          create: Object.entries(validatedFields.data) // Create new fields from form data
+            .filter(([key]) => !key.endsWith("_notes"))
+            .filter(
+              ([_, value]) =>
+                value !== undefined && value !== null && value !== ""
+            )
+            .map(([fieldId, value]) => {
+              const fieldDefinition = allFields.find((f) => f.id === fieldId);
+              return {
+                fieldName: fieldDefinition?.label || fieldId,
+                fieldValue: String(value),
+                notes: validatedFields.data[`${fieldId}_notes`] || null,
+              };
+            }),
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Database Error updating assessment:", error);
+    return { message: "Database Error: Failed to update assessment." };
+  }
+
+  revalidatePath(`/dashboard/animals/${animalId}/assessments`);
+  redirect(`/dashboard/animals/${animalId}/assessments`);
+}
 
 const _deleteAnimalAssessment = async (
   assessmentId: string,
@@ -173,6 +251,14 @@ const _restoreAnimalAssessment = async (
     };
   }
 };
+
+export const createAssessment = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_ASSESSMENT_CREATE)(_createAssessment)
+);
+
+export const updateAnimalAssessment = RequirePermission(
+  Permissions.ANIMAL_ASSESSMENT_UPDATE
+)(_updateAnimalAssessment);
 
 export const deleteAnimalAssessment = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_DELETE

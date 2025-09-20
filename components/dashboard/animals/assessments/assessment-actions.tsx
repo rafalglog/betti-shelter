@@ -15,6 +15,7 @@ import {
   restoreAnimalAssessment,
 } from "@/app/lib/actions/animal-assessment.actions";
 import { toast } from "sonner";
+import Link from "next/link";
 
 interface AssessmentActionsProps {
   assessment: AnimalAssessmentPayload;
@@ -55,19 +56,19 @@ export function AssessmentActions({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 flex-shrink-0"
-        >
+        <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
           <span className="sr-only">More options</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem disabled>
-          <Edit className="mr-2 h-4 w-4" />
-          <span>Edit (coming soon)</span>
+        <DropdownMenuItem asChild>
+          <Link
+            href={`/dashboard/animals/${animalId}/assessments/${assessment.id}/edit`}
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            <span>Edit</span>
+          </Link>
         </DropdownMenuItem>
         {assessment.deletedAt ? (
           <DropdownMenuItem onClick={onRestore} disabled={isPending}>

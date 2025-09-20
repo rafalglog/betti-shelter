@@ -1,0 +1,58 @@
+import { Suspense } from "react";
+import { fetchAnimalAssessmentById, getAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
+import { AssessmentForm } from "@/components/dashboard/animals/assessments/assessment-form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { notFound } from "next/navigation";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { Authorize } from "@/app/ui/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+
+interface Props {
+  params: Promise<{ id: string, assessmentId: string }>;
+}
+
+const Page = async ({ params }: Props) => {
+  return (
+    <Authorize
+      permission={Permissions.ANIMAL_ASSESSMENT_READ_DETAIL}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent params={params} />
+    </Authorize>
+  );
+};
+
+const PageContent = async ({ params }: Props) => {
+  const { id: animalId, assessmentId } = await params;
+
+  const templates = await getAssessmentTemplates();
+  const assessment = await fetchAnimalAssessmentById(assessmentId);
+  
+  if (!assessment) {
+    notFound();
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Edit Assessment</CardTitle>
+        <CardDescription>
+          Edit the details for this assessment.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense fallback={<div>Loading assessment form...</div>}>
+          <AssessmentForm assessment={assessment} animalId={animalId} templates={templates} />
+        </Suspense>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default Page;
