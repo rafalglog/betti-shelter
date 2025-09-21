@@ -353,6 +353,7 @@ export const fetchPartners = RequirePermission(Permissions.PARTNER_READ)(
 export const fetchPetCardData = RequirePermission(
   Permissions.ANIMAL_READ_ANALYTICS
 )(_fetchAnimalCardData);
+
 export const fetchLatestPets = RequirePermission(
   Permissions.ANIMAL_READ_ANALYTICS
 )(_fetchLatestPets);
@@ -363,6 +364,7 @@ export const fetchLatestPets = RequirePermission(
 export const fetchFilteredAnimals = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchFilteredAnimals);
+
 export const fetchAnimalById = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
   _fetchAnimalById
 );
