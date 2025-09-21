@@ -138,7 +138,6 @@ const _updateAnimalNote = async (
     };
   }
 
-  console.log("Note updated successfully.");
   revalidatePath(`dashboard/animals/${animalId}/notes`);
   return {
     message: "Note updated successfully.",

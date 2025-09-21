@@ -31,8 +31,10 @@ const Page = async ({ params }: Props) => {
 const PageContent = async ({ params }: Props) => {
   const { id: animalId, assessmentId } = await params;
 
-  const templates = await getAssessmentTemplates();
-  const assessment = await fetchAnimalAssessmentById(assessmentId);
+  const [templates, assessment] = await Promise.all([
+    getAssessmentTemplates(),
+    fetchAnimalAssessmentById(assessmentId),
+  ]);
   
   if (!assessment) {
     notFound();
