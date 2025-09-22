@@ -109,6 +109,7 @@ const _createAssessment = async (
   revalidatePath(`/dashboard/animals/${animalId}`);
   redirect(`/dashboard/animals/${animalId}/assessments`);
 };
+
 const _updateAnimalAssessment = async (
   user: SessionUser, // Injected by withAuthenticatedUser
   assessmentId: string,

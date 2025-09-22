@@ -56,82 +56,20 @@ const stateCodes = US_STATES.map((state) => state.code) as [
   ...string[]
 ];
 
-// Schema for the animal form
-
-// export const AnimalFormSchema = z.object({
-//   name: z.string().min(1, { message: "Name cannot be empty." }),
-//   birthDate: z.coerce
-//     .date({
-//       required_error: "Please select a date of birth.",
-//       invalid_type_error: "That's not a valid date!",
-//     })
-//     .max(new Date(), { message: "Date of birth cannot be in the future." }),
-//   sex: z.nativeEnum(Sex, {
-//     required_error: "Please select a sex.",
-//     invalid_type_error: "Invalid sex selected.",
-//   }),
-//   size: z.nativeEnum(AnimalSize).optional(),
-
-//   // Updated to handle multiple breeds
-//   breedIds: z
-//     .array(z.string().cuid({ message: "Invalid breed ID." }))
-//     .min(1, { message: "Please select at least one breed." }),
-
-//   // Updated to handle multiple colors
-//   colorIds: z
-//     .array(z.string().cuid({ message: "Invalid color ID." }))
-//     .min(1, { message: "Please select at least one color." }),
-
-//   weightKg: z.preprocess(
-//     (val) => (String(val).trim() === "" ? undefined : Number(val)),
-//     z
-//       .number()
-//       .positive({ message: "Weight must be a positive number." })
-//       .optional()
-//   ),
-// heightCm: z.preprocess(
-//   (val) => (String(val).trim() === "" ? undefined : Number(val)),
-//   z
-//     .number()
-//     .positive({ message: "Height must be a positive number." })
-//     .optional()
-// ),
-//   city: z.string().min(1, { message: "City cannot be empty." }),
-
-// // Updated to a string, with an optional enum for frontend validation
-// state: z.string().refine((val) => stateCodes.includes(val as typeof stateCodes[number]), {
-//   message: "Invalid state selected. Please select a valid US state.",
-// }),
-
-//   description: z.string().optional(),
-//   listingStatus: z.nativeEnum(AnimalListingStatus, {
-//     required_error: "Please select a listing status.",
-//   }),
-//   microchipNumber: z.string().optional(),
-//   healthStatus: z.nativeEnum(AnimalHealthStatus).optional(),
-//   legalStatus: z.nativeEnum(AnimalLegalStatus).optional(),
-
-//   // This field was commented in your schema but is a common denormalized field.
-//   // Kept here for form validation.
-//   isSpayedNeutered: z.boolean().default(false),
-
-//   archiveReason: z.nativeEnum(AnimalArchiveReason).optional().nullable(),
-// });
-
-export const IntakeFormSchema = z
+export const AnimalFormSchema = z
   .object({
+    // Core Animal Details
     animalName: z.string().min(1, { message: "Animal name is required." }),
-    city: z.string().optional(),
-    state: z.string().optional(),
     species: z.string().cuid({ message: "A valid species ID is required." }),
-    description: z.string().optional(),
-    breed: z
-      .string()
-      .cuid({ message: "A valid primary breed ID is required." }),
-    primaryColor: z
-      .string()
-      .cuid({ message: "A valid primary color ID is required." }),
+    breed: z.string().cuid({ message: "A valid primary breed ID is required." }),
+    primaryColor: z.string().cuid({ message: "A valid primary color ID is required." }),
     sex: z.nativeEnum(Sex, { required_error: "Sex is required." }),
+    estimatedBirthDate: z.coerce.date({
+      required_error: "Estimated birth date is required.",
+    }),
+    healthStatus: z.nativeEnum(AnimalHealthStatus, {
+      required_error: "Health status is required.",
+    }),
     weightKg: z.coerce
       .number({ invalid_type_error: "Weight must be a number." })
       .positive({ message: "Weight must be a positive number." })
@@ -142,24 +80,16 @@ export const IntakeFormSchema = z
       .positive({ message: "Height must be a positive number." })
       .optional()
       .or(z.literal("")),
-    estimatedBirthDate: z.coerce.date({
-      required_error: "Estimated birth date is required.",
-    }),
-    healthStatus: z.nativeEnum(AnimalHealthStatus, {
-      required_error: "Health status is required.",
-    }),
     microchipNumber: z.string().optional(),
+    description: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
 
-    // Intake Details
-    intakeType: z.nativeEnum(IntakeType, {
-      required_error: "Intake type is required.",
-    }),
-    intakeDate: z.coerce
-      .date({ required_error: "Intake date is required." })
-      .max(new Date(), { message: "Intake date cannot be in the future." }),
+    // Intake-Only Details
+    intakeType: z.nativeEnum(IntakeType).optional(),
+    intakeDate: z.coerce.date().optional(),
     notes: z.string().optional(),
-
-    sourcePartnerId: z.string().cuid().optional(),
+    sourcePartnerId: z.string().cuid().optional().or(z.literal("")),
     foundAddress: z.string().optional(),
     foundCity: z.string().optional(),
     foundState: z.string().optional(),
@@ -250,7 +180,6 @@ export const NoteFormSchema = z.object({
   category: z.nativeEnum(NoteCategory),
   content: z.string().min(1, { message: "Content cannot be empty." }),
 });
-
 
 export const assessmentFieldSchema = z.object({
   fieldName: z.string().min(1, "Field name cannot be empty."),

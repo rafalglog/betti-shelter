@@ -1,5 +1,4 @@
 import { prisma } from "@/app/lib/prisma";
-import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import {
   AnimalListingStatus,
   Role,
@@ -13,10 +12,10 @@ import {
   SpeciesPayload,
   ColorPayload,
   PartnerPayload,
+  AnimalWithDetailsPayload,
 } from "../../types";
 import {
   cuidSchema,
-  searchQuerySchema,
 } from "../../zod-schemas/common.schemas";
 import { DashboardPetsFilterSchema as DashboardAnimalFilterSchema } from "../../zod-schemas/pet.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
@@ -49,9 +48,6 @@ const _fetchAnimalCardData = async () => {
         }),
       ]);
 
-    // add a 4 seconds delay to simulate a slow network
-    // await new Promise((resolve) => setTimeout(resolve, 4000));
-
     return {
       totalPets,
       adoptedPetsCount,
@@ -65,45 +61,6 @@ const _fetchAnimalCardData = async () => {
     throw new Error("Error fetching card data.");
   }
 };
-
-// const _fetchPetsPages = async (query: string) => {
-//   const parsedQuery = searchQuerySchema.safeParse(query);
-//   if (!parsedQuery.success) {
-//     if (process.env.NODE_ENV !== "production") {
-//       console.error(
-//         "Zod validation error in fetchPetsPages:",
-//         parsedQuery.error.flatten()
-//       );
-//     }
-//     throw new Error(
-//       parsedQuery.error.errors[0]?.message || "Invalid query format."
-//     );
-//   }
-//   const validatedQuery = parsedQuery.data;
-
-//   // Get the total number of pets that contains the query
-//   try {
-//     const count = await prisma.animal.count({
-//       where: {
-//         name: {
-//           contains: validatedQuery,
-//           mode: "insensitive",
-//         },
-//       },
-//     });
-
-//     // Calculate the total number of pages
-//     const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-
-//     // return the total number of pages
-//     return totalPages;
-//   } catch (error) {
-//     if (process.env.NODE_ENV !== "production") {
-//       console.error("Error fetching pets pages.", error);
-//     }
-//     throw new Error("Error fetching pets pages.");
-//   }
-// };
 
 const _fetchLatestPets = async () => {
   // Get the latest pets
@@ -127,9 +84,6 @@ const _fetchLatestPets = async () => {
       },
       take: 5,
     });
-
-    // add a 4 seconds delay to simulate a slow network
-    // await new Promise((resolve) => setTimeout(resolve, 4000));
 
     return latestPets;
   } catch (error) {
@@ -235,48 +189,39 @@ const _fetchFilteredAnimals = async (
   }
 };
 
-// Fetch a pet by its ID to show on the dashboard edit page
 const _fetchAnimalById = async (
   id: string
-): Promise<AnimalByIDPayload | null> => {
-  // Validate the id
+): Promise<AnimalWithDetailsPayload | null> => {
+  // Validate the incoming animal ID
   const parsedId = cuidSchema.safeParse(id);
-  if (!parsedId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchPetById:",
-        parsedId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedId.error.errors[0]?.message || "Invalid Pet ID format."
-    );
-  }
-  const validatedId = parsedId.data;
 
-  // Get the pet by id
+  if (!parsedId.success) {
+    console.error("Invalid CUID format in _fetchAnimalById:", parsedId.error);
+    // Return null for an invalid ID format to prevent crashes
+    return null;
+  }
+
+  const validatedAnimalId = parsedId.data;
+
   try {
+    // Fetch the animal record from the database
     const animal = await prisma.animal.findUnique({
-      where: {
-        id: validatedId,
-      },
+      where: { id: validatedAnimalId },
+      // Include related data required by the AnimalForm in edit mode
       include: {
-        animalImages: true,
-        breeds: {
-          include: {
-            species: true,
-          },
-        },
+        species: true,
+        breeds: true,
+        colors: true,
       },
     });
 
-    // return the pet
     return animal;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching animal.", error);
+      console.error("Error fetching animal by ID.", error);
     }
-    throw new Error("Error fetching animal.");
+    // Propagate the error to be handled by the calling component
+    throw new Error("Error fetching animal details.");
   }
 };
 
@@ -358,9 +303,6 @@ export const fetchLatestPets = RequirePermission(
   Permissions.ANIMAL_READ_ANALYTICS
 )(_fetchLatestPets);
 
-// export const fetchPetsPages = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
-//   _fetchPetsPages
-// );
 export const fetchFilteredAnimals = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchFilteredAnimals);

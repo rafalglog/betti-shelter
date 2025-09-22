@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import ActivityFeedItem from "../../../../components/dashboard/activityFeed/activity-feed";
+import ActivityFeedItem from "../../../../../components/dashboard/activityFeed/activity-feed";
 import { fetchAnimalActivityLogs } from "@/app/lib/data/animals/animal-activity.data";
 
 interface Props {

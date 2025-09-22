@@ -1,4 +1,4 @@
-import CreateAnimalForm from "@/app/ui/dashboard/pets/animal-create-form";
+import AnimalForm from "@/app/ui/dashboard/pets/animal-form";
 import { fetchSpecies } from "@/app/lib/data/animals/public.data";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { Authorize } from "@/app/ui/auth/authorize";
@@ -20,7 +20,7 @@ const PageContent = async () => {
 
   return (
     <main>
-      <CreateAnimalForm
+      <AnimalForm
         speciesList={speciesList}
       />
     </main>

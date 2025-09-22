@@ -1,4 +1,4 @@
-import { AssessmentOutcome, AssessmentType, FieldType, Prisma } from "@prisma/client";
+import { Animal, AssessmentOutcome, AssessmentType, Breed, Color, FieldType, Prisma, Species } from "@prisma/client";
 
 export type SearchParamsType = Promise<{ [key: string]: string | undefined }>;
 export type IDParamType = Promise<{ id: string }>;
@@ -14,6 +14,12 @@ export type AnimalByIDPayload = Prisma.AnimalGetPayload<{
     };
   };
 }>;
+
+export type AnimalWithDetailsPayload = Animal & {
+  species: Species;
+  breeds: Breed[];
+  colors: Color[];
+};
 
 export type ActionResult = {
   success: boolean;

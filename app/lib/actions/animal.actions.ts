@@ -7,8 +7,8 @@ import path from "path";
 import { prisma } from "@/app/lib/prisma";
 import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
 import { cuidSchema } from "../zod-schemas/common.schemas";
-import { IntakeFormSchema, TaskFormSchema } from "../zod-schemas/pet.schemas";
-import { AnimalFormState, AnimalTaskFormState } from "../form-state-types";
+import { AnimalFormSchema } from "../zod-schemas/pet.schemas";
+import { AnimalFormState } from "../form-state-types";
 import {
   RequirePermission,
   SessionUser,
@@ -31,7 +31,7 @@ const _createAnimal = async (
     };
   }
 
-  const validatedFields = IntakeFormSchema.safeParse(
+  const validatedFields = AnimalFormSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
 
@@ -42,6 +42,13 @@ const _createAnimal = async (
     };
   }
 
+  if (!validatedFields.data.intakeType || !validatedFields.data.intakeDate) {
+    return {
+      message:
+        "Intake type and date are required to create a new animal record.",
+    };
+  }
+
   const {
     animalName,
     estimatedBirthDate,
@@ -49,9 +56,9 @@ const _createAnimal = async (
     healthStatus,
     microchipNumber,
     description,
-    species: speciesId, // ID from the form
-    breed: breedId, // ID from the form
-    primaryColor: primaryColorId, // ID from the form
+    species: speciesId,
+    breed: breedId,
+    primaryColor: primaryColorId,
     intakeType,
     intakeDate,
     notes,
@@ -66,17 +73,13 @@ const _createAnimal = async (
   } = validatedFields.data;
 
   try {
-    // MODIFIED: Transaction logic updated
     await prisma.$transaction(async (tx) => {
-      // Step 1: Get species name for the 'getAnimalSize' function.
-      // This is the only lookup needed now.
       const speciesRecord = await tx.species.findUnique({
         where: { id: speciesId },
         select: { name: true },
       });
 
       if (!speciesRecord) {
-        // This should ideally not happen if form validation is correct
         throw new Error("Invalid Species ID provided.");
       }
 
@@ -86,7 +89,6 @@ const _createAnimal = async (
         weightKg as number | null
       );
 
-      // Step 2: Handle conditional person creation (logic is unchanged)
       let surrenderingPersonId: string | undefined;
       if (intakeType === IntakeType.OWNER_SURRENDER && surrenderingPersonName) {
         const person = await tx.person.create({
@@ -99,7 +101,6 @@ const _createAnimal = async (
         surrenderingPersonId = person.id;
       }
 
-      // Step 3: Create the Animal record using the IDs directly
       const newAnimal = await tx.animal.create({
         data: {
           name: animalName,
@@ -113,14 +114,12 @@ const _createAnimal = async (
           microchipNumber: microchipNumber,
           city: validatedFields.data.foundCity || null,
           state: validatedFields.data.foundState || null,
-          // Add the species connection
           species: { connect: { id: speciesId } },
           breeds: { connect: { id: breedId } },
           colors: { connect: { id: primaryColorId } },
         },
       });
 
-      // Step 4: Create the Intake record (logic is unchanged)
       await tx.intake.create({
         data: {
           type: intakeType,
@@ -151,6 +150,115 @@ const _createAnimal = async (
   console.log("Animal created successfully.");
   revalidatePath("/dashboard/animals");
   redirect("/dashboard/animals");
+};
+
+const _updateAnimal = async (
+  user: SessionUser, // Injected by withAuthenticatedUser
+  animalId: string,
+  prevState: AnimalFormState,
+  formData: FormData
+): Promise<AnimalFormState> => {
+  const parsedId = cuidSchema.safeParse(animalId);
+  if (!parsedId.success) {
+    return { message: "Invalid Animal ID." };
+  }
+  const validatedAnimalId = parsedId.data;
+
+  const validatedFields = AnimalFormSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to update animal.",
+    };
+  }
+
+  const {
+    animalName,
+    estimatedBirthDate,
+    sex,
+    healthStatus,
+    microchipNumber,
+    description,
+    species: speciesId,
+    breed: breedId,
+    primaryColor: primaryColorId,
+    weightKg,
+    heightCm,
+    city,
+    state,
+    notes,
+  } = validatedFields.data;
+
+  const numericWeight = weightKg === "" ? undefined : weightKg;
+  const numericHeight = heightCm === "" ? undefined : heightCm;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // Fetch species name to calculate the size
+      const speciesRecord = await tx.species.findUnique({
+        where: { id: speciesId },
+        select: { name: true },
+      });
+
+      if (!speciesRecord) {
+        throw new Error("Invalid Species ID provided.");
+      }
+
+      // Re-calculate size based on potentially updated weight/species
+      const calculatedSize = getAnimalSize(
+        speciesRecord.name,
+        numericWeight as number | null
+      );
+
+      if (notes !== undefined) {
+        // Find the intake record associated with this animal
+        const intakeRecord = await tx.intake.findFirst({
+          where: { animalId: validatedAnimalId },
+          select: { id: true },
+        });
+
+        if (intakeRecord) {
+          await tx.intake.update({
+            where: { id: intakeRecord.id },
+            data: { notes: notes },
+          });
+        }
+      }
+
+      await tx.animal.update({
+        where: { id: validatedAnimalId },
+        data: {
+          name: animalName,
+          birthDate: estimatedBirthDate,
+          sex: sex,
+          size: calculatedSize,
+          description: description,
+          weightKg: numericWeight,
+          heightCm: numericHeight,
+          healthStatus: healthStatus,
+          microchipNumber: microchipNumber,
+          city: city,
+          state: state,
+          species: { connect: { id: speciesId } },
+          breeds: { set: [{ id: breedId }] },
+          colors: { set: [{ id: primaryColorId }] },
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Database Error updating animal:", error);
+    return {
+      message: "Database Error: Failed to update animal record.",
+    };
+  }
+
+  // Revalidate paths to clear cache and show updated data
+  revalidatePath("/dashboard/animals");
+  revalidatePath(`/dashboard/animals/${validatedAnimalId}`);
+  redirect(`/dashboard/animals/${validatedAnimalId}`);
 };
 
 /**
@@ -187,153 +295,6 @@ const getAnimalSize = (
   if (weightKg < 20) return AnimalSize.MEDIUM;
   return AnimalSize.LARGE;
 };
-
-// const _updatePet = async (
-//   animalId: string, // Pet ID from the URL parameters
-//   prevState: AnimalFormState,
-//   formData: FormData
-// ): Promise<AnimalFormState> => {
-//   // Validate the petId at runtime
-//   const parsedAnimaltId = cuidSchema.safeParse(animalId);
-//   if (!parsedAnimaltId.success) {
-//     return {
-//       message: "Invalid Pet ID format.",
-//     };
-//   }
-//   const validatedPetId = parsedAnimaltId.data;
-
-//   // Validate form fields using Zod
-//   const validatedFields = IntakeFormSchema.safeParse({
-//     name: formData.get("name"),
-//     birthDate: formData.get("birthDate"),
-//     sex: formData.get("sex"),
-//     speciesId: formData.get("speciesId"),
-//     breed: formData.get("breed"),
-//     weightKg: formData.get("weightKg"),
-//     heightCm: formData.get("heightCm"),
-//     city: formData.get("city"),
-//     state: formData.get("state"),
-//     description: formData.get("description"),
-//     listingStatus: formData.get("listingStatus"),
-//   });
-
-//   // If form validation fails, return errors early. Otherwise, continue.
-//   if (!validatedFields.success) {
-//     return {
-//       errors: validatedFields.error.flatten().fieldErrors,
-//       message: "Missing Fields. Failed to Update Pet.",
-//     };
-//   }
-
-//   // Prepare data for insertion into the database
-//   const {
-//     name,
-//     birthDate,
-//     sex,
-//     weightKg,
-//     heightCm,
-//     city,
-//     state,
-//     description,
-//     listingStatus,
-//   } = validatedFields.data;
-
-//   // Update the pet in the database
-//   try {
-//     await prisma.animal.update({
-//       where: { id: validatedPetId },
-//       data: {
-//         name: name,
-//         birthDate: birthDate,
-//         sex: sex,
-//         // species: {
-//         //   connect: {
-//         //     id: speciesId,
-//         //   },
-//         // },
-//         // breed: breed,
-//         weightKg: weightKg,
-//         heightCm: heightCm,
-//         city: city,
-//         state: state,
-//         description: description,
-//         listingStatus: listingStatus,
-//         // Conditionally update images only if new ones were uploaded
-//         // ...(imageUrlArray.length > 0 && {
-//         //   animalImages: {
-//         //     create: imageUrlArray.map((url) => ({
-//         //       url: url,
-//         //     })),
-//         //   },
-//         // }),
-//       },
-//     });
-//   } catch (error) {
-//     console.error(`Database Error updating pet ${validatedPetId}:`, error);
-//     return {
-//       message: "Database Error: Failed to Update Pet.",
-//     };
-//   }
-
-//   // Revalidate the cache for the /dashboard/pets path and the individual pet page
-//   revalidatePath("/dashboard/pets");
-//   revalidatePath(`/pets/${validatedPetId}`);
-
-//   // Redirect to the /dashboard/pets path
-//   redirect("/dashboard/pets");
-// };
-
-// const _deletePetImage = async (animalImageId: string): Promise<void> => {
-//   // Validate the petImageId at runtime
-//   const parsedAnimalImageId = cuidSchema.safeParse(animalImageId);
-//   if (!parsedAnimalImageId.success) {
-//     console.error(
-//       `Invalid PetImage ID format for delete: ${parsedAnimalImageId.error
-//         .flatten()
-//         .formErrors.join(", ")}`
-//     );
-//     throw new Error("Invalid PetImage ID format.");
-//   }
-//   const validatedPetImageId = parsedAnimalImageId.data; // This is the PetImage ID
-
-//   // Delete the image from the database
-//   try {
-//     const deletedPetImage = await prisma.animalImage.delete({
-//       where: { id: validatedPetImageId },
-//     });
-
-//     if (!deletedPetImage) {
-//       console.error(
-//         `PetImage with ID ${validatedPetImageId} not found or failed to delete.`
-//       );
-//       throw new Error("Image not found or failed to delete from database.");
-//     }
-
-//     // Delete the file from the uploads folder
-//     const filePath = path.join(process.cwd(), "public", deletedPetImage.url);
-//     try {
-//       await unlink(filePath);
-//     } catch (fileError: any) {
-//       console.error(
-//         `Failed to delete image file ${deletedPetImage.url} from filesystem for PetImage ${validatedPetImageId}:`,
-//         fileError
-//       );
-//     }
-
-//     revalidatePath("/dashboard/pets");
-//     // Revalidate the specific pet's edit page and its public page
-//     if (deletedPetImage.animalId) {
-//       revalidatePath(`/dashboard/pets/${deletedPetImage.animalId}/edit`);
-//       revalidatePath(`/pets/${deletedPetImage.animalId}`);
-//     }
-//   } catch (error) {
-//     console.error(
-//       `Database Error deleting image ${validatedPetImageId}:`,
-//       error
-//     );
-//     throw new Error("Database Error: Failed to Delete Image.");
-//   }
-// };
 
 const _togglePetLike = async (
   user: SessionUser, // Injected by withAuthenticatedUser
@@ -429,4 +390,9 @@ const _togglePetLike = async (
 export const createAnimal = withAuthenticatedUser(
   RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimal)
 );
+
+export const updateAnimal = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_UPDATE)(_updateAnimal)
+);
+
 export const togglePetLike = withAuthenticatedUser(_togglePetLike);

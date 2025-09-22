@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { Row } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Row } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,19 +15,18 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { Animal } from "@prisma/client"
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { Animal } from "@prisma/client";
 import { FilteredAnimalsPayload } from "@/app/lib/types";
 
-
 interface DataTableRowActionsProps {
-  row: Row<FilteredAnimalsPayload>
+  row: Row<FilteredAnimalsPayload>;
 }
 
 export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
   const animal = row.original;
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,7 +42,9 @@ export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
         <Link href={`/dashboard/animals/${animal.id}`}>
           <DropdownMenuItem>Details</DropdownMenuItem>
         </Link>
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <Link href={`/dashboard/animals/${animal.id}/edit`}>
+          <DropdownMenuItem>Edit</DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive">
           Delete
@@ -51,5 +52,5 @@ export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
