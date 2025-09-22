@@ -52,7 +52,10 @@ export function AnimalNavTabs() {
         <DropdownMenuContent className="w-56" align="start">
           <DropdownMenuGroup>
             {dynamicLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive =
+                link.href === basePath
+                  ? pathname === link.href
+                  : pathname.startsWith(link.href);
               return (
                 <Link key={link.href} href={link.href} passHref>
                   <DropdownMenuItem
@@ -74,70 +77,3 @@ export function AnimalNavTabs() {
     </div>
   );
 }
-
-// "use client";
-
-// import { usePathname } from "next/navigation";
-// import Link from "next/link";
-// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { LinkTabs } from "./LinkTabs";
-
-// const settingsLinks = [
-//   { href: '/dashboard/animals/activity', label: 'Activity' },
-//   { href: '/dashboard/animals/tasks', label: 'Tasks' },
-//   { href: '/dashboard/animals/characteristics', label: 'Characteristics' },
-//   { href: '/dashboard/animals/journey', label: 'Journey' },
-//   { href: '/dashboard/animals/notes', label: 'Notes' },
-//   { href: '/dashboard/animals/assessments', label: 'Assessments' },
-//   { href: '/dashboard/animals/documents', label: 'Documents' },
-// ];
-
-// // Helper to get the base animal ID route
-// const getBasePath = (pathname: string) => {
-//   const segments = pathname.split("/");
-//   // Assuming URL is /dashboard/animals/[id]/...
-//   return segments.slice(0, 4).join("/");
-// };
-
-// export function AnimalNavTabs() {
-//   const pathname = usePathname();
-//   const basePath = getBasePath(pathname);
-
-//   // Determine the active tab from the URL's last segment
-//   const segments = pathname.split("/");
-//   const isActive =
-//     segments[segments.length - 1] === basePath.split("/")[3]
-//       ? "activity"
-//       : segments[segments.length - 1];
-
-//   return (
-//     <>
-//       <LinkTabs links={settingsLinks} />
-//       <Tabs value={isActive} className="w-full hidden sm:block">
-//         <TabsList>
-//           <TabsTrigger value="activity" asChild>
-//             <Link href={`${basePath}`}>Activity</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="tasks" asChild>
-//             <Link href={`${basePath}/tasks`}>Tasks</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="characteristics" asChild>
-//             <Link href={`${basePath}/characteristics`}>Characteristics</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="journey" asChild>
-//             <Link href={`${basePath}/journey`}>Journey</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="notes" asChild>
-//             <Link href={`${basePath}/notes`}>Notes</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="assessments" asChild>
-//             <Link href={`${basePath}/assessments`}>Assessments</Link>
-//           </TabsTrigger>
-//           <TabsTrigger value="documents" asChild>
-//             <Link href={`${basePath}/documents`}>Documents</Link>
-//           </TabsTrigger>
-//         </TabsList>
-//       </Tabs>
-//     </>
-//   );
-// }

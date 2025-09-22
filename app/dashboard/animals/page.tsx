@@ -1,5 +1,6 @@
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -12,6 +13,8 @@ import {
 } from "@/app/lib/data/animals/animal.data";
 import { SearchParamsType } from "@/app/lib/types";
 import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-data-table-toolbar";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 export const dynamic = 'force-dynamic'
 
 interface Props {
@@ -45,10 +48,18 @@ const Page = async ({ searchParams }: Props) => {
     <>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold tabular-nums @[650px]/card:text-xl">
+          <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
             Animals
           </CardTitle>
           <CardDescription>List of animals</CardDescription>
+          <CardAction>
+          <Button asChild>
+            <Link href="/dashboard/animals/create">
+              New Intake
+            </Link>
+          </Button>
+        </CardAction>
+
         </CardHeader>
         <CardContent>
           <div className="flex flex-1 flex-col">

@@ -78,11 +78,6 @@ const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {
 
       <div className="flex self-start gap-2">
         <DataTableViewOptions table={table} />
-        <Link href="/dashboard/animals/create" passHref>
-          <Button variant="default" size="sm">
-            New Intake
-          </Button>
-        </Link>
       </div>
     </div>
   );

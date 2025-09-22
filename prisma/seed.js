@@ -684,6 +684,17 @@ async function seedAnimalsAndRelations() {
 
       await prisma.intake.create({ data: intakeData });
 
+      await prisma.animalActivityLog.create({
+        data: {
+          animalId: animal.id,
+          activityType: "INTAKE_PROCESSED", // Corresponds to AnimalActivityType.INTAKE_PROCESSED
+          changedById: processingStaff.id,
+          changeSummary: `Animal was admitted as ${animalData.intakeType
+            .replace(/_/g, " ")
+            .toLowerCase()}.`,
+        },
+      });
+
       await prisma.note.create({
         data: {
           animalId: animal.id,
