@@ -1,14 +1,12 @@
 import { prisma } from "@/app/lib/prisma";
 import {
   AnimalListingStatus,
-  Role,
   ApplicationStatus,
   Sex,
   Prisma,
 } from "@prisma/client";
 import {
   FilteredAnimalsPayload,
-  AnimalByIDPayload,
   SpeciesPayload,
   ColorPayload,
   PartnerPayload,

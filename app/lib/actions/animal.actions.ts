@@ -15,7 +15,7 @@ import {
   withAuthenticatedUser,
 } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { AnimalSize, IntakeType, PersonType } from "@prisma/client";
+import { AnimalActivityType, AnimalSize, IntakeType, PersonType } from "@prisma/client";
 
 const _createAnimal = async (
   user: SessionUser, // Injected by withAuthenticatedUser
@@ -139,6 +139,18 @@ const _createAnimal = async (
           foundState: intakeType === IntakeType.STRAY ? foundState : undefined,
         },
       });
+      
+      await tx.animalActivityLog.create({
+        data: {
+          animalId: newAnimal.id,
+          activityType: AnimalActivityType.INTAKE_PROCESSED,
+          changedById: staffMemberId,
+          changeSummary: `Animal was admitted as ${intakeType
+            .replace(/_/g, " ")
+            .toLowerCase()}.`,
+        },
+      });
+
     });
   } catch (error) {
     console.error("Database Error creating intake record:", error);

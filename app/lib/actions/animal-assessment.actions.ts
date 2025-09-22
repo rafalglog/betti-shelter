@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
-import { createDynamicSchema } from "../dynamicFormSchema";
+import { createDynamicSchema } from "../zod-schemas/dynamic-form-schema";
 import { TemplateField } from "../types";
 import {
   withAuthenticatedUser,

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { FieldType, AssessmentOutcome } from "@prisma/client";
-import { TemplateField } from "./types";
+import { TemplateField } from "../types";
 
 export function createDynamicSchema(fields: TemplateField[]) {
   const schemaFields: Record<string, z.ZodTypeAny> = {};

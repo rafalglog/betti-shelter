@@ -17,8 +17,8 @@ import {
   AnimalAssessmentPayload,
   AssessmentTemplateWithFields,
 } from "@/app/lib/data/animals/animal-assessment.data";
-import { createDynamicSchema } from "@/app/lib/dynamicFormSchema";
-import { DynamicFormField } from "@/app/lib/DynamicFormField";
+import { createDynamicSchema } from "@/app/lib/zod-schemas/dynamic-form-schema";
+import { DynamicFormField } from "@/app/lib/dynamic-form-field";
 import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { TemplateField } from "@/app/lib/types";
 import { assessmentOutcomeOptions } from "@/app/lib/utils/enum-formatter";

@@ -1,5 +1,5 @@
-import { CharacteristicWithAssignment, fetchAnimalCharacteristics } from "@/app/lib/data/animals/animal-characteristics.data";
-import { IDParamType, SearchParamsType } from "@/app/lib/types";
+import { fetchAnimalCharacteristics } from "@/app/lib/data/animals/animal-characteristics.data";
+import { IDParamType } from "@/app/lib/types";
 import AnimalCharacteristicsManager from "@/components/dashboard/characteristics/characteristics";
 
 interface Props {
