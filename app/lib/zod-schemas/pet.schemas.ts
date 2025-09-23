@@ -21,11 +21,6 @@ const speciesNameSchema = z
   .max(50, { message: "Species name must be at most 50 characters long." })
   .optional();
 
-export const PublishedPetsPageCountSchema = z.object({
-  query: searchQuerySchema,
-  speciesName: speciesNameSchema,
-});
-
 export const PublishedPetsFilterSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,

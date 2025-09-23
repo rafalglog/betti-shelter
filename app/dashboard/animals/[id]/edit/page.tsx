@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import { fetchAnimalById, fetchColors, fetchPartners, fetchSpecies } from "@/app/lib/data/animals/animal.data";
-import AnimalForm from "@/app/ui/dashboard/pets/animal-form";
+import AnimalForm from "@/components/dashboard/animals/animal-form";
 interface Props {
   params: Promise<{ id: string }>;
 }

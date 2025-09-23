@@ -1,4 +1,4 @@
-import AnimalForm from "@/app/ui/dashboard/pets/animal-form";
+import AnimalForm from "@/components/dashboard/animals/animal-form";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { Authorize } from "@/app/ui/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";

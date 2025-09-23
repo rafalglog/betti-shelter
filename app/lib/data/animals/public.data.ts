@@ -1,145 +1,120 @@
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { auth } from "@/auth";
-import { AnimalListingStatus } from "@prisma/client";
+import { AnimalListingStatus, Prisma } from "@prisma/client";
 import { cuidSchema } from "../../zod-schemas/common.schemas";
-import { PublishedPetsFilterSchema, PublishedPetsPageCountSchema } from "../../zod-schemas/pet.schemas";
+import { PublishedPetsFilterSchema } from "../../zod-schemas/pet.schemas";
 
-export const fetchFilteredPublishedPetsWithCategory = async (
+export type FilteredPetsPayload = Prisma.AnimalGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    city: true;
+    state: true;
+    birthDate: true;
+    listingStatus: true;
+    animalImages: {
+      select: {
+        url: true;
+      };
+      take: 1;
+    };
+    likes: {
+      select: {
+        userId: true;
+      };
+      take: 1;
+    };
+  };
+}>;
+
+// The new, combined function
+export const fetchFilteredPublishedPets = async (
   queryInput: string,
   currentPageInput: number,
   speciesNameInput?: string
-) => {
-  // Parse the query, currentPage, and speciesName
+): Promise<{ pets: FilteredPetsPayload[]; totalPages: number }> => {
   const validatedArgs = PublishedPetsFilterSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     speciesName: speciesNameInput,
   });
+
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
-      console.error("Validation error in fetchFilteredPublishedPetsWithCategory:", validatedArgs.error.flatten());
+      console.error(
+        "Validation error in fetchFilteredPublishedPets:",
+        validatedArgs.error.flatten()
+      );
     }
     throw new Error("Invalid arguments for fetching pets.");
   }
   const { query, currentPage, speciesName } = validatedArgs.data;
 
-  // page offset
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-
-  // get the user id from the session
   const session = await auth();
   const userId = session?.user?.id;
 
-  // fetch the pets
-  try {
-    const pets = await prisma.animal.findMany({
-      where: {
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
-        listingStatus: {
-          in: [AnimalListingStatus.PUBLISHED, AnimalListingStatus.PENDING_ADOPTION],
-        },
-        // if speciesName is provided, filter by species
-        ...(speciesName && {
-          species: {
-            name: speciesName,
-          },
-        }),
+  const whereClause: Prisma.AnimalWhereInput = {
+    name: {
+      contains: query,
+      mode: "insensitive",
+    },
+    listingStatus: {
+      in: [AnimalListingStatus.PUBLISHED, AnimalListingStatus.PENDING_ADOPTION],
+    },
+    ...(speciesName && {
+      species: {
+        name: speciesName,
       },
-      select: {
-        id: true,
-        name: true,
-        city: true,
-        state: true,
-        birthDate: true,
-        animalImages: {
-          select: {
-            url: true,
-          },
-          take: 1,
-        },
-        // if userId is provided, check if the user liked the pet
-        ...(userId && {
-          likes: {
+    }),
+  };
+
+  try {
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+    const [totalCount, pets] = await prisma.$transaction([
+      prisma.animal.count({ where: whereClause }),
+      prisma.animal.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          name: true,
+          city: true,
+          state: true,
+          birthDate: true,
+          animalImages: {
             select: {
-              userId: true,
-            },
-            where: {
-              userId: userId,
+              url: true,
             },
             take: 1,
           },
+          ...(userId && {
+            likes: {
+              select: {
+                userId: true,
+              },
+              where: {
+                userId: userId,
+              },
+              take: 1,
+            },
+          }),
           listingStatus: true,
-        }),
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: ITEMS_PER_PAGE,
-      skip: offset,
-    });
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: ITEMS_PER_PAGE,
+        skip: offset,
+      }),
+    ]);
 
-    // add a 4 seconds delay to simulate a slow network
-    // await new Promise((resolve) => setTimeout(resolve, 4000));
-
-    // return the pets
-    return pets;
+    const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
+    return { pets, totalPages };
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching pets.", error);
     }
     throw new Error("Error fetching pets.");
-  }
-};
-
-export const fetchPublishedPetsPagesWithCategory = async (
-  queryInput: string,
-  speciesNameInput?: string
-) => {
-  // Parse the query and speciesName
-  const validatedArgs = PublishedPetsPageCountSchema.safeParse({
-    query: queryInput,
-    speciesName: speciesNameInput,
-  });
-  if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Validation error in fetchPublishedPetsPagesWithCategory:", validatedArgs.error.flatten());
-    }
-    throw new Error("Invalid arguments for fetching pet pages.");
-  }
-  const { query, speciesName } = validatedArgs.data;
-
-  // fetch the total number of pets based on the query
-  try {
-    const count = await prisma.animal.count({
-      where: {
-        name: {
-          contains: query,
-          mode: "insensitive",
-        },
-        listingStatus: AnimalListingStatus.PUBLISHED,
-        // if speciesName is provided, filter by species
-        ...(speciesName && {
-          species: {
-            name: speciesName,
-          },
-        }),
-      },
-    });
-
-    // calculate the total number of pages
-    const totalPages = Math.ceil(Number(count) / ITEMS_PER_PAGE);
-
-    // return the total number of pages
-    return totalPages;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching pets pages.", error);
-    }
-    throw new Error("Error fetching pets pages.");
   }
 };
 
@@ -183,15 +158,14 @@ export const fetchPublicPagePetById = async (id: string) => {
         listingStatus: true,
         city: true,
         state: true,
-        // breed: true, 
         birthDate: true, 
         weightKg: true, 
         heightCm: true, 
-        // species: {
-        //   select: {
-        //     name: true,
-        //   },
-        // },
+        species: {
+          select: {
+            name: true,
+          },
+        },
         description: true, 
         animalImages: true, 
         // Conditionally include likes if userId is available

@@ -2,10 +2,8 @@ import { Suspense } from "react";
 import Search from "../../ui/search";
 import { PublicPetsCardSkeleton } from "../../ui/skeletons";
 import {
-  fetchPublishedPetsPagesWithCategory,
   fetchSpecies,
 } from "@/app/lib/data/animals/public.data";
-import Pagination from "@/app/ui/pagination";
 import PetGrid from "@/app/ui/publicpages/pet-grid";
 import CategoryList from "@/app/ui/publicpages/category-list";
 import { SearchParamsType } from "@/app/lib/types";
@@ -18,12 +16,6 @@ const Page = async ({ searchParams }: Props) => {
   const { page = "1", category = "", query = "" } = await searchParams;
   const speciesName = category;
   const currentPage = Number(page);
-
-  // get the total number of pages
-  const totalPages = await fetchPublishedPetsPagesWithCategory(
-    query,
-    speciesName
-  );
 
   // get the list of species
   const speciesList = await fetchSpecies();
@@ -58,11 +50,6 @@ const Page = async ({ searchParams }: Props) => {
           speciesName={speciesName}
         />
       </Suspense>
-
-      {/* Pagination buttons */}
-      <div className="flex justify-center">
-        <Pagination totalPages={totalPages} />
-      </div>
     </div>
   );
 };

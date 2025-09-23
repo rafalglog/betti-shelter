@@ -33,6 +33,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import Link from "next/link"
 
 const data = {
   navMain: [
@@ -52,12 +53,12 @@ const data = {
       icon: IconChartBar,
     },
     {
-      title: "Projects",
+      title: "My Applications",
       url: "#",
       icon: IconFolder,
     },
     {
-      title: "Team",
+      title: "User Applications",
       url: "#",
       icon: IconUsers,
     },
@@ -129,11 +130,6 @@ const data = {
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
       name: "Reports",
       url: "#",
       icon: IconReport,
@@ -160,10 +156,10 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Pet Adopt</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

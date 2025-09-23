@@ -16,7 +16,6 @@ interface Props {
 
 const Page = async ({ params }: Props) => {
   const { id: animalId } = await params;
-
   const session = await auth();
   const currentUserId = session?.user?.id;
 

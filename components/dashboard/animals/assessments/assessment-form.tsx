@@ -22,7 +22,6 @@ import { DynamicFormField } from "@/app/lib/dynamic-form-field";
 import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { TemplateField } from "@/app/lib/types";
 import { assessmentOutcomeOptions } from "@/app/lib/utils/enum-formatter";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -46,14 +45,12 @@ interface AssessmentFormProps {
   animalId: string;
   templates: AssessmentTemplateWithFields[];
   assessment?: AnimalAssessmentPayload; // Optional: If provided, form is in "edit" mode
-  onFormSubmit?: () => void; // Optional: Callback to run on successful submission
 }
 
 export function AssessmentForm({
   animalId,
   templates,
   assessment,
-  onFormSubmit,
 }: AssessmentFormProps) {
   const isEditMode = !!assessment;
 
@@ -134,10 +131,6 @@ export function AssessmentForm({
   }, [allFields, reset, isEditMode]);
 
   useEffect(() => {
-    if (state.message && !state.errors) {
-      toast.success(state.message);
-      if (onFormSubmit) onFormSubmit();
-    }
     if (state.message && state.errors) {
       toast.error(state.message);
     }
@@ -148,7 +141,7 @@ export function AssessmentForm({
         }
       }
     }
-  }, [state, setError, onFormSubmit]);
+  }, [state, setError]);
 
   const handleTemplateChange = (templateId: string) => {
     if (!isEditMode) {
@@ -174,7 +167,6 @@ export function AssessmentForm({
     startTransition(() => {
       formAction(formData);
     });
-    
   };
 
   if (!selectedTemplate) {
@@ -282,27 +274,16 @@ export function AssessmentForm({
           </div>
 
           <div className="col-span-full flex justify-end space-x-2 pt-4">
-            {onFormSubmit ? (
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isPending}
-                onClick={onFormSubmit}
-              >
+            <Button
+              asChild
+              variant="outline"
+              type="button"
+              disabled={isPending}
+            >
+              <Link href={`/dashboard/animals/${animalId}/assessments`}>
                 Cancel
-              </Button>
-            ) : (
-              <Button
-                asChild
-                variant="outline"
-                type="button"
-                disabled={isPending}
-              >
-                <Link href={`/dashboard/animals/${animalId}/assessments`}>
-                  Cancel
-                </Link>
-              </Button>
-            )}
+              </Link>
+            </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
@@ -319,4 +300,3 @@ export function AssessmentForm({
     </Form>
   );
 }
-

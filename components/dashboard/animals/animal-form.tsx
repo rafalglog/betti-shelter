@@ -63,6 +63,7 @@ import {
   PartnerPayload,
   SpeciesPayload,
 } from "@/app/lib/types";
+import Link from "next/link";
 
 type AnimalFormValues = z.infer<typeof AnimalFormSchema>;
 
@@ -756,6 +757,16 @@ const AnimalForm = ({
             </div>
           </CardContent>
           <CardFooter className="justify-end">
+            <Button
+              asChild
+              variant="outline"
+              type="button"
+              disabled={isPending}
+            >
+              <Link href={`/dashboard/animals`}>
+                Cancel
+              </Link>
+            </Button>
             <Button type="submit" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
@@ -764,7 +775,7 @@ const AnimalForm = ({
                   : "Submitting..."
                 : isEditMode
                 ? "Save Changes"
-                : "Create Intake Record"}
+                : "Create Intake"}
             </Button>
           </CardFooter>
         </Card>

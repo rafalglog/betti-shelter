@@ -31,7 +31,7 @@ const Page = () => {
         <div className="text-center mt-20">
           <Link
             href="/pets?page=1"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all"
+            className="inline-block bg-black text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all"
           >
             View All Our Animals
           </Link>

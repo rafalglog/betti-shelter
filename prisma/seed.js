@@ -357,7 +357,6 @@ const taskSeedData = [
   },
 ];
 
-// --- MODIFIED: Added `type` to each template ---
 const assessmentTemplateSeedData = [
   {
     name: "Intake Behavioral",
@@ -419,8 +418,7 @@ const assessmentTemplateSeedData = [
   {
     name: "Daily Monitoring",
     type: AssessmentType.DAILY_MONITORING,
-    description:
-      "For animals under observation for mild illness or behavior.",
+    description: "For animals under observation for mild illness or behavior.",
     allowCustomFields: true,
     fields: [
       {
@@ -576,7 +574,6 @@ async function seedPartners() {
   console.log("Seeded partners.");
 }
 
-// --- MODIFIED: Includes `type` in the create call ---
 async function seedAssessmentTemplates() {
   console.log("Seeding assessment templates...");
   try {
@@ -584,7 +581,7 @@ async function seedAssessmentTemplates() {
       await prisma.assessmentTemplate.create({
         data: {
           name: templateData.name,
-          type: templateData.type, // <-- ADDED THIS LINE
+          type: templateData.type,
           description: templateData.description,
           allowCustomFields: templateData.allowCustomFields,
           // Use a nested create to add all related fields at once
@@ -662,7 +659,13 @@ async function seedAnimalsAndRelations() {
           animalImages: {
             create: [
               {
-                url: `/uploads/placeholder-${animalData.species.name.toLowerCase()}.jpg`,
+                url: `/uploads/dog3.jpg`,
+              },
+              {
+                url: "/uploads/dog3-1.jpg",
+              },
+              {
+                url: "/uploads/dog3-2.jpg",
               },
             ],
           },
@@ -753,7 +756,6 @@ async function seedTasks() {
   console.log("Seeded tasks.");
 }
 
-// --- MODIFIED: Removed `type` and links via `templateName` ---
 async function seedAssessments() {
   console.log("Seeding assessments...");
   try {
