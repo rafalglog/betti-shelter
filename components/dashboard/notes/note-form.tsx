@@ -32,7 +32,7 @@ import {
   updateAnimalNote,
 } from "@/app/lib/actions/animal-note.actions";
 import { FetchAnimalNoteByIdPayload } from "@/app/lib/data/animals/animal-note.data";
-import { NoteFormSchema } from "@/app/lib/zod-schemas/pet.schemas";
+import { NoteFormSchema } from "@/app/lib/zod-schemas/animal.schemas";
 
 type NoteFormValues = z.infer<typeof NoteFormSchema>;
 

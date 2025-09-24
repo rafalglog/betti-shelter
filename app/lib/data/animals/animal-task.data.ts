@@ -1,6 +1,6 @@
 import { prisma } from "@/app/lib/prisma";
 import { Prisma, TaskCategory, TaskStatus } from "@prisma/client";
-import { DashboardTasksFilterSchema } from "../../zod-schemas/pet.schemas";
+import { DashboardTasksFilterSchema } from "../../zod-schemas/animal.schemas";
 
 export type FilteredTaskPayload = Prisma.TaskGetPayload<{
   select: {

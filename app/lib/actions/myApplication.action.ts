@@ -41,7 +41,7 @@ const _updateMyAdoptionApp = async (
 
     // Perform the ABAC (context-aware) check
     // Check if the application belongs to the current user
-    if (application.userId !== currentUserId) {
+    if (application.userId !== user.personId) {
       return {
         message: "Access Denied. You can only update your own applications.",
       };
@@ -87,8 +87,8 @@ const _updateMyAdoptionApp = async (
     householdSize: formData.get("householdSize"),
     hasChildren: formData.get("hasChildren"),
     childrenAges: formData.get("childrenAges"),
-    otherPetsDescription: formData.get("otherPetsDescription"),
-    petExperience: formData.get("petExperience"),
+    otherAnimalsDescription: formData.get("otherAnimalsDescription"),
+    animalExperience: formData.get("animalExperience"),
     reasonForAdoption: formData.get("reasonForAdoption"),
   });
 
@@ -116,34 +116,28 @@ const _updateMyAdoptionApp = async (
     householdSize,
     hasChildren,
     childrenAges,
-    otherPetsDescription,
-    petExperience,
+    otherAnimalsDescription,
+    animalExperience,
     reasonForAdoption,
   } = validatedFields.data;
+
+  const dataToUpdate = {
+    ...validatedFields.data,
+    hasYard: hasYard === "true", // Convert string "true" to boolean true
+    landlordPermission: landlordPermission === "true", // Convert string "true" to boolean true
+    householdSize: parseInt(householdSize, 10), // Convert string to number
+    hasChildren: hasChildren === "true", // Convert string "true" to boolean true
+    childrenAges:
+      childrenAges.trim() === ""
+        ? []
+        : childrenAges.split(",").map((age) => parseInt(age.trim(), 10)), // Convert comma-separated string to number array
+  };
 
   // Update the adoption application
   try {
     await prisma.adoptionApplication.update({
       where: { id: validatedApplicationId },
-      data: {
-        applicantName,
-        applicantEmail,
-        applicantPhone,
-        applicantAddressLine1,
-        applicantAddressLine2,
-        applicantCity,
-        applicantState,
-        applicantZipCode,
-        livingSituation,
-        hasYard,
-        landlordPermission,
-        householdSize,
-        hasChildren,
-        childrenAges,
-        otherPetsDescription,
-        petExperience,
-        reasonForAdoption,
-      },
+      data: dataToUpdate,
     });
   } catch (error) {
     console.error(
@@ -187,7 +181,7 @@ const _withdrawMyApplication = async (
       return { success: false, message: "Adoption Application not found." };
     }
 
-    if (application.userId !== currentUserId) {
+    if (application.userId !== user.personId) {
       return {
         success: false,
         message: "Access Denied. You can only withdraw your own applications.",
@@ -260,7 +254,7 @@ const _reactivateMyApplication = async (
       return { success: false, message: "Adoption Application not found." };
     }
 
-    if (application.userId !== currentUserId) {
+    if (application.userId !== user.personId) {
       return {
         success: false,
         message: "Access Denied. You can only reactivate your own applications.",
@@ -306,19 +300,19 @@ const _reactivateMyApplication = async (
 // Server action for the user to submit an application
 const _createMyAdoptionApp = async (
   user: SessionUser, // Injected by withAuthenticatedUser
-  animalId: string, // Pet ID from the URL parameters
+  animalId: string, //
   prevState: MyAdoptionAppFormState,
   formData: FormData
 ): Promise<MyAdoptionAppFormState> => {
   const currentUserId = user.id;
 
-  const parsedanimalId = cuidSchema.safeParse(petId);
-  if (!parsedPetId.success) {
+  const parsedanimalId = cuidSchema.safeParse(animalId);
+  if (!parsedanimalId.success) {
     return {
       message: "Invalid Adoption Application ID format.",
     };
   }
-  const validatedPetId = parsedPetId.data;
+  const validatedAnimalId = parsedanimalId.data;
 
   // Validate form fields using Zod
   const validatedFields = MyAdoptionAppFormSchema.safeParse({
@@ -336,8 +330,8 @@ const _createMyAdoptionApp = async (
     householdSize: formData.get("householdSize"),
     hasChildren: formData.get("hasChildren"),
     childrenAges: formData.get("childrenAges"),
-    otherPetsDescription: formData.get("otherPetsDescription"),
-    petExperience: formData.get("petExperience"),
+    otherAnimalsDescription: formData.get("otherAnimalsDescription"),
+    animalExperience: formData.get("animalExperience"),
     reasonForAdoption: formData.get("reasonForAdoption"),
   });
 
@@ -365,34 +359,28 @@ const _createMyAdoptionApp = async (
     householdSize,
     hasChildren,
     childrenAges,
-    otherPetsDescription,
-    petExperience,
+    otherAnimalsDescription,
+    animalExperience,
     reasonForAdoption,
   } = validatedFields.data;
 
+  const dataToCreate = {
+    ...validatedFields.data,
+    userId: user.personId,
+    animalId: animalId,
+    hasYard: hasYard === "true", // Convert string "true" to boolean true
+    landlordPermission: landlordPermission === "true", // Convert string "true" to boolean true
+    householdSize: parseInt(householdSize, 10), // Convert string to number
+    hasChildren: hasChildren === "true", // Convert string "true" to boolean true
+    childrenAges:
+      childrenAges.trim() === ""
+        ? []
+        : childrenAges.split(",").map((age) => parseInt(age.trim(), 10)), // Convert comma-separated string to number array
+  };
+
   try {
     await prisma.adoptionApplication.create({
-      data: {
-        userId: currentUserId,
-        petId: validatedPetId,
-        applicantName: applicantName,
-        applicantEmail: applicantEmail,
-        applicantPhone: applicantPhone,
-        applicantAddressLine1: applicantAddressLine1,
-        applicantAddressLine2: applicantAddressLine2,
-        applicantCity: applicantCity,
-        applicantState: applicantState,
-        applicantZipCode: applicantZipCode,
-        livingSituation: livingSituation,
-        hasYard: hasYard,
-        landlordPermission: landlordPermission,
-        householdSize: householdSize,
-        hasChildren: hasChildren,
-        childrenAges: childrenAges,
-        otherPetsDescription: otherPetsDescription,
-        petExperience: petExperience,
-        reasonForAdoption: reasonForAdoption,
-      },
+      data: dataToCreate,
     });
   } catch (error: unknown) {
     console.error("Error submitting adoption application:", error);
@@ -402,8 +390,8 @@ const _createMyAdoptionApp = async (
     };
   }
 
+  revalidatePath(`/pets/${validatedAnimalId}`);
   revalidatePath("/dashboard/my-applications");
-
   redirect("/dashboard/my-applications");
 };
 

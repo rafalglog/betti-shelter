@@ -185,7 +185,6 @@ const AnimalCharacteristicsManager = ({
   };
 
   return (
-    <div className="p-4 sm:p-8 bg-slate-50 min-h-screen">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <Card className="w-full mx-auto">
           <CardHeader className="relative">
@@ -347,7 +346,6 @@ const AnimalCharacteristicsManager = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
   );
 };
 

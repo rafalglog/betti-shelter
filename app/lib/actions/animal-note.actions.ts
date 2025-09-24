@@ -9,7 +9,7 @@ import {
   withAuthenticatedUser,
 } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { NoteFormSchema } from "../zod-schemas/pet.schemas";
+import { NoteFormSchema } from "../zod-schemas/animal.schemas";
 
 export interface AnimalNoteFormState {
   message?: string | null;

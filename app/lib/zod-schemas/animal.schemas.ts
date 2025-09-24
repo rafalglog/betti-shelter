@@ -27,7 +27,7 @@ export const PublishedPetsFilterSchema = z.object({
   speciesName: speciesNameSchema,
 });
 
-export const DashboardPetsFilterSchema = z.object({
+export const DashboardAnimalsFilterSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   listingStatus: z.string().optional(),

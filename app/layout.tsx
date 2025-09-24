@@ -4,7 +4,7 @@ import { inter, openSans, fontgeist } from "./ui/fonts";
 import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
-  title: "Pet Shelter & internal CRM",
+  title: "Animal Shelter & Operations Platform",
   description: "Find your new best friend.",
 };
 

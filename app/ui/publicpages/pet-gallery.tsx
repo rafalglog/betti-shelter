@@ -16,12 +16,12 @@ import clsx from "clsx";
 
 interface PetGalleryProps {
   images: PrismaPetImage[];
-  currentUserId: string | undefined;
+  currentUserPersonId: string | undefined;
   animalId: string;
   isLikedByCurrentUser: boolean;
 }
 
-const PetGallery = ({ images, currentUserId, animalId, isLikedByCurrentUser }: PetGalleryProps) => {
+const PetGallery = ({ images, currentUserPersonId, animalId, isLikedByCurrentUser }: PetGalleryProps) => {
   // State to keep track of the selected image
   const [selectedImage, setSelectedImage] = useState(
     images.length > 0 ? images[0].url : ""
@@ -65,7 +65,7 @@ const PetGallery = ({ images, currentUserId, animalId, isLikedByCurrentUser }: P
           <div className="absolute top-2 right-2 z-10">
             <LikeButton
               animalId={animalId}
-              currentUserId={currentUserId}
+              currentUserPersonId={currentUserPersonId}
               isLikedByCurrentUser={isLikedByCurrentUser}
             />
           </div>

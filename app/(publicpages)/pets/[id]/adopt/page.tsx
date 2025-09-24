@@ -1,25 +1,25 @@
-import { getPetForApplication } from "@/app/lib/data/myApplications.data";
+import { getAnimalForApplication } from "@/app/lib/data/myApplications.data";
 import { IDParamType, AnimalForApplicationPayload } from "@/app/lib/types";
 import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import MyAdoptionAppSkeleton from "@/app/ui/dashboard/myApplication/myAdoptionApp-skeleton";
-import CreateMyAdoptionAppForm from "@/app/ui/dashboard/myApplication/create-MyAdoptionApp-form";
+import { MyApplicationForm } from "@/app/ui/dashboard/myApplication/myApplication-form";
 
 async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
-  // Get pet data for the application 
-  const petToAdopt: AnimalForApplicationPayload | null =
-    await getPetForApplication(animalId);
+  // Get animal data for the application 
+  const animalToAdopt: AnimalForApplicationPayload | null =
+    await getAnimalForApplication(animalId);
 
-  // If no pet is found, show a 404 page 
-  if (!petToAdopt) {
+  // If no animal is found, show a 404 page 
+  if (!animalToAdopt) {
     notFound();
   }
 
-  // Check if the current user already has an application for this pet 
+  // Check if the current user already has an application for this animal
   const currentUserHasActiveApplication =
-    petToAdopt.adoptionApplications &&
-    petToAdopt.adoptionApplications.length > 0;
+    animalToAdopt.adoptionApplications &&
+    animalToAdopt.adoptionApplications.length > 0;
 
   // If an application exists, redirect to the dashboard 
   if (currentUserHasActiveApplication) {
@@ -27,7 +27,7 @@ async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
   }
 
   // Once data is ready and checks have passed, render the client component with the data
-  return <CreateMyAdoptionAppForm animalId={animalId} petToAdopt={petToAdopt} />;
+  return <MyApplicationForm animal={animalToAdopt} />;
 }
 
 interface Props {

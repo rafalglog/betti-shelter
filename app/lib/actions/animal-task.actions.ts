@@ -10,7 +10,7 @@ import {
   withAuthenticatedUser,
 } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { TaskFormSchema } from "../zod-schemas/pet.schemas";
+import { TaskFormSchema } from "../zod-schemas/animal.schemas";
 import { TaskStatus } from "@prisma/client";
 
 const _createAnimalTask = async (

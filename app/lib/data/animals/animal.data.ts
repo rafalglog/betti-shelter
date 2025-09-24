@@ -15,7 +15,7 @@ import {
 import {
   cuidSchema,
 } from "../../zod-schemas/common.schemas";
-import { DashboardPetsFilterSchema as DashboardAnimalFilterSchema } from "../../zod-schemas/pet.schemas";
+import { DashboardAnimalsFilterSchema as DashboardAnimalFilterSchema } from "../../zod-schemas/animal.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 

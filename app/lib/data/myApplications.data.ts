@@ -6,16 +6,15 @@ import {
   FilteredMyApplicationPayload,
   AnimalForApplicationPayload,
 } from "../types";
-import { DashboardPetsFilterSchema } from "../zod-schemas/pet.schemas";
+import { DashboardAnimalsFilterSchema } from "../zod-schemas/animal.schemas";
 import { AnimalListingStatus } from "@prisma/client";
 import { SessionUser, withAuthenticatedUser } from "../auth/protected-actions";
 
 const _fetchMyApplicationPages = async (
   user: SessionUser,
-  queryInput: string // Search query for pet names
+  queryInput: string // Search query for animal names
 ): Promise<number> => {
-
-  const userId = user.id;
+  const personId = user.personId;
 
   // Parse the query
   const parsedQuery = searchQuerySchema.safeParse(queryInput);
@@ -34,9 +33,9 @@ const _fetchMyApplicationPages = async (
   try {
     const count = await prisma.adoptionApplication.count({
       where: {
-        userId: userId, // Filter by the logged-in user's ID
-        // Search by the name of the pet associated with the application
-        pet: {
+        userId: personId, // Filter by the logged-in user's ID
+        // Search by the name of the animal associated with the application
+        animal: {
           name: {
             contains: validatedQuery,
             mode: "insensitive",
@@ -63,14 +62,14 @@ const _fetchFilteredMyApplications = async (
   queryInput: string,
   currentPageInput: number
 ): Promise<FilteredMyApplicationPayload[]> => {
-
-  const userId = user.id;
+  const personId = user.personId;
 
   // Parse the query and currentPage
-  const validatedArgs = DashboardPetsFilterSchema.safeParse({
+  const validatedArgs = DashboardAnimalsFilterSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
   });
+
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
       console.error(
@@ -88,9 +87,9 @@ const _fetchFilteredMyApplications = async (
   try {
     const myApplications = await prisma.adoptionApplication.findMany({
       where: {
-        userId: userId, // Filter by the logged-in user's ID
-        // Search by the name of the pet associated with the application
-        pet: {
+        userId: personId, // Filter by the logged-in user's ID
+        // Search by the name of the animal associated with the application
+        animal: {
           name: {
             contains: query,
             mode: "insensitive",
@@ -101,8 +100,7 @@ const _fetchFilteredMyApplications = async (
         id: true,
         status: true,
         submittedAt: true,
-        isPrimary: true,
-        pet: {
+        animal: {
           select: {
             name: true,
             species: {
@@ -140,11 +138,11 @@ const _fetchMyAppById = async (
   user: SessionUser,
   adoptionAppId: string // Adoption Application id from route params
 ): Promise<AdoptionApplicationPayload | null> => {
-
-  const userId = user.id;
+  const personId = user.personId;
 
   // Validate the adoptionAppId at runtime
   const parsedAdoptionAppId = cuidSchema.safeParse(adoptionAppId);
+
   if (!parsedAdoptionAppId.success) {
     if (process.env.NODE_ENV !== "production") {
       console.error( // Consistent console error message
@@ -161,14 +159,18 @@ const _fetchMyAppById = async (
     const myApplication = await prisma.adoptionApplication.findFirst({
       where: {
         id: validatedAdoptionAppId,
-        userId: userId,
+        userId: personId,
       },
       include: {
-        pet: {
+        animal: {
           select: {
             id: true,
             name: true,
-            breed: true,
+            breeds: {
+              select: {
+                name: true,
+              },
+            },
             species: {
               select: {
                 name: true,
@@ -178,6 +180,7 @@ const _fetchMyAppById = async (
         },
       },
     });
+
     return myApplication;
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
@@ -187,37 +190,41 @@ const _fetchMyAppById = async (
   }
 };
 
-// Fetch the pet information the user is trying to adopt
-const _getPetForApplication = async (
+// Fetch the animal information the user is trying to adopt
+const _getAnimalForApplication = async (
   user: SessionUser,
-  petId: string // Pet ID
+  animalId: string // Animal ID
 ): Promise<AnimalForApplicationPayload | null> => {
+  const personId = user.personId;
 
-  const userId = user.id;
+  // Validate the animalId
+  const parsedId = cuidSchema.safeParse(animalId);
 
-  // Validate the petId
-  const parsedId = cuidSchema.safeParse(petId);
   if (!parsedId.success) {
     if (process.env.NODE_ENV !== "production") {
       console.error(
-        "Zod validation error in getPetForApplication:",
+        "Zod validation error in getAnimalForApplication:",
         parsedId.error.flatten()
       );
     }
-    throw new Error(parsedId.error.errors[0]?.message || "Invalid pet ID format.");
+    throw new Error(parsedId.error.errors[0]?.message || "Invalid animal ID format.");
   }
-  const validatedPetId = parsedId.data;
+  const validatedAnimalId = parsedId.data;
 
   try {
-    const pet = await prisma.pet.findFirst({
+    const animal = await prisma.animal.findFirst({
       where: {
-        id: validatedPetId,
+        id: validatedAnimalId,
         listingStatus: AnimalListingStatus.PUBLISHED,
       },
       select: {
         id: true,
         name: true,
-        breed: true,
+        breeds: {
+          select: {
+            name: true,
+          },
+        },
         species: {
           select: {
             name: true,
@@ -225,7 +232,7 @@ const _getPetForApplication = async (
         },
         adoptionApplications: {
           where: {
-            userId: userId,
+            userId: personId,
           },
           select: {
             userId: true,
@@ -233,10 +240,11 @@ const _getPetForApplication = async (
         },
       },
     });
-    return pet;
+
+    return animal;
   } catch (error) {
-    console.error("Error fetching pet for application:", error);
-    throw new Error("Failed to fetch pet information for application.");
+    console.error("Error fetching animal for application:", error);
+    throw new Error("Failed to fetch animal information for application.");
   }
 };
 
@@ -245,9 +253,9 @@ export const fetchMyApplicationPages = withAuthenticatedUser(
   _fetchMyApplicationPages
 );
 export const fetchFilteredMyApplications = withAuthenticatedUser(
-    _fetchFilteredMyApplications
+  _fetchFilteredMyApplications
 );
 export const fetchMyAppById = withAuthenticatedUser(_fetchMyAppById);
-export const getPetForApplication = withAuthenticatedUser(
-  _getPetForApplication
+export const getAnimalForApplication = withAuthenticatedUser(
+  _getAnimalForApplication
 );

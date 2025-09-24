@@ -9,20 +9,20 @@ import LoginPromptModal from "../login-prompt-modal";
 
 interface LikeButtonProps {
   animalId: string;
-  currentUserId: string | undefined;
+  currentUserPersonId: string | undefined;
   isLikedByCurrentUser: boolean;
 }
 
 const LikeButton = ({
   animalId,
-  currentUserId,
+  currentUserPersonId,
   isLikedByCurrentUser,
 }: LikeButtonProps) => {
   const [isPending, startTransition] = useTransition();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleLikeClick = () => {
-    if (!currentUserId) {
+    if (!currentUserPersonId) {
       setIsLoginModalOpen(true);
       return;
     }
@@ -57,7 +57,7 @@ const LikeButton = ({
         )}
       </button>
 
-      {!currentUserId && (
+      {!currentUserPersonId && (
         <LoginPromptModal
           isOpen={isLoginModalOpen}
           onClose={() => setIsLoginModalOpen(false)}

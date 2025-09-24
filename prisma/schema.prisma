@@ -479,6 +479,7 @@ model FosterProfile {
   childrenAges            Int[]
   otherAnimalsDescription String?
   experience              String? // General experience with animals
+  
   internalNotes           String? // For staff notes about the foster applicant
   /// A list of all animals this user has fostered in the past or is currently fostering.
   /// To see ONLY the currently fostered animals, query the Animal model for this fosterProfileId.

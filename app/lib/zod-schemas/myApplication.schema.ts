@@ -16,15 +16,29 @@ const RequiredBooleanRadioSelectionSchema = (errorMessage: string) =>
     .transform((val) => val === "true"); // Transforms "true" to true, "false" to false
 
 // Helper schema to parse a comma-separated string of ages into an array of numbers.
-const CommaSeparatedAgesSchema = z.preprocess((val) => {
-  if (typeof val !== "string" || val.trim() === "") {
-    return []; // Return empty array for empty string or non-string input
-  }
-  return val
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s !== "");
-}, z.array(z.string().regex(/^\d+$/, "Each age must be a valid positive number.").transform(Number).pipe(z.number().int("Age must be a whole number.").min(0, "Age cannot be negative."))));
+const CommaSeparatedAgesSchema = z
+  .string() // Explicitly define the input as a string
+  .transform((val, ctx) => {
+    if (val.trim() === "") {
+      return []; // Return an empty array for an empty string
+    }
+    const parts = val.split(",").map((s) => s.trim());
+    const numbers: number[] = [];
+
+    for (const part of parts) {
+      if (part === "") continue; // Allows for trailing commas, etc.
+      const num = Number(part);
+      if (isNaN(num) || !Number.isInteger(num) || num < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Each age must be a valid positive number.`,
+        });
+        return z.NEVER; // Stop processing on invalid input
+      }
+      numbers.push(num);
+    }
+    return numbers;
+  });
 
 // Define the Zod schema for the adoption application form
 export const MyAdoptionAppFormSchema = z
@@ -40,44 +54,44 @@ export const MyAdoptionAppFormSchema = z
     livingSituation: z.nativeEnum(LivingSituation, {
       required_error: "Living situation is required",
     }),
-    hasYard: RequiredBooleanRadioSelectionSchema(
-      "Yard information is required."
-    ),
-    landlordPermission: RequiredBooleanRadioSelectionSchema(
-      "Landlord permission information is required."
-    ),
-    householdSize: z.preprocess(
-      (val) =>
-        typeof val === "string" && val.trim() !== ""
-          ? Number(val.trim())
-          : undefined,
-      z
-        .number({ invalid_type_error: "Household size must be a number." })
-        .int("Household size must be a whole number.")
-        .min(1, "Household size must be at least 1.")
-    ),
-    hasChildren: RequiredBooleanRadioSelectionSchema(
-      "Children information is required."
-    ),
-    childrenAges: CommaSeparatedAgesSchema,
-    otherPetsDescription: z.string().optional(),
-    petExperience: z.string().min(1, "Pet experience is required"),
+    
+    // Validates a "true" or "false" string, but does NOT transform it to a boolean
+    hasYard: z.enum(["true", "false"], {
+      required_error: "Yard information is required.",
+    }),
+    landlordPermission: z.enum(["true", "false"], {
+      required_error: "Landlord permission information is required.",
+    }),
+    
+    // Validates a string that contains a number, but does NOT transform it
+    householdSize: z.string().min(1, "Household size is required.")
+      .regex(/^\d+$/, "Household size must be a positive number."),
+
+    hasChildren: z.enum(["true", "false"], {
+      required_error: "Children information is required.",
+    }),
+
+    // Validates the string of ages, but does NOT transform it to a number array
+    childrenAges: z.string().regex(/^[\d\s,]*$/, "Ages must be a comma-separated list of numbers."),
+
+    otherAnimalsDescription: z.string().optional(),
+    animalExperience: z.string().min(1, "Animal experience is required"),
     reasonForAdoption: z.string().min(1, "Reason for adoption is required"),
   })
   .superRefine((data, ctx) => {
-    if (data.hasChildren === false && data.childrenAges.length > 0) {
+    // This logic now works with string values, as it should for a form
+    if (data.hasChildren === 'false' && data.childrenAges.trim().length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["childrenAges"],
         message: "If 'No children' is selected, ages should not be provided.",
       });
     }
-    if (data.hasChildren === true && data.childrenAges.length === 0) {
+    if (data.hasChildren === 'true' && data.childrenAges.trim().length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["childrenAges"],
-        message:
-          "Please provide the ages of the children if 'Yes' is selected for having children.",
+        message: "Please provide the ages of the children if 'Yes' is selected.",
       });
     }
   });

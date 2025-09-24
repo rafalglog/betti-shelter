@@ -3,7 +3,7 @@ import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { auth } from "@/auth";
 import { AnimalListingStatus, Prisma } from "@prisma/client";
 import { cuidSchema } from "../../zod-schemas/common.schemas";
-import { PublishedPetsFilterSchema } from "../../zod-schemas/pet.schemas";
+import { PublishedPetsFilterSchema } from "../../zod-schemas/animal.schemas";
 
 export type FilteredPetsPayload = Prisma.AnimalGetPayload<{
   select: {
@@ -52,7 +52,7 @@ export const fetchFilteredPublishedPets = async (
   const { query, currentPage, speciesName } = validatedArgs.data;
 
   const session = await auth();
-  const userId = session?.user?.id;
+  const personId = session?.user?.personId;
 
   const whereClause: Prisma.AnimalWhereInput = {
     name: {
@@ -87,13 +87,13 @@ export const fetchFilteredPublishedPets = async (
             },
             take: 1,
           },
-          ...(userId && {
+          ...(personId && {
             likes: {
               select: {
                 userId: true,
               },
               where: {
-                userId: userId,
+                userId: personId,
               },
               take: 1,
             },
@@ -141,7 +141,7 @@ export const fetchPublicPagePetById = async (id: string) => {
   const validatedId = parsedId.data;
 
   const session = await auth(); 
-  const userId = session?.user?.id; 
+  const personId = session?.user?.personId; 
 
   try {
     const pet = await prisma.animal.findUnique({
@@ -169,10 +169,10 @@ export const fetchPublicPagePetById = async (id: string) => {
         description: true, 
         animalImages: true, 
         // Conditionally include likes if userId is available
-        ...(userId && {
+        ...(personId && {
           likes: {
             where: {
-              userId: userId,
+              userId: personId,
             },
             select: {
               id: true,
@@ -181,10 +181,10 @@ export const fetchPublicPagePetById = async (id: string) => {
           },
         }),
         // Conditionally include adoption application status if userId is available
-        ...(userId && {
+        ...(personId && {
           adoptionApplications: {
             where: {
-              userId: userId,
+              userId: personId,
             },
             select: {
               id: true, 
@@ -208,7 +208,7 @@ export const fetchPublicPagePetById = async (id: string) => {
 
 export const fetchLatestPublicAnimals = async () => {
   const session = await auth();
-  const userId = session?.user?.id;
+  const personId = session?.user?.personId;
 
   // use prisma to get the latest pets
   try {
@@ -229,13 +229,13 @@ export const fetchLatestPublicAnimals = async () => {
           },
           take: 1,
         },
-        ...(userId && {
+        ...(personId && {
           likes: {
             select: {
               userId: true,
             },
             where: {
-              userId: userId,
+              userId: personId,
             },
             take: 1,
           },

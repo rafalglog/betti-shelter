@@ -55,7 +55,7 @@ import {
   animalSexOptions,
   intakeTypeOptions,
 } from "@/app/lib/utils/enum-formatter";
-import { AnimalFormSchema } from "@/app/lib/zod-schemas/pet.schemas";
+import { AnimalFormSchema } from "@/app/lib/zod-schemas/animal.schemas";
 import { US_STATES } from "@/app/lib/constants/us-states";
 import {
   AnimalWithDetailsPayload,

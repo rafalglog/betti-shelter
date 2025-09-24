@@ -665,7 +665,7 @@ async function seedAnimalsAndRelations() {
                 url: "/uploads/dog3-1.jpg",
               },
               {
-                url: "/uploads/dog3-2.jpg",
+                url: "/uploads/dog3-2.webp",
               },
             ],
           },

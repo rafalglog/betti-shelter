@@ -1,7 +1,7 @@
 import { cuidSchema, searchQuerySchema } from "../zod-schemas/common.schemas";
 import { prisma } from "../prisma";
 import { ITEMS_PER_PAGE } from "../constants/constants";
-import { DashboardPetsFilterSchema } from "../zod-schemas/pet.schemas";
+import { DashboardAnimalsFilterSchema } from "../zod-schemas/animal.schemas";
 import {
   AdoptionApplicationPayload,
   FilteredApplicationsPayload,
@@ -53,7 +53,7 @@ const _fetchFilteredApplications = async (
   currentPageInput: number
 ): Promise<FilteredApplicationsPayload[]> => {
   // Parse the query and currentPage
-  const validatedArgs = DashboardPetsFilterSchema.safeParse({
+  const validatedArgs = DashboardAnimalsFilterSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
   });

@@ -26,7 +26,7 @@ export type ActionResult = {
   message: string | null;
 };
 
-// Type for the adoption application object, including selected pet details
+// Type for the adoption application object, including selected animal details
 // This type is based on the data structure returned by `fetchApplicationById`.
 export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
   include: {
@@ -34,10 +34,14 @@ export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
       select: {
         id: true;
         name: true;
-        breed: true;
+        breeds: {
+          select: {
+            name: true,
+          },
+        };
         species: {
           select: {
-            name: true;
+            name: true,
           };
         };
       };
@@ -45,13 +49,17 @@ export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
   };
 }>;
 
-// Type for the pet object returned by getPetForApplication
-// This includes basic pet details and a minimal list of adoption applications
+// Type for the animal object returned by getAnimalForApplication
+// This includes basic animal details and a minimal list of adoption applications
 export type AnimalForApplicationPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
-    breed: true;
+    breeds: {
+      select: {
+        name: true,
+      },
+    };
     species: {
       select: { name: true };
     };
@@ -95,8 +103,7 @@ export type FilteredMyApplicationPayload =
       id: true;
       status: true;
       submittedAt: true;
-      isPrimary: true;
-      pet: {
+      animal: {
         select: {
           name: true;
           species: {
@@ -126,7 +133,6 @@ export type FilteredApplicationsPayload = Prisma.AdoptionApplicationGetPayload<{
     applicantState: true;
     status: true;
     submittedAt: true;
-    isPrimary: true;
     // animal: {
     //   select: {
     //     name: true;
@@ -189,6 +195,7 @@ export type SpeciesPayload = Prisma.SpeciesGetPayload<{
 }>;
 
 export type FieldOption = string | { value: string; label: string };
+
 export interface TemplateField {
   id: string;
   label: string;

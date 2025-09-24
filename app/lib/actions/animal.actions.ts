@@ -7,7 +7,7 @@ import path from "path";
 import { prisma } from "@/app/lib/prisma";
 import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
 import { cuidSchema } from "../zod-schemas/common.schemas";
-import { AnimalFormSchema } from "../zod-schemas/pet.schemas";
+import { AnimalFormSchema } from "../zod-schemas/animal.schemas";
 import { AnimalFormState } from "../form-state-types";
 import {
   RequirePermission,
@@ -312,7 +312,7 @@ const _togglePetLike = async (
   user: SessionUser, // Injected by withAuthenticatedUser
   animalId: string
 ): Promise<void> => {
-  const userId = user.id;
+  const personId = user.personId;
 
   // Validate Pet ID
   const parsedPetId = cuidSchema.safeParse(animalId);
@@ -360,7 +360,7 @@ const _togglePetLike = async (
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_animalId: {
-          userId: userId,
+          userId: personId,
           animalId: validatedAnimalId,
         },
       },
@@ -371,7 +371,7 @@ const _togglePetLike = async (
       await prisma.like.delete({
         where: {
           userId_animalId: {
-            userId: userId,
+            userId: personId,
             animalId: validatedAnimalId,
           },
         },
@@ -380,14 +380,14 @@ const _togglePetLike = async (
       // If like does not exist, create it
       await prisma.like.create({
         data: {
-          userId: userId,
+          userId: personId,
           animalId: validatedAnimalId,
         },
       });
     }
   } catch (error) {
     console.error(
-      `Database error toggling like for pet ${validatedAnimalId} and user ${userId}:`,
+      `Database error toggling like for pet ${validatedAnimalId} and user ${personId}:`,
       error
     );
     throw new Error(

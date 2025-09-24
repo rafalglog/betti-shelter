@@ -17,7 +17,7 @@ interface Props {
 const Page = async ({ params }: Props) => {
   const { id: animalId } = await params;
   const session = await auth();
-  const currentUserId = session?.user?.id;
+  const currentUserPersonId = session?.user?.personId;
 
   const animal = await fetchPublicPagePetById(animalId);
   if (!animal) {
@@ -34,8 +34,10 @@ const Page = async ({ params }: Props) => {
   const formattedBirthDate = formatDateToLongString(animal.birthDate);
 
   const currentUserHasActiveApplication =
-    currentUserId &&
-    animal.adoptionApplications?.some((app) => app.userId === currentUserId);
+    currentUserPersonId &&
+    animal.adoptionApplications?.some(
+      (app) => app.userId === currentUserPersonId
+    );
 
   const isLikedByCurrentUser = animal.likes && animal.likes.length > 0;
 
@@ -43,14 +45,16 @@ const Page = async ({ params }: Props) => {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 lg:gap-y-0">
       <PetGallery
         images={animal.animalImages}
-        currentUserId={currentUserId}
+        currentUserPersonId={currentUserPersonId}
         animalId={animal.id}
         isLikedByCurrentUser={isLikedByCurrentUser}
       />
 
       <div className="flex flex-col space-y-5">
         <div>
-          <h1 className="text-3xl font-semibold text-gray-800">{animal.name}</h1>
+          <h1 className="text-3xl font-semibold text-gray-800">
+            {animal.name}
+          </h1>
           <p className="text-sm text-gray-500 mt-1 flex items-center">
             <MapPinIcon className="size-5 inline mr-1 text-red-400" />
             {animal.city}, {animal.state}
@@ -77,28 +81,25 @@ const Page = async ({ params }: Props) => {
         )}
 
         <div className="pt-2">
-          {
-            animal.listingStatus === "PENDING_ADOPTION" ? (
-              <div className="block w-full sm:w-auto text-center bg-yellow-500 text-white px-8 py-3 rounded-md font-semibold text-lg shadow-sm cursor-not-allowed">
-                Pending Adoption
-              </div>
-            ) :
-            currentUserHasActiveApplication ? (
-              <Link
-                href="/dashboard/my-applications"
-                className="block w-full sm:w-auto text-center bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
-              >
-                View Your Application
-              </Link>
-            ) : (
-              <Link
-                href={`${animalId}/adopt`}
-                className="block w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
-              >
-                Adopt
-              </Link>
-            )
-          }
+          {animal.listingStatus === "PENDING_ADOPTION" ? (
+            <div className="block w-full sm:w-auto text-center bg-yellow-500 text-white px-8 py-3 rounded-md font-semibold text-lg shadow-sm cursor-not-allowed">
+              Pending Adoption
+            </div>
+          ) : currentUserHasActiveApplication ? (
+            <Link
+              href="/dashboard/my-applications"
+              className="block w-full sm:w-auto text-center bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
+            >
+              View Your Application
+            </Link>
+          ) : (
+            <Link
+              href={`${animalId}/adopt`}
+              className="block w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
+            >
+              Adopt
+            </Link>
+          )}
         </div>
       </div>
     </div>
