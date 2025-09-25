@@ -6,13 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DataTable from "@/components/dashboard/animals/table/animal-data-table";
-import { columns } from "@/components/dashboard/animals/table/animal-data-table-columns";
+import DataTable from "@/components/dashboard/animals/table/animal-table";
+import { columns } from "@/components/dashboard/animals/table/animal-table-columns";
 import {
   fetchFilteredAnimals,
 } from "@/app/lib/data/animals/animal.data";
 import { SearchParamsType } from "@/app/lib/types";
-import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-data-table-toolbar";
+import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-table-toolbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 export const dynamic = 'force-dynamic'

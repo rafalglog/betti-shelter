@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import EditUserForm from "@/app/ui/dashboard/users/edit-user-form";
 import { IDParamType } from "@/app/lib/types";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 
 interface Props {
   params: IDParamType;

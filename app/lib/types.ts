@@ -26,27 +26,30 @@ export type ActionResult = {
   message: string | null;
 };
 
-// Type for the adoption application object, including selected animal details
-// This type is based on the data structure returned by `fetchApplicationById`.
 export type AdoptionApplicationPayload = Prisma.AdoptionApplicationGetPayload<{
   include: {
     animal: {
       select: {
-        id: true;
-        name: true;
+        id: true,
+        name: true,
         breeds: {
           select: {
             name: true,
           },
-        };
+        },
         species: {
           select: {
             name: true,
-          };
-        };
-      };
-    };
-  };
+          },
+        },
+        adoptionApplications: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    },
+  },
 }>;
 
 // Type for the animal object returned by getAnimalForApplication
@@ -96,12 +99,14 @@ export type FilteredAnimalsPayload = Prisma.AnimalGetPayload<{
   };
 }>;
 
-// Type for the filtered adoption applications returned by fetchFilteredMyApplications
+// Type for the filtered adoption applications returned by
 export type FilteredMyApplicationPayload =
   Prisma.AdoptionApplicationGetPayload<{
     select: {
       id: true;
       status: true;
+      applicantName: true;
+      applicantPhone: true;
       submittedAt: true;
       animal: {
         select: {
@@ -133,21 +138,6 @@ export type FilteredApplicationsPayload = Prisma.AdoptionApplicationGetPayload<{
     applicantState: true;
     status: true;
     submittedAt: true;
-    // animal: {
-    //   select: {
-    //     name: true;
-    //     species: {
-    //       select: {
-    //         name: true;
-    //       };
-    //     };
-    //   };
-    // };
-    // user: {
-    //   select: {
-    //     image: true;
-    //   };
-    // };
   };
 }>;
 

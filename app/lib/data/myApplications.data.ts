@@ -1,73 +1,32 @@
 import { ITEMS_PER_PAGE } from "../constants/constants";
 import { prisma } from "../prisma";
-import { cuidSchema, searchQuerySchema } from "../zod-schemas/common.schemas";
+import { cuidSchema } from "../zod-schemas/common.schemas";
 import {
   AdoptionApplicationPayload,
   FilteredMyApplicationPayload,
   AnimalForApplicationPayload,
 } from "../types";
-import { DashboardAnimalsFilterSchema } from "../zod-schemas/animal.schemas";
-import { AnimalListingStatus } from "@prisma/client";
+import { MyApplicationsSchema } from "../zod-schemas/animal.schemas";
+import { AnimalListingStatus, ApplicationStatus, Prisma } from "@prisma/client";
 import { SessionUser, withAuthenticatedUser } from "../auth/protected-actions";
 
-const _fetchMyApplicationPages = async (
-  user: SessionUser,
-  queryInput: string // Search query for animal names
-): Promise<number> => {
-  const personId = user.personId;
-
-  // Parse the query
-  const parsedQuery = searchQuerySchema.safeParse(queryInput);
-  if (!parsedQuery.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchMyApplicationPages:",
-        parsedQuery.error.flatten()
-      );
-    }
-    throw new Error(parsedQuery.error.errors[0]?.message || "Invalid query format.");
-  }
-  const validatedQuery = parsedQuery.data;
-
-  // Get the total number of adoption applications that match the query
-  try {
-    const count = await prisma.adoptionApplication.count({
-      where: {
-        userId: personId, // Filter by the logged-in user's ID
-        // Search by the name of the animal associated with the application
-        animal: {
-          name: {
-            contains: validatedQuery,
-            mode: "insensitive",
-          },
-        },
-      },
-    });
-
-    // Calculate the total number of pages
-    const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
-
-    // Return the total number of pages
-    return totalPages;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching count of user's application pages:", error);
-    }
-    throw new Error("Failed to fetch count of user's application pages.");
-  }
-};
-
-const _fetchFilteredMyApplications = async (
+const _fetchMyApplications = async (
   user: SessionUser,
   queryInput: string,
-  currentPageInput: number
-): Promise<FilteredMyApplicationPayload[]> => {
+  currentPageInput: number,
+  sortInput: string | undefined,
+  statusInput: string | undefined
+): Promise<{
+  myApplications: FilteredMyApplicationPayload[];
+  totalPages: number;
+}> => {
   const personId = user.personId;
 
-  // Parse the query and currentPage
-  const validatedArgs = DashboardAnimalsFilterSchema.safeParse({
+  const validatedArgs = MyApplicationsSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
+    sort: sortInput,
+    status: statusInput,
   });
 
   if (!validatedArgs.success) {
@@ -77,55 +36,91 @@ const _fetchFilteredMyApplications = async (
         validatedArgs.error.flatten()
       );
     }
-    throw new Error(validatedArgs.error.errors[0]?.message || "Invalid arguments for fetching filtered applications.");
+    throw new Error(
+      validatedArgs.error.errors[0]?.message ||
+        "Invalid arguments for fetching filtered applications."
+    );
   }
-  const { query, currentPage } = validatedArgs.data;
-
-  // Calculate the number of records to skip based on the current page
+  const { query, currentPage, sort, status } = validatedArgs.data;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  try {
-    const myApplications = await prisma.adoptionApplication.findMany({
-      where: {
-        userId: personId, // Filter by the logged-in user's ID
-        // Search by the name of the animal associated with the application
-        animal: {
-          name: {
-            contains: query,
-            mode: "insensitive",
-          },
-        },
-      },
-      select: {
-        id: true,
-        status: true,
-        submittedAt: true,
-        animal: {
-          select: {
-            name: true,
-            species: {
-              select: {
-                name: true,
-              },
-            },
-            animalImages: {
-              select: {
-                url: true,
-              },
-              take: 1,
-            },
-          },
-        },
-      },
-      orderBy: {
-        submittedAt: "desc",
-      },
-      take: ITEMS_PER_PAGE,
-      skip: offset,
-    });
+  const orderBy: Prisma.AdoptionApplicationOrderByWithRelationInput = (() => {
+    if (!sort) return { submittedAt: "desc" };
+    const [field, direction] = sort.split(".");
+    const dir = direction === "asc" ? "asc" : "desc";
 
-    // Return the filtered applications
-    return myApplications;
+    switch (field) {
+      case "animalName":
+        return { animal: { name: dir } };
+      case "status":
+        return { status: dir };
+      case "submittedAt":
+        return { submittedAt: dir };
+      default:
+        return { submittedAt: "desc" };
+    }
+  })();
+
+  const whereClause: Prisma.AdoptionApplicationWhereInput = {
+    userId: personId,
+    animal: {
+      name: {
+        contains: query,
+        mode: "insensitive" as const,
+      },
+    },
+  };
+
+  if (status) {
+    // Split the status string by comma into an array
+    const statuses = status.split(",") as ApplicationStatus[];
+
+    // If there are multiple statuses, use the 'in' operator.
+    // Otherwise, use the single status value.
+    if (statuses.length > 1) {
+      whereClause.status = { in: statuses };
+    } else {
+      whereClause.status = statuses[0];
+    }
+  }
+
+  try {
+    const [count, myApplications] = await prisma.$transaction([
+      prisma.adoptionApplication.count({ where: whereClause }),
+      prisma.adoptionApplication.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          status: true,
+          submittedAt: true,
+          applicantName: true,
+          applicantPhone: true,
+          animal: {
+            select: {
+              name: true,
+              species: {
+                select: {
+                  name: true,
+                },
+              },
+              animalImages: {
+                select: {
+                  url: true,
+                },
+                take: 1,
+              },
+            },
+          },
+        },
+        orderBy: orderBy,
+        take: ITEMS_PER_PAGE,
+        skip: offset,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+
+    return { myApplications, totalPages };
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Error fetching applications.", error);
@@ -145,12 +140,15 @@ const _fetchMyAppById = async (
 
   if (!parsedAdoptionAppId.success) {
     if (process.env.NODE_ENV !== "production") {
-      console.error( // Consistent console error message
+      console.error(
         "Zod validation error in fetchMyAppById:",
         parsedAdoptionAppId.error.flatten()
       );
     }
-    throw new Error(parsedAdoptionAppId.error.errors[0]?.message || "Invalid Application ID format.");
+    throw new Error(
+      parsedAdoptionAppId.error.errors[0]?.message ||
+        "Invalid Application ID format."
+    );
   }
   const validatedAdoptionAppId = parsedAdoptionAppId.data;
 
@@ -176,6 +174,11 @@ const _fetchMyAppById = async (
                 name: true,
               },
             },
+            adoptionApplications: {
+              select: {
+                userId: true,
+              },
+            },
           },
         },
       },
@@ -193,7 +196,7 @@ const _fetchMyAppById = async (
 // Fetch the animal information the user is trying to adopt
 const _getAnimalForApplication = async (
   user: SessionUser,
-  animalId: string // Animal ID
+  animalId: string
 ): Promise<AnimalForApplicationPayload | null> => {
   const personId = user.personId;
 
@@ -207,7 +210,9 @@ const _getAnimalForApplication = async (
         parsedId.error.flatten()
       );
     }
-    throw new Error(parsedId.error.errors[0]?.message || "Invalid animal ID format.");
+    throw new Error(
+      parsedId.error.errors[0]?.message || "Invalid animal ID format."
+    );
   }
   const validatedAnimalId = parsedId.data;
 
@@ -248,13 +253,7 @@ const _getAnimalForApplication = async (
   }
 };
 
-// Export the functions wrapped with the authenticated user HOF
-export const fetchMyApplicationPages = withAuthenticatedUser(
-  _fetchMyApplicationPages
-);
-export const fetchFilteredMyApplications = withAuthenticatedUser(
-  _fetchFilteredMyApplications
-);
+export const fetchMyApplications = withAuthenticatedUser(_fetchMyApplications);
 export const fetchMyAppById = withAuthenticatedUser(_fetchMyAppById);
 export const getAnimalForApplication = withAuthenticatedUser(
   _getAnimalForApplication

@@ -1,8 +1,8 @@
 import AnimalForm from "@/components/dashboard/animals/animal-form";
 import { fetchSpecies } from "@/app/lib/data/animals/public.data";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 
 const Page = async () => {
   return (

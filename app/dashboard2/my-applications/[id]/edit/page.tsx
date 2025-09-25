@@ -3,10 +3,10 @@ import { IDParamType } from "@/app/lib/types";
 import { fetchMyAppById } from "@/app/lib/data/myApplications.data";
 import EditMyAdoptionAppForm from "@/app/ui/dashboard/myApplication/edit-MyAdoptionApp-form";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Suspense } from "react";
-import MyAdoptionAppSkeleton from "@/app/ui/dashboard/myApplication/myAdoptionApp-skeleton";
+import MyAdoptionAppSkeleton from "@/components/dashboard/my-applications/myAdoptionApp-skeleton";
 
 interface Props {
   params: IDParamType;

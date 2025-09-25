@@ -1,6 +1,6 @@
 import Pagination from "@/app/ui/pagination";
-import Search from "@/app/ui/search";
-import { TableSkeleton } from "@/app/ui/skeletons";
+import Search from "@/components/search";
+import { TableSkeleton } from "@/components/skeletons";
 import { Suspense } from "react";
 import {
   fetchFilteredAnimals,
@@ -12,8 +12,8 @@ import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { hasPermission } from "@/app/lib/auth/hasPermission";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { petTableColumns } from "@/app/ui/dashboard/pets/pet-table-columns";
 
 interface Props {

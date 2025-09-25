@@ -1,12 +1,12 @@
 import Link from "next/link";
-import WelcomeImage from "../ui/publicpages/welcome-image";
+import WelcomeImage from "../../components/public-pages/welcome-image";
 import { fetchLatestPublicAnimals } from "../lib/data/animals/public.data";
 import Image from "next/image";
 import { shimmer, toBase64 } from "../lib/utils/image-loading-placeholder";
 import { calculateAgeString } from "../lib/utils/date-utils";
 import { Suspense } from "react";
 import { PhotoIcon } from "@heroicons/react/16/solid";
-import LikeButton from "../ui/publicpages/like-button";
+import LikeButton from "../../components/public-pages/like-button";
 import { auth } from "@/auth";
 
 const categories = ["Dog", "Cat", "Bird", "Reptile"];

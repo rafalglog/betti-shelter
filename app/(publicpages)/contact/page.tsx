@@ -1,6 +1,6 @@
-import Card from "@/app/ui/aboutUs/card";
-import PublicPageHeader from "@/app/ui/aboutUs/page-header";
-import PageLayout from "@/app/ui/aboutUs/page-layout";
+import Card from "@/components/public-pages/aboutUs/card";
+import PublicPageHeader from "@/components/public-pages/aboutUs/page-header";
+import PageLayout from "@/components/public-pages/aboutUs/page-layout";
 
 const contactDetails = [
   { title: "Volunteer", email: "volunteer@example.com", phone: "+1 (555) 905-6789" },

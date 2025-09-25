@@ -30,12 +30,12 @@ import { NoteCategory } from "@prisma/client";
 import { FilteredNotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { noteCategoryOptions } from "@/app/lib/utils/enum-formatter";
 import { formatDateOrNA, formatTimeAgo } from "@/app/lib/utils/date-utils";
-import { ServerSideFacetedFilter } from "./server-side-faceted-filter";
-import { ServerSideSort } from "./server-side-sort";
+import { ServerSideSort } from "../../table-common/server-side-sort";
 import { NoteForm } from "./note-form";
 import { NoteActions } from "./note-actions";
-import { ServerSideSwitch } from "./server-side-switch";
-import { SimplePagination } from "../pagination";
+import { ServerSideSwitch } from "../../table-common/server-side-switch";
+import { SimplePagination } from "../../simple-pagination";
+import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 
 export const noteCategoryColors: Record<NoteCategory, string> = {
   [NoteCategory.BEHAVIORAL]: "bg-blue-100 text-blue-800 border-blue-200",

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CardsSkeleton, LatestPetsSkeleton } from "@/app/ui/skeletons";
+import { CardsSkeleton, LatestPetsSkeleton } from "@/components/skeletons";
 import CardWrapper from "@/app/ui/dashboard/dashboard-info-cards";
 import LatestPets from "@/app/ui/dashboard/latest-pets";
 import PageHeader from "@/app/ui/dashboard/page-header";

@@ -79,7 +79,6 @@ export const MyAdoptionAppFormSchema = z
     reasonForAdoption: z.string().min(1, "Reason for adoption is required"),
   })
   .superRefine((data, ctx) => {
-    // This logic now works with string values, as it should for a form
     if (data.hasChildren === 'false' && data.childrenAges.trim().length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

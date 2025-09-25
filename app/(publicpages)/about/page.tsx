@@ -1,6 +1,6 @@
-import Card from "@/app/ui/aboutUs/card";
-import PageHeader from "@/app/ui/aboutUs/page-header";
-import PageLayout from "@/app/ui/aboutUs/page-layout";
+import Card from "@/components/public-pages/aboutUs/card";
+import PageHeader from "@/components/public-pages/aboutUs/page-header";
+import PageLayout from "@/components/public-pages/aboutUs/page-layout";
 
 const locations = [
   { location: "New York", address: "742 Evergreen Terrace", state: "New York, NY 10001" },

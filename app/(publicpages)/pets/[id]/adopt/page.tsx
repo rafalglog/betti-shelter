@@ -3,8 +3,8 @@ import { IDParamType, AnimalForApplicationPayload } from "@/app/lib/types";
 import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import MyAdoptionAppSkeleton from "@/app/ui/dashboard/myApplication/myAdoptionApp-skeleton";
-import { MyApplicationForm } from "@/app/ui/dashboard/myApplication/myApplication-form";
+import MyAdoptionAppSkeleton from "@/components/dashboard/my-applications/myAdoptionApp-skeleton";
+import { MyApplicationForm } from "@/components/dashboard/my-applications/myApplication-form";
 
 async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
   // Get animal data for the application 

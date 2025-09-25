@@ -4,7 +4,7 @@ import {
   calculateAgeString,
   formatDateToLongString,
 } from "@/app/lib/utils/date-utils";
-import PetGallery from "@/app/ui/publicpages/pet-gallery";
+import PetGallery from "@/components/public-pages/pets/pet-gallery";
 import { auth } from "@/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";

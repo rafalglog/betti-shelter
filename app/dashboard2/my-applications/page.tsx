@@ -1,14 +1,14 @@
 import Pagination from "@/app/ui/pagination";
-import Search from "@/app/ui/search";
-import { TableSkeleton } from "@/app/ui/skeletons";
+import Search from "@/components/search";
+import { TableSkeleton } from "@/components/skeletons";
 import { Suspense } from "react";
 import { FilteredMyApplicationPayload, SearchParamsType } from "@/app/lib/types";
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
-import { fetchMyApplicationPages, fetchFilteredMyApplications } from "@/app/lib/data/myApplications.data";
+import { fetchMyApplicationPages, fetchMyApplications } from "@/app/lib/data/myApplications.data";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { appTableColumns } from "@/app/ui/dashboard/myApplication/myApp-table-columns";
 
 interface Props {
@@ -43,7 +43,7 @@ const PageContent = async ({ searchParams }: Props) => {
 
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
         <ReusableTable<FilteredMyApplicationPayload>
-          fetchData={fetchFilteredMyApplications}
+          fetchData={fetchMyApplications}
           query={query}
           currentPage={currentPage}
           columns={appTableColumns}

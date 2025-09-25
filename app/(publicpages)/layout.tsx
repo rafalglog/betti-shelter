@@ -1,5 +1,5 @@
-import Footer from "../ui/footer";
-import TopNavWrapper from "../ui/top-nav-wrapper";
+import Footer from "../../components/public-pages/footer";
+import TopNavWrapper from "../../components/public-pages/nav/top-nav-wrapper";
 
 export default async function PagesLayout({
   children,

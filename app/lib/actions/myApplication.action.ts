@@ -5,7 +5,7 @@ import { cuidSchema } from "../zod-schemas/common.schemas";
 import { prisma } from "../prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { ApplicationStatus, Prisma } from "@prisma/client";
+import { ApplicationStatus } from "@prisma/client";
 import { MyAdoptionAppFormSchema } from "../zod-schemas/myApplication.schema";
 import { SessionUser, withAuthenticatedUser } from "../auth/protected-actions";
 import { ActionResult } from "../types";
@@ -17,7 +17,6 @@ const _updateMyAdoptionApp = async (
   prevState: MyAdoptionAppFormState,
   formData: FormData
 ): Promise<MyAdoptionAppFormState> => {
-  const currentUserId = user.id;
 
   // Validate the applicationId
   const parsedApplicationId = cuidSchema.safeParse(applicationId);
@@ -161,7 +160,6 @@ const _withdrawMyApplication = async (
   user: SessionUser, // Injected by withAuthenticatedUser
   applicationId: string
 ): Promise<ActionResult> => {
-  const currentUserId = user.id;
 
   // Validate the applicationId
   const parsedApplicationId = cuidSchema.safeParse(applicationId);
@@ -234,7 +232,6 @@ const _reactivateMyApplication = async (
   user: SessionUser, // Injected by withAuthenticatedUser
   applicationId: string
 ): Promise<ActionResult> => {
-  const currentUserId = user.id;
 
   // Validate the applicationId
   const parsedApplicationId = cuidSchema.safeParse(applicationId);
@@ -300,11 +297,10 @@ const _reactivateMyApplication = async (
 // Server action for the user to submit an application
 const _createMyAdoptionApp = async (
   user: SessionUser, // Injected by withAuthenticatedUser
-  animalId: string, //
+  animalId: string,
   prevState: MyAdoptionAppFormState,
   formData: FormData
 ): Promise<MyAdoptionAppFormState> => {
-  const currentUserId = user.id;
 
   const parsedanimalId = cuidSchema.safeParse(animalId);
   if (!parsedanimalId.success) {

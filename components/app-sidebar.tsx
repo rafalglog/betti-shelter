@@ -54,7 +54,7 @@ const data = {
     },
     {
       title: "My Applications",
-      url: "#",
+      url: "/dashboard/my-applications",
       icon: IconFolder,
     },
     {

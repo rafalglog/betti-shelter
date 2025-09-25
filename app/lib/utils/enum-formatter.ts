@@ -10,6 +10,7 @@ import {
   NoteCategory,
   AssessmentOutcome,
   AssessmentType,
+  ApplicationStatus
 } from "@prisma/client";
 
 /**
@@ -86,3 +87,5 @@ export const noteCategoryOptions = formatEnumAsOptions(NoteCategory);
 
 export const assessmentOutcomeOptions = formatEnumAsOptions(AssessmentOutcome);
 export const assessmentTypeOptions = formatEnumAsOptions(AssessmentType);
+
+export const myApplicationStatusOptions = formatEnumAsOptions(ApplicationStatus);

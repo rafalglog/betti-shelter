@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { SimplePagination } from "@/components/dashboard/pagination";
+import { SimplePagination } from "@/components/simple-pagination";
 import {
   Accordion,
   AccordionContent,
@@ -29,10 +29,10 @@ import {
   assessmentTypeOptions,
 } from "@/app/lib/utils/enum-formatter";
 import Link from "next/link";
-import { ServerSideFacetedFilter } from "@/components/dashboard/notes/server-side-faceted-filter";
-import { ServerSideSort } from "@/components/dashboard/notes/server-side-sort";
-import { ServerSideSwitch } from "@/components/dashboard/notes/server-side-switch";
+import { ServerSideSort } from "@/components/table-common/server-side-sort";
+import { ServerSideSwitch } from "@/components/table-common/server-side-switch";
 import { AssessmentActions } from "./assessment-actions";
+import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 
 const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
   switch (outcome) {
@@ -60,15 +60,6 @@ const AnimalAssessmentsTab = ({
   animalId,
   totalPages,
 }: Props) => {
-  const handleEdit = (assessmentId: string) => {
-    console.log(`Opening modal to edit assessment: ${assessmentId}`);
-    // Open a Dialog/Modal with the form pre-filled with this assessment's data
-  };
-
-  const handleSoftDelete = (assessmentId: string) => {
-    console.log(`Soft deleting assessment: ${assessmentId}`);
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -191,7 +182,9 @@ const AnimalAssessmentsTab = ({
           </Accordion>
         ) : (
           <div className="text-center py-12 border-2 border-dashed rounded-lg">
-            <p className="font-semibold text-lg">No Matching Assessments Found</p>
+            <p className="font-semibold text-lg">
+              No Matching Assessments Found
+            </p>
             <p className="text-sm mt-1 text-muted-foreground">
               Try adjusting your filters or creating a new assessment.
             </p>

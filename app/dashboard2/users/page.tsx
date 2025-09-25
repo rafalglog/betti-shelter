@@ -1,15 +1,15 @@
 import Pagination from "@/app/ui/pagination";
-import Search from "@/app/ui/search";
+import Search from "@/components/search";
 import { Suspense } from "react";
 import { fetchFilteredUsers, fetchUserPages } from "@/app/lib/data/users/user.data";
 import { FilteredUsersPayload, SearchParamsType } from "@/app/lib/types";
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { userTableColumns } from "@/app/ui/dashboard/users/users-table-columns";
-import { TableSkeleton } from "@/app/ui/skeletons";
+import { TableSkeleton } from "@/components/skeletons";
 
 interface Props {
   searchParams: SearchParamsType;

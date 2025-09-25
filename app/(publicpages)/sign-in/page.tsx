@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { auth, providerMap, signIn } from "@/auth"
-import { ProviderIcon } from "@/app/ui/provider-icon"
+import { ProviderIcon } from "@/components/auth/provider-icon"
 import { SearchParamsType } from "@/app/lib/types"
 import clsx from "clsx"
 

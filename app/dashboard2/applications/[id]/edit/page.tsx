@@ -4,8 +4,8 @@ import EditApplicationForm from "@/app/ui/dashboard/applications/edit-applicatio
 import { fetchApplicationById } from "@/app/lib/data/application.data";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { hasPermission } from "@/app/lib/auth/hasPermission";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import Link from "next/link";
 
 interface Props {

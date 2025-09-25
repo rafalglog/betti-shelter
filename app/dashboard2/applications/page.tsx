@@ -1,6 +1,6 @@
 import Pagination from "@/app/ui/pagination";
-import Search from "@/app/ui/search";
-import { TableSkeleton } from "@/app/ui/skeletons";
+import Search from "@/components/search";
+import { TableSkeleton } from "@/components/skeletons";
 import { Suspense } from "react";
 import { FilteredApplicationsPayload, SearchParamsType } from "@/app/lib/types";
 import {
@@ -10,8 +10,8 @@ import {
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { applicationTableColumns } from "@/app/ui/dashboard/applications/app-table-columns";
 
 interface Props {

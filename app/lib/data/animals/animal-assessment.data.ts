@@ -18,10 +18,9 @@ export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
 
 const ASSESSMENTS_PER_PAGE = 5;
 
-// Renamed to indicate it's the internal, unprotected function
-async function _getAssessmentTemplates(): Promise<
+const _getAssessmentTemplates = async (): Promise<
   AssessmentTemplateWithFields[]
-> {
+> => {
   try {
     const templates = await prisma.assessmentTemplate.findMany({
       include: {
@@ -36,7 +35,7 @@ async function _getAssessmentTemplates(): Promise<
     console.error("Error fetching assessment templates:", error);
     throw new Error("Could not fetch assessment templates from the database.");
   }
-}
+};
 
 export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
   include: {
@@ -46,7 +45,7 @@ export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
   };
 }>;
 
-export const DashboardAssessmentsFilterSchema = z.object({
+export const DashboardAssessmentsSchema = z.object({
   currentPage: currentPageSchema,
   animalId: cuidSchema,
   type: z.string().optional(),
@@ -55,8 +54,7 @@ export const DashboardAssessmentsFilterSchema = z.object({
   showDeleted: z.boolean().optional(),
 });
 
-// Renamed to indicate it's the internal, unprotected function
-const _fetchFilteredAnimalAssessments = async (
+const _fetchAnimalAssessments = async (
   animalId: string,
   currentPageInput: number,
   typeInput: string | undefined,
@@ -65,7 +63,7 @@ const _fetchFilteredAnimalAssessments = async (
   showDeletedInput: boolean = false
 ): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> => {
   // Validate and parse inputs
-  const validatedArgs = DashboardAssessmentsFilterSchema.safeParse({
+  const validatedArgs = DashboardAssessmentsSchema.safeParse({
     currentPage: currentPageInput,
     animalId: animalId,
     type: typeInput,
@@ -127,7 +125,6 @@ const _fetchFilteredAnimalAssessments = async (
   }
 };
 
-// Renamed to indicate it's the internal, unprotected function
 const _fetchAnimalAssessmentById = async (
   id: string
 ): Promise<AnimalAssessmentPayload | null> => {
@@ -159,4 +156,4 @@ export const getAssessmentTemplates = RequirePermission(
 
 export const fetchFilteredAnimalAssessments = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
-)(_fetchFilteredAnimalAssessments);
+)(_fetchAnimalAssessments);

@@ -27,6 +27,18 @@ export const PublishedPetsFilterSchema = z.object({
   speciesName: speciesNameSchema,
 });
 
+export const sortSchema = z
+  .string()
+  .regex(/^\w+\.(asc|desc)$/, "Sort must be in 'field.direction' format")
+  .optional();
+
+export const MyApplicationsSchema = z.object({
+  query: searchQuerySchema,
+  currentPage: currentPageSchema,
+  sort: sortSchema,
+  status: z.string().optional(),
+});
+
 export const DashboardAnimalsFilterSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
@@ -56,8 +68,12 @@ export const AnimalFormSchema = z
     // Core Animal Details
     animalName: z.string().min(1, { message: "Animal name is required." }),
     species: z.string().cuid({ message: "A valid species ID is required." }),
-    breed: z.string().cuid({ message: "A valid primary breed ID is required." }),
-    primaryColor: z.string().cuid({ message: "A valid primary color ID is required." }),
+    breed: z
+      .string()
+      .cuid({ message: "A valid primary breed ID is required." }),
+    primaryColor: z
+      .string()
+      .cuid({ message: "A valid primary color ID is required." }),
     sex: z.nativeEnum(Sex, { required_error: "Sex is required." }),
     estimatedBirthDate: z.coerce.date({
       required_error: "Estimated birth date is required.",

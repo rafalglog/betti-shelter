@@ -1,11 +1,11 @@
 import { Suspense } from "react";
-import Search from "../../ui/search";
-import { PublicPetsCardSkeleton } from "../../ui/skeletons";
+import Search from "../../../components/search";
+import { PublicPetsCardSkeleton } from "../../../components/skeletons";
 import {
   fetchSpecies,
 } from "@/app/lib/data/animals/public.data";
-import PetGrid from "@/app/ui/publicpages/pet-grid";
-import CategoryList from "@/app/ui/publicpages/category-list";
+import PetGrid from "@/components/public-pages/pets/pet-grid";
+import CategoryList from "@/components/public-pages/pets/category-list";
 import { SearchParamsType } from "@/app/lib/types";
 
 interface Props {
@@ -30,7 +30,6 @@ const Page = async ({ searchParams }: Props) => {
       </div>
 
       <div className="flex flex-row flex-wrap items-center justify-between gap-x-2 gap-y-2">
-        {/* search bar */}
         <div className="w-96">
           <Search placeholder="Search pet name" />
         </div>

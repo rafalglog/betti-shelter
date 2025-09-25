@@ -9,8 +9,8 @@ import { IDParamType } from "@/app/lib/types";
 import { DeletePetImage } from "@/app/ui/dashboard/pets/buttons/delete-pet-image";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { hasPermission } from "@/app/lib/auth/hasPermission";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 
 interface Props {
   params: IDParamType;

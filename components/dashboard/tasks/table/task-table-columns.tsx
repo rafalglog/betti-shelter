@@ -3,9 +3,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { categories, priorities, statuses } from "../task-options";
-import { DataTableColumnHeader } from "../../data-table-column-header";
-import { DataTableRowActions } from "./task-data-table-row-actions";
+import { categories, priorities, statuses } from "./task-options";
+import { DataTableColumnHeader } from "../../../table-common/data-table-column-header";
+import { DataTableRowActions } from "./task-table-row-actions";
 import { FilteredTaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
 

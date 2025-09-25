@@ -1,4 +1,4 @@
-import PageNotFoundOrAccessDenied from "./ui/PageNotFoundOrAccessDenied"
+import PageNotFoundOrAccessDenied from "../components/PageNotFoundOrAccessDenied"
 
 const Page = () => {
   return <PageNotFoundOrAccessDenied type="notFound" />

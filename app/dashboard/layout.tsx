@@ -1,10 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import DashboardTopBar from "../ui/dashboard/dashboard-top-nav";
-import SidebarContent from "../ui/dashboard/sidebar-content";
-import { navItems, quickActionItems } from "../ui/dashboard/nav-links.config";
+// import DashboardTopBar from "../ui/dashboard/dashboard-top-nav";
+// import SidebarContent from "../ui/dashboard/sidebar-content";
+// import { navItems, quickActionItems } from "../ui/dashboard/nav-links.config";
 import { getFilteredLinks } from "../lib/getFilteredLinks";
-import Breadcrumbs from "../ui/dashboard/breadcrumbs";
+// import Breadcrumbs from "../ui/dashboard/breadcrumbs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
@@ -20,12 +20,12 @@ const Layout = async ({ children }: LayoutProps) => {
   }
 
   // Get user name and image
-  const userImage = session?.user?.image ?? null;
+  // const userImage = session?.user?.image ?? null;
 
-  const [filteredNavLinks, filteredQuickActionLinks] = await Promise.all([
-    getFilteredLinks(navItems),
-    getFilteredLinks(quickActionItems),
-  ]);
+  // const [filteredNavLinks, filteredQuickActionLinks] = await Promise.all([
+  //   getFilteredLinks(navItems),
+  //   getFilteredLinks(quickActionItems),
+  // ]);
 
   return (
     <SidebarProvider

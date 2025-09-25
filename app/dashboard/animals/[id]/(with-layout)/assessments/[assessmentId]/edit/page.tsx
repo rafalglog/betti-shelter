@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { Authorize } from "@/app/ui/auth/authorize";
-import PageNotFoundOrAccessDenied from "@/app/ui/PageNotFoundOrAccessDenied";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 
 interface Props {
   params: Promise<{ id: string, assessmentId: string }>;
