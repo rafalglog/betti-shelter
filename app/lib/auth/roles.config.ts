@@ -33,6 +33,8 @@ const staffPermissions = [
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL,
   Permissions.ANIMAL_ASSESSMENT_UPDATE,
   Permissions.ANIMAL_ASSESSMENT_DELETE,
+
+  Permissions.OUTCOMES_MANAGE
 ] as const;
 
 // Admin inherits all STAFF permissions

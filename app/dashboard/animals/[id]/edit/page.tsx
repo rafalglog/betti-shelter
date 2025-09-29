@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/card";
 import { notFound } from "next/navigation";
 import { fetchAnimalById, fetchColors, fetchPartners, fetchSpecies } from "@/app/lib/data/animals/animal.data";
-import AnimalForm from "@/components/dashboard/animals/animal-form";
+import AnimalForm from "@/components/dashboard/animals/animal-intake-form";
+import { IDParamType } from "@/app/lib/types";
+
 interface Props {
-  params: Promise<{ id: string }>;
+  params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {

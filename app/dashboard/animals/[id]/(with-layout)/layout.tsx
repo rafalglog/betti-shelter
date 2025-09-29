@@ -1,5 +1,5 @@
 import { IDParamType } from "@/app/lib/types";
-import { AnimalNavTabs } from "@/components/dashboard/animals/animal-nav-tabs";
+import { AnimalNavTabs } from "@/components/dashboard/animals/tabs-nav/animal-nav-tabs";
 import AnimalSectionCards from "@/components/pet-section-cards";
 
 interface Props {

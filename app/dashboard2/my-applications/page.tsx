@@ -2,10 +2,10 @@ import Pagination from "@/app/ui/pagination";
 import Search from "@/components/search";
 import { TableSkeleton } from "@/components/skeletons";
 import { Suspense } from "react";
-import { FilteredMyApplicationPayload, SearchParamsType } from "@/app/lib/types";
+import { MyApplicationPayload, SearchParamsType } from "@/app/lib/types";
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
-import { fetchMyApplicationPages, fetchMyApplications } from "@/app/lib/data/myApplications.data";
+import { fetchMyApplicationPages, fetchMyApplications } from "@/app/lib/data/my-applications.data";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
@@ -42,7 +42,7 @@ const PageContent = async ({ searchParams }: Props) => {
       </div>
 
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
-        <ReusableTable<FilteredMyApplicationPayload>
+        <ReusableTable<MyApplicationPayload>
           fetchData={fetchMyApplications}
           query={query}
           currentPage={currentPage}

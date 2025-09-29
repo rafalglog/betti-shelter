@@ -1,7 +1,4 @@
-import {
-  IDParamType,
-  SearchParamsType,
-} from "@/app/lib/types";
+import { IDParamType, SearchParamsType } from "@/app/lib/types";
 import {
   Card,
   CardContent,
@@ -9,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import ActivityFeedItem from "../../../../../components/dashboard/activityFeed/activity-feed";
+import ActivityFeedItem from "../../../../../components/dashboard/animals/activityFeed/activity-feed";
 import { fetchAnimalActivityLogs } from "@/app/lib/data/animals/animal-activity.data";
 
 interface Props {
@@ -26,7 +23,10 @@ const Page = async ({ params, searchParams }: Props) => {
     <Card>
       <CardHeader>
         <CardTitle>Activity</CardTitle>
-        <CardDescription>Activity feed for this animal.</CardDescription>
+        <CardDescription>
+          This page displays the ten most recent activity logs for this animal,
+          including who made the change and a summary of the action.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flow-root">

@@ -18,6 +18,9 @@ export const Permissions = {
   ANIMAL_NOTE_UPDATE: "animal_note:update",
   ANIMAL_NOTE_DELETE: "animal_note:delete",
 
+  // Animal Outcome Permissions
+  OUTCOMES_MANAGE: "outcome:manage",
+
   PARTNER_READ: "partner:read_analytics",
 
   // Application Management (for staff/admins, and volunteers for read-only)

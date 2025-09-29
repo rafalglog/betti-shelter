@@ -1,4 +1,4 @@
-import { fetchUserById } from "@/app/lib/data/users/user.data";
+import { fetchUserById } from "@/app/lib/data/user.data";
 import { notFound } from "next/navigation";
 import EditUserForm from "@/app/ui/dashboard/users/edit-user-form";
 import { IDParamType } from "@/app/lib/types";

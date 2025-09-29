@@ -6,7 +6,7 @@ import {
   fetchFilteredAnimals,
   fetchPetsPages,
 } from "@/app/lib/data/animals/animal.data";
-import { FilteredAnimalsPayload, SearchParamsType } from "@/app/lib/types";
+import { AnimalsPayload, SearchParamsType } from "@/app/lib/types";
 import { CreatePetButton } from "@/app/ui/dashboard/pets/buttons/create-pet";
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
@@ -49,7 +49,7 @@ const PageContent = async ({ searchParams }: Props) => {
       </div>
 
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
-        <ReusableTable<FilteredAnimalsPayload>
+        <ReusableTable<AnimalsPayload>
           fetchData={fetchFilteredAnimals}
           query={query}
           currentPage={currentPage}

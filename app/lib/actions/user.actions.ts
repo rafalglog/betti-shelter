@@ -1,62 +1,62 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { Role } from "@prisma/client";
 import { prisma } from "@/app/lib/prisma";
-import { Permissions } from "@/app/lib/auth/permissions";
 import { cuidSchema } from "../zod-schemas/common.schemas";
-import { updateUserRoleFormSchema } from "../zod-schemas/user.schemas";
-import { UpdateUserFormState } from "../form-state-types";
 import { RequirePermission } from "../auth/protected-actions";
+import { Permissions } from "../auth/permissions";
 
-const _updateUserRole = async (
-  userId: string,
-  prevState: UpdateUserFormState,
-  formData: FormData
-): Promise<UpdateUserFormState> => {
+// Define a Zod schema for input validation
+const UpdateUserRoleSchema = z.object({
+  userId: cuidSchema,
+  // Ensure the role is one of the valid, non-admin enum values
+  role: z.nativeEnum(Role).refine(
+    (role) => role !== Role.ADMIN,
+    { message: "Assigning the Admin role is not permitted here." }
+  ),
+});
 
-  // Validate the userId at runtime
-  const parsedUserId = cuidSchema.safeParse(userId);
-  if (!parsedUserId.success) {
+const _updateUserRole = async (userId: string, newRole: Role) => {
+  const validation = UpdateUserRoleSchema.safeParse({ userId, role: newRole });
+
+  if (!validation.success) {
     return {
-      message: "Invalid User ID format.",
+      success: false,
+      message: validation.error.errors[0]?.message || "Invalid input provided.",
     };
   }
-  const validatedUserId = parsedUserId.data;
 
-  // Validate the form data using Zod
-  const validatedFields = updateUserRoleFormSchema.safeParse({
-    role: formData.get("role"),
-  });
+  const { userId: validatedUserId, role: validatedRole } = validation.data;
 
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Update User.",
-    };
-  }
-  // Prepare data for insertion into the database
-  const { role } = validatedFields.data;
-
-  // Update the user in the database
   try {
     await prisma.user.update({
-      where: { id: validatedUserId },
+      where: {
+        id: validatedUserId,
+        // As a safeguard, ensure we're not updating an ADMIN role
+        NOT: {
+          role: Role.ADMIN,
+        },
+      },
       data: {
-        role: role,
+        role: validatedRole,
       },
     });
-  } catch (error) {
+
+    revalidatePath("/dashboard/users");
+
     return {
-      message: "Database Error: Failed to Update User.",
+      success: true,
+      message: "User role updated successfully.",
+    };
+  } catch (error) {
+    console.error("Failed to update user role:", error);
+    return {
+      success: false,
+      message: "Database error: Could not update the user's role.",
     };
   }
-
-  // Revalidate the cache
-  revalidatePath("/dashboard/users");
-
-  // Redirect to the users page
-  redirect("/dashboard/users");
 };
 
 export const updateUserRole = RequirePermission(Permissions.MANAGE_ROLES)(_updateUserRole);

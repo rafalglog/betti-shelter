@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { IDParamType } from "@/app/lib/types";
 import EditApplicationForm from "@/app/ui/dashboard/applications/edit-application-form";
-import { fetchApplicationById } from "@/app/lib/data/application.data";
+import { fetchApplicationById } from "@/app/lib/data/user-application.data";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { hasPermission } from "@/app/lib/auth/hasPermission";
 import { Authorize } from "@/components/auth/authorize";

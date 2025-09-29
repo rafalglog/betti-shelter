@@ -7,10 +7,10 @@ import { sexOptions, sizeOptions } from "./animal-options";
 import { DataTableColumnHeader } from "../../../table-common/data-table-column-header";
 import { AnimalTableRowActions } from "./animal-table-row-actions";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
-import { FilteredAnimalsPayload } from "@/app/lib/types";
+import { AnimalsPayload } from "@/app/lib/types";
 import { animalListingStatusOptions } from "@/app/lib/utils/enum-formatter";
 
-export const columns: ColumnDef<FilteredAnimalsPayload>[] = [
+export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     id: "select",
     header: ({ table }) => (

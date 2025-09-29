@@ -1,8 +1,8 @@
 import Pagination from "@/app/ui/pagination";
 import Search from "@/components/search";
 import { Suspense } from "react";
-import { fetchFilteredUsers, fetchUserPages } from "@/app/lib/data/users/user.data";
-import { FilteredUsersPayload, SearchParamsType } from "@/app/lib/types";
+import { fetchUsers, fetchUserPages } from "@/app/lib/data/user.data";
+import { UsersPayload, SearchParamsType } from "@/app/lib/types";
 import ReusableTable from "@/app/ui/reusable-table";
 import PageHeader from "@/app/ui/dashboard/page-header";
 import { Permissions } from "@/app/lib/auth/permissions";
@@ -41,8 +41,8 @@ const PageContent = async ({ searchParams }: Props) => {
       </div>
 
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
-        <ReusableTable<FilteredUsersPayload>
-          fetchData={fetchFilteredUsers}
+        <ReusableTable<UsersPayload>
+          fetchData={fetchUsers}
           query={query}
           currentPage={currentPage}
           columns={userTableColumns}

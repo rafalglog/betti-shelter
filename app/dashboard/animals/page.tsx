@@ -51,7 +51,7 @@ const Page = async ({ searchParams }: Props) => {
           <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
             Animals
           </CardTitle>
-          <CardDescription>List of animals</CardDescription>
+          <CardDescription>Manage all animals currently in your care or begin the intake process for a new arrival.</CardDescription>
           <CardAction>
           <Button asChild>
             <Link href="/dashboard/animals/create">
@@ -59,7 +59,6 @@ const Page = async ({ searchParams }: Props) => {
             </Link>
           </Button>
         </CardAction>
-
         </CardHeader>
         <CardContent>
           <div className="flex flex-1 flex-col">

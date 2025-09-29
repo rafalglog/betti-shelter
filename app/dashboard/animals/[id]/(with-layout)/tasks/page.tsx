@@ -1,7 +1,7 @@
 import { fetchFilteredAnimalTasks } from "@/app/lib/data/animals/animal-task.data";
-import { getColumns } from "@/components/dashboard/tasks/table/task-table-columns";
-import DataTable from "@/components/dashboard/tasks/table/task-table";
-import TasksDataTableToolbar from "@/components/dashboard/tasks/table/task-table-toolbar";
+import { getColumns } from "@/components/dashboard/animals/tasks/table/task-table-columns";
+import DataTable from "@/components/dashboard/animals/tasks/table/task-table";
+import TasksDataTableToolbar from "@/components/dashboard/animals/tasks/table/task-table-toolbar";
 import { IDParamType, SearchParamsType } from "@/app/lib/types";
 import {
   Card,
@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchTaskAssigneeList } from "@/app/lib/data/users/user.data";
+import { fetchTaskAssigneeList } from "@/app/lib/data/user.data";
 
 interface Props {
   params: IDParamType;
@@ -49,7 +49,10 @@ const Page = async ({ params, searchParams }: Props) => {
     <Card>
       <CardHeader>
         <CardTitle>Tasks</CardTitle>
-        <CardDescription>Tasks associated with this animal.</CardDescription>
+        <CardDescription>
+          This page displays all tasks that are associated with this animal,
+          which can be filtered, sorted, and paginated.
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
         <div className="flex flex-1 flex-col">

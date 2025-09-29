@@ -1,4 +1,4 @@
-import AnimalForm from "@/components/dashboard/animals/animal-form";
+import AnimalForm from "@/components/dashboard/animals/animal-intake-form";
 import { fetchSpecies } from "@/app/lib/data/animals/public.data";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { Authorize } from "@/components/auth/authorize";

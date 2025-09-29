@@ -6,7 +6,7 @@ import {
   Prisma,
 } from "@prisma/client";
 import {
-  FilteredAnimalsPayload,
+  AnimalsPayload,
   SpeciesPayload,
   ColorPayload,
   PartnerPayload,
@@ -100,7 +100,7 @@ const _fetchFilteredAnimals = async (
   sexInput: string | undefined,
   pageSizeInput: number,
   sortInput: string | undefined
-): Promise<{ animals: FilteredAnimalsPayload[]; totalPages: number }> => {
+): Promise<{ animals: AnimalsPayload[]; totalPages: number }> => {
   // Parse the query and currentPage
   const validatedArgs = DashboardAnimalFilterSchema.safeParse({
     query: queryInput,

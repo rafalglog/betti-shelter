@@ -519,9 +519,11 @@ model AdoptionApplication {
   // Status and Workflow Management
   status        ApplicationStatus          @default(PENDING)
   internalNotes String? // For persistent staff notes about the application as a whole
-  history       ApplicationStatusHistory[]
+  
   outcome       Outcome?
-
+  
+  history       ApplicationStatusHistory[]
+  
   // Relations
   userId   String @map(name: "user_id")
   user     Person @relation(fields: [userId], references: [id], onDelete: Cascade)

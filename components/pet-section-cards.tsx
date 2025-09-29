@@ -80,7 +80,9 @@ const AnimalSectionCards = async ({ params }: Props) => {
           </div>
         </CardContent>
         <CardFooter className="flex-col items-end gap-1.5 text-sm">
-          <Button className="h-8">Details</Button>
+          <Button asChild className="h-8">
+            <Link href={`/dashboard/outcomes/create?animalId=${animal.id}`}>Create Outcome</Link>
+          </Button>
         </CardFooter>
       </Card>
 

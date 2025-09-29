@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button";
 import { DataTableViewOptions } from "../../../table-common/data-table-view-options";
 import { sexOptions } from "./animal-options";
 import { animalListingStatusOptions } from "@/app/lib/utils/enum-formatter";
-import { FilteredAnimalsPayload } from "@/app/lib/types";
+import { AnimalsPayload } from "@/app/lib/types";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 
 interface AnimalsDataTableToolbarProps {
-  table: Table<FilteredAnimalsPayload>;
+  table: Table<AnimalsPayload>;
 }
 
 const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {

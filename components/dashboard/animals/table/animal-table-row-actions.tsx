@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { FilteredAnimalsPayload } from "@/app/lib/types";
+import { AnimalsPayload } from "@/app/lib/types";
 
 interface DataTableRowActionsProps {
-  row: Row<FilteredAnimalsPayload>;
+  row: Row<AnimalsPayload>;
 }
 
 export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
@@ -34,7 +34,7 @@ export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <Link href={`/dashboard/animals/${animal.id}`}>
-          <DropdownMenuItem>Details</DropdownMenuItem>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
         </Link>
         <Link href={`/dashboard/animals/${animal.id}/edit`}>
           <DropdownMenuItem>Edit</DropdownMenuItem>

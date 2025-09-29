@@ -26,6 +26,16 @@ export type AnimalFormState = {
   };
 };
 
+export type OutcomeFormState = {
+  message?: string | null;
+  errors?: {
+    outcomeDate?: string[];
+    outcomeType?: string[];
+    destinationPartnerId?: string[];
+    notes?: string[];
+  };
+};
+
 export interface AnimalTaskFormState {
   message?: string | null;
   errors?: {
@@ -64,14 +74,6 @@ export interface MyAdoptionAppFormState {
   };
 }
 
-// Error messages for the user form
-export type UpdateUserFormState = {
-  errors?: {
-    role?: string[];
-  };
-  message?: string | null;
-};
-
 // Error state for updating the application (staff)
 export type StaffUpdateAppFormState = {
   message?: string | null;
@@ -79,6 +81,5 @@ export type StaffUpdateAppFormState = {
     status?: string[];
     internalNotes?: string[];
     statusChangeReason?: string[];
-    isPrimary?: string[];
   };
 };

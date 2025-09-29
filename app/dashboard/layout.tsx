@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { getFilteredLinks } from "../lib/getFilteredLinks";
 // import Breadcrumbs from "../ui/dashboard/breadcrumbs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/dashboard/nav/sidebar-links";
 import { SiteHeader } from "@/components/site-header";
 
 interface LayoutProps {

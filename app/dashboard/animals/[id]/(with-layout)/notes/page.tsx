@@ -1,5 +1,5 @@
 import { IDParamType, SearchParamsType } from "@/app/lib/types";
-import AnimalNotes from "@/components/dashboard/notes/notes";
+import AnimalNotes from "@/components/dashboard/animals/notes/notes";
 import { fetchFilteredAnimalNotes } from "@/app/lib/data/animals/animal-note.data";
 
 interface Props {

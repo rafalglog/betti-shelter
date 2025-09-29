@@ -15,6 +15,35 @@ export type AnimalByIDPayload = Prisma.AnimalGetPayload<{
   };
 }>;
 
+export type OutcomePayload = Prisma.OutcomeGetPayload<{
+  include: {
+    animal: {
+      select: {
+        id: true;
+        name: true;
+      };
+    };
+    staffMember: {
+      select: {
+        id: true;
+        name: true;
+      };
+    };
+    destinationPartner: {
+      select: {
+        id: true;
+        name: true;
+      };
+    };
+    adoptionApplication: {
+      select: {
+        id: true;
+        applicantName: true;
+      };
+    };
+  };
+}>;
+
 export type AnimalWithDetailsPayload = Animal & {
   species: Species;
   breeds: Breed[];
@@ -72,8 +101,7 @@ export type AnimalForApplicationPayload = Prisma.AnimalGetPayload<{
   };
 }>;
 
-// Type for the filtered users returned by _fetchFilteredUsers
-export type FilteredUsersPayload = Prisma.UserGetPayload<{
+export type UsersPayload = Prisma.UserGetPayload<{
   select: {
     id: true;
     email: true;
@@ -83,8 +111,7 @@ export type FilteredUsersPayload = Prisma.UserGetPayload<{
   };
 }>;
 
-// Type for the filtered pets returned by _fetchFilteredPets
-export type FilteredAnimalsPayload = Prisma.AnimalGetPayload<{
+export type AnimalsPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
@@ -99,8 +126,7 @@ export type FilteredAnimalsPayload = Prisma.AnimalGetPayload<{
   };
 }>;
 
-// Type for the filtered adoption applications returned by
-export type FilteredMyApplicationPayload =
+export type MyApplicationPayload =
   Prisma.AdoptionApplicationGetPayload<{
     select: {
       id: true;
@@ -127,8 +153,7 @@ export type FilteredMyApplicationPayload =
     };
   }>;
 
-// Type for the filtered adoption applications returned by _fetchFilteredApplications
-export type FilteredApplicationsPayload = Prisma.AdoptionApplicationGetPayload<{
+export type ApplicationsPayload = Prisma.AdoptionApplicationGetPayload<{
   select: {
     id: true;
     applicantName: true;
@@ -204,3 +229,43 @@ export interface AssessmentFormData {
   customFields?: TemplateField[];
   [key: string]: any; // For dynamic field values
 }
+
+// export type OutcomeWithDetails = Prisma.OutcomeGetPayload<{
+//   include: {
+//     animal: {
+//       select: {
+//         id: true;
+//         name: true;
+//         species: {
+//           select: {
+//             name: true;
+//           };
+//         };
+//       };
+//     };
+//     staffMember: {
+//       select: {
+//         id: true;
+//         name: true;
+//       };
+//     };
+//     destinationPartner: {
+//       select: {
+//         id: true;
+//         name: true;
+//       };
+//     };
+//     owner: {
+//       select: {
+//         id: true;
+//         name: true;
+//       };
+//     };
+//     adoptionApplication: {
+//       select: {
+//         id: true;
+//         applicantName: true;
+//       };
+//     };
+//   };
+// }>;

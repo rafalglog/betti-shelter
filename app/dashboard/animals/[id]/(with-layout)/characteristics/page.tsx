@@ -1,6 +1,6 @@
 import { fetchAnimalCharacteristics } from "@/app/lib/data/animals/animal-characteristics.data";
 import { IDParamType } from "@/app/lib/types";
-import AnimalCharacteristicsManager from "@/components/dashboard/characteristics/characteristics";
+import AnimalCharacteristicsManager from "@/components/dashboard/animals/characteristics/characteristics";
 
 interface Props {
   params: IDParamType;

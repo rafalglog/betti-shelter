@@ -7,15 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MyApplicationForm } from "@/components/dashboard/my-applications/myApplication-form";
-import { fetchMyAppById } from "@/app/lib/data/myApplications.data";
+import { MyApplicationForm } from "@/components/dashboard/my-adoption-applications/my-adoption-application-form";
+import { fetchMyAppById } from "@/app/lib/data/my-applications.data";
 
 interface Props {
-  params: { applicationId: string };
+  params: Promise<{ applicationId: string }>;
 }
 
 const Page = async ({ params }: Props) => {
-  const { applicationId } = params;
+  const { applicationId } = await params;
 
   const myApplication = await fetchMyAppById(applicationId);
 

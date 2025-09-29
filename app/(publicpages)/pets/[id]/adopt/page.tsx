@@ -1,10 +1,10 @@
-import { getAnimalForApplication } from "@/app/lib/data/myApplications.data";
+import { getAnimalForApplication } from "@/app/lib/data/my-applications.data";
 import { IDParamType, AnimalForApplicationPayload } from "@/app/lib/types";
 import { auth } from "@/auth";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
-import MyAdoptionAppSkeleton from "@/components/dashboard/my-applications/myAdoptionApp-skeleton";
-import { MyApplicationForm } from "@/components/dashboard/my-applications/myApplication-form";
+import MyAdoptionAppSkeleton from "@/components/dashboard/my-adoption-applications/myAdoptionApp-skeleton";
+import { MyApplicationForm } from "@/components/dashboard/my-adoption-applications/my-adoption-application-form";
 
 async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
   // Get animal data for the application 
@@ -35,12 +35,12 @@ interface Props {
 }
 
 const Page = async ({ params }: Props) => {
-  const { id } = await params; // 
+  const { id } = await params;
 
   // Get user session information 
   const session = await auth();
   if (!session || !session.user) {
-    redirect("/api/auth/signin"); // 
+    redirect("/api/auth/signin");
   }
 
   return (

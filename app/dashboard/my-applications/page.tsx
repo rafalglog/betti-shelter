@@ -6,13 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import DataTable from "@/components/dashboard/my-applications/table/my-applications-table";
-import { columns } from "@/components/dashboard/my-applications/table/my-applications-table-columns";
+import DataTable from "@/components/dashboard/my-adoption-applications/table/my-applications-table";
+import { columns } from "@/components/dashboard/my-adoption-applications/table/my-applications-table-columns";
 import { SearchParamsType } from "@/app/lib/types";
-import MyAppTableToolbar from "@/components/dashboard/my-applications/table/my-applications-table-toolbar";
+import MyAppTableToolbar from "@/components/dashboard/my-adoption-applications/table/my-applications-table-toolbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { fetchMyApplications } from "@/app/lib/data/myApplications.data";
+import { fetchMyApplications } from "@/app/lib/data/my-applications.data";
 export const dynamic = "force-dynamic";
 
 interface Props {
@@ -38,11 +38,11 @@ const Page = async ({ searchParams }: Props) => {
             My applications
           </CardTitle>
           <CardDescription>
-            List of your submitted applications.
+            List of your submitted adoption applications.
           </CardDescription>
           <CardAction>
             <Button asChild>
-              <Link href="/adopt">Adopt Pets</Link>
+              <Link href="/pets">Adopt Pets</Link>
             </Button>
           </CardAction>
         </CardHeader>
