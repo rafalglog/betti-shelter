@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { IDParamType } from "@/app/lib/types";
-import { getAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
+import { fetchAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentForm } from "@/components/dashboard/animals/assessments/assessment-form";
 import {
   Card,
@@ -17,7 +17,7 @@ interface Props {
 export default async function NewAssessmentPage({ params }: Props) {
   const { id: animalId } = await params;
 
-  const templates = await getAssessmentTemplates();
+  const templates = await fetchAssessmentTemplates();
 
   return (
     <Card>

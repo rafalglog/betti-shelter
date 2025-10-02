@@ -5,8 +5,10 @@ import {
   differenceInWeeks,
   differenceInDays,
   addYears,
+  isPast,
   formatDistanceToNowStrict,
 } from "date-fns";
+import { TaskStatus } from "@prisma/client";
 
 interface calculateAgeStringProps {
   /**
@@ -148,4 +150,36 @@ export const formatTimeAgo = (dateInput: string | Date | undefined | null): stri
     console.error("Error formatting time ago:", error);
     return "Invalid Date";
   }
+};
+
+/**
+ * Formats a due date with special handling for overdue tasks.
+ * @param {string | Date | undefined | null} dateInput - The due date.
+ * @param {TaskStatus} status - The current status of the task.
+ * @returns {string} A formatted string like "Overdue by 3 days", "in 2 hours", or "N/A".
+ */
+export const formatDueDate = (
+  dateInput: string | Date | undefined | null,
+  status: TaskStatus
+): string => {
+  if (dateInput === null || dateInput === undefined) {
+    return "N/A";
+  }
+
+  const date = new Date(dateInput);
+  const isOverdue = isPast(date);
+
+  // Define which statuses are considered "active" for overdue checks
+  const activeStatuses: TaskStatus[] = [
+    TaskStatus.TODO,
+    TaskStatus.IN_PROGRESS,
+  ];
+
+  if (activeStatuses.includes(status) && isOverdue) {
+    // Return a special string for active, overdue tasks
+    return `Overdue by ${formatDistanceToNowStrict(date)}`;
+  }
+
+  // For all other cases (done tasks, future tasks), use the standard time ago format
+  return formatTimeAgo(dateInput);
 };

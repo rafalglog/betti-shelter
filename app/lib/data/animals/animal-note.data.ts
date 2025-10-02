@@ -8,7 +8,7 @@ import z from "zod";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { RequirePermission } from "../../auth/protected-actions";
 
-export type FilteredNotePayload = Prisma.NoteGetPayload<{
+export type NotePayload = Prisma.NoteGetPayload<{
   select: {
     id: true;
     content: true;
@@ -25,7 +25,7 @@ export type FilteredNotePayload = Prisma.NoteGetPayload<{
   };
 }>;
 
-export const DashboardNotesFilterSchema = z.object({
+export const AnimalNotesSchema = z.object({
   currentPage: currentPageSchema,
   animalId: cuidSchema,
   category: z.string().optional(),
@@ -40,9 +40,9 @@ const _fetchFilteredAnimalNotes = async (
   sortInput: string | undefined,
   inputAnimalId: string,
   showDeleted: boolean = false
-): Promise<{ notes: FilteredNotePayload[]; totalPages: number }> => {
+): Promise<{ notes: NotePayload[]; totalPages: number }> => {
   // Validate and parse the input arguments using the Zod schema
-  const validatedArgs = DashboardNotesFilterSchema.safeParse({
+  const validatedArgs = AnimalNotesSchema.safeParse({
     currentPage: currentPageInput,
     category: categoryInput,
     sort: sortInput,
@@ -125,7 +125,6 @@ export type FetchAnimalNoteByIdPayload = Prisma.NoteGetPayload<{
   };
 }>;
 
-// Renamed: Internal function is now prefixed with an underscore
 const _fetchAnimalNoteById = async (
   id: string
 ): Promise<FetchAnimalNoteByIdPayload | null> => {
@@ -147,7 +146,6 @@ const _fetchAnimalNoteById = async (
   }
 };
 
-// Added: Export the protected version of the function
 export const fetchAnimalNoteById = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchAnimalNoteById);

@@ -18,7 +18,7 @@ export type AssessmentTemplateWithFields = Prisma.AssessmentTemplateGetPayload<{
 
 const ASSESSMENTS_PER_PAGE = 5;
 
-const _getAssessmentTemplates = async (): Promise<
+const _fetchAssessmentTemplates = async (): Promise<
   AssessmentTemplateWithFields[]
 > => {
   try {
@@ -45,7 +45,7 @@ export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
   };
 }>;
 
-export const DashboardAssessmentsSchema = z.object({
+export const AnimalAssessmentsSchema = z.object({
   currentPage: currentPageSchema,
   animalId: cuidSchema,
   type: z.string().optional(),
@@ -63,7 +63,7 @@ const _fetchAnimalAssessments = async (
   showDeletedInput: boolean = false
 ): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> => {
   // Validate and parse inputs
-  const validatedArgs = DashboardAssessmentsSchema.safeParse({
+  const validatedArgs = AnimalAssessmentsSchema.safeParse({
     currentPage: currentPageInput,
     animalId: animalId,
     type: typeInput,
@@ -150,9 +150,9 @@ export const fetchAnimalAssessmentById = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
 )(_fetchAnimalAssessmentById);
 
-export const getAssessmentTemplates = RequirePermission(
+export const fetchAssessmentTemplates = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
-)(_getAssessmentTemplates);
+)(_fetchAssessmentTemplates);
 
 export const fetchFilteredAnimalAssessments = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL

@@ -12,6 +12,7 @@ import {
 import { Permissions } from "@/app/lib/auth/permissions";
 import { TaskFormSchema } from "../zod-schemas/animal.schemas";
 import { TaskStatus } from "@prisma/client";
+import z from "zod";
 
 const _createAnimalTask = async (
   user: SessionUser, // Injected by withAuthenticatedUser
@@ -53,13 +54,13 @@ const _createAnimalTask = async (
       data: {
         title: title,
         details: details,
-        status: status, // Prisma will use default if undefined
+        status: status,
         category: category,
-        priority: priority, // Prisma will use default if undefined
+        priority: priority,
         dueDate: dueDate,
         animalId: parsedId.data,
         assigneeId: assigneeId,
-        createdById: taskCreatorId, // Assign the task creator
+        createdById: taskCreatorId,
       },
     });
   } catch (error) {
@@ -137,7 +138,6 @@ const _updateAnimalTask = async (
         priority: priority,
         dueDate: dueDate,
         assigneeId: assigneeId,
-        // Note: createdById is not updated as it should be immutable.
       },
     });
   } catch (error) {
@@ -183,10 +183,43 @@ const _updateTaskStatus = async (
   return { message: `Task status updated to ${status}.` };
 };
 
+const UpdateAssigneeSchema = z.object({
+  taskId: z.string().min(1, "Task ID is required."),
+  assigneeId: z.string().nullable(),
+});
 
-export const updateAnimalTaskStatus = RequirePermission(Permissions.ANIMAL_UPDATE)(
-  _updateTaskStatus
-);
+const _updateAnimalTaskAssignee = async (
+  taskId: string,
+  assigneeId: string | null
+) => {
+  try {
+    const validatedData = UpdateAssigneeSchema.parse({ taskId, assigneeId });
+
+    await prisma.task.update({
+      where: { id: validatedData.taskId },
+      data: {
+        assigneeId: validatedData.assigneeId,
+      },
+    });
+
+    // Revalidate the path to refresh the data on the page
+    revalidatePath("/dashboard/tasks");
+    return { success: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { error: "Invalid data provided." };
+    }
+    return { error: "Failed to update assignee. Please try again." };
+  }
+};
+
+export const updateAnimalTaskAssignee = RequirePermission(
+  Permissions.ANIMAL_UPDATE
+)(_updateAnimalTaskAssignee);
+
+export const updateAnimalTaskStatus = RequirePermission(
+  Permissions.ANIMAL_UPDATE
+)(_updateTaskStatus);
 
 export const updateAnimalTask = RequirePermission(Permissions.ANIMAL_UPDATE)(
   _updateAnimalTask

@@ -1,4 +1,4 @@
-import { fetchFilteredAnimalTasks } from "@/app/lib/data/animals/animal-task.data";
+import { fetchAnimalTasks } from "@/app/lib/data/animals/animal-task.data";
 import { getColumns } from "@/components/dashboard/animals/tasks/table/task-table-columns";
 import DataTable from "@/components/dashboard/animals/tasks/table/task-table";
 import TasksDataTableToolbar from "@/components/dashboard/animals/tasks/table/task-table-toolbar";
@@ -33,7 +33,7 @@ const Page = async ({ params, searchParams }: Props) => {
   const currentPageSize = Number(pageSize);
 
   // Pass all parameters, including the potentially undefined ones, to the function.
-  const { tasks, totalPages } = await fetchFilteredAnimalTasks(
+  const { tasks, totalPages } = await fetchAnimalTasks(
     query,
     currentPage,
     category,

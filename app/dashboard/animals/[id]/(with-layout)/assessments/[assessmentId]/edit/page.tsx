@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { fetchAnimalAssessmentById, getAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
+import { fetchAnimalAssessmentById, fetchAssessmentTemplates } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentForm } from "@/components/dashboard/animals/assessments/assessment-form";
 import {
   Card,
@@ -32,7 +32,7 @@ const PageContent = async ({ params }: Props) => {
   const { id: animalId, assessmentId } = await params;
 
   const [templates, assessment] = await Promise.all([
-    getAssessmentTemplates(),
+    fetchAssessmentTemplates(),
     fetchAnimalAssessmentById(assessmentId),
   ]);
   

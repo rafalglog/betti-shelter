@@ -159,7 +159,6 @@ const _createAnimal = async (
     };
   }
 
-  console.log("Animal created successfully.");
   revalidatePath("/dashboard/animals");
   redirect("/dashboard/animals");
 };

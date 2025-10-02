@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, LifebuoyIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { IconPaw } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -62,7 +63,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
                 </SheetHeader>
                 {/* Logo inside the Sheet */}
                 <div className="flex shrink-0 items-center">
-                  <LifebuoyIcon className="h-8 w-8 text-green-400" />
+                  <IconPaw className="h-6 w-6" />
                   <span className="text-white font-bold text-xl ml-2">
                     Pet Adopt
                   </span>
@@ -86,7 +87,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
           <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
             {/* Logo for desktop */}
             <div className="flex shrink-0 items-center">
-              <LifebuoyIcon className="h-8 w-8 text-green-400" />
+              <IconPaw className="h-6 w-6" />
               <span className="text-white font-bold text-xl ml-2">
                 Pet Adopt
               </span>

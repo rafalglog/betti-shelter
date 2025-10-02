@@ -9,6 +9,7 @@ import { AnimalTableRowActions } from "./animal-table-row-actions";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
 import { AnimalsPayload } from "@/app/lib/types";
 import { animalListingStatusOptions } from "@/app/lib/utils/enum-formatter";
+import Link from "next/link";
 
 export const columns: ColumnDef<AnimalsPayload>[] = [
   {
@@ -52,9 +53,12 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
       return (
         <div className="flex space-x-2">
           {status && <Badge variant="outline">{status.label}</Badge>}{" "}
-          <span className="max-w-[500px] truncate font-medium">
+          <Link
+            className="font-medium hover:underline"
+            href={`/dashboard/animals/${row.original.id}`}
+          >
             {row.getValue("name")}
-          </span>
+          </Link>
         </div>
       );
     },

@@ -1,8 +1,10 @@
 import { prisma } from "@/app/lib/prisma";
 import { Prisma, TaskCategory, TaskStatus } from "@prisma/client";
-import { DashboardTasksFilterSchema } from "../../zod-schemas/animal.schemas";
+import { AnimalTasksSchema } from "../../zod-schemas/animal.schemas";
+import { RequirePermission } from "../../auth/protected-actions";
+import { Permissions } from "@/app/lib/auth/permissions";
 
-export type FilteredTaskPayload = Prisma.TaskGetPayload<{
+export type TaskPayload = Prisma.TaskGetPayload<{
   select: {
     id: true;
     title: true;
@@ -22,7 +24,7 @@ export type FilteredTaskPayload = Prisma.TaskGetPayload<{
   };
 }>;
 
-export const fetchFilteredAnimalTasks = async (
+const _fetchAnimalTasks = async (
   queryInput: string,
   currentPageInput: number,
   categoryInput: string | undefined,
@@ -30,8 +32,8 @@ export const fetchFilteredAnimalTasks = async (
   pageSizeInput: number,
   sortInput: string | undefined,
   inputAnimalId: string
-): Promise<{ tasks: FilteredTaskPayload[]; totalPages: number }> => {
-  const validatedArgs = DashboardTasksFilterSchema.safeParse({
+): Promise<{ tasks: TaskPayload[]; totalPages: number }> => {
+  const validatedArgs = AnimalTasksSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     category: categoryInput,
@@ -44,13 +46,13 @@ export const fetchFilteredAnimalTasks = async (
   if (!validatedArgs.success) {
     if (process.env.NODE_ENV !== "production") {
       console.error(
-        "Zod validation error in fetchFilteredAnimalTasks:",
+        "Zod validation error in fetchAnimalTasks:",
         validatedArgs.error.flatten()
       );
     }
     throw new Error(
       validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching filtered tasks."
+        "Invalid arguments for fetching tasks."
     );
   }
 
@@ -139,7 +141,7 @@ export type FetchAnimalTaskByIdPayload = Prisma.TaskGetPayload<{
   };
 }>;
 
-export const fetchAnimalTaskById = async (
+const _fetchAnimalTaskById = async (
   id: string
 ): Promise<FetchAnimalTaskByIdPayload | null> => {
   try {
@@ -171,3 +173,11 @@ export const fetchAnimalTaskById = async (
     throw new Error(`Error fetching task with ID ${id}.`);
   }
 };
+
+export const fetchAnimalTasks = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalTasks);
+
+export const fetchAnimalTaskById = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalTaskById);

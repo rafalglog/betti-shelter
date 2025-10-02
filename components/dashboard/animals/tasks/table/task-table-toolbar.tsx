@@ -10,7 +10,7 @@ import {
   TaskCategoryOptions,
   TaskStatusOptions,
 } from "@/app/lib/utils/enum-formatter";
-import { FilteredTaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ import { ServerSideFacetedFilter } from "@/components/table-common/server-side-f
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
 
 interface TasksDataTableToolbarProps {
-  table: Table<FilteredTaskPayload>;
+  table: Table<TaskPayload>;
   animalId: string;
   assigneeList: TaskAssignee[];
 }

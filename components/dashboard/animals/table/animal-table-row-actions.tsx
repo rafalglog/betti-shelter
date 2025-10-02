@@ -36,14 +36,10 @@ export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
         <Link href={`/dashboard/animals/${animal.id}`}>
           <DropdownMenuItem>Profile</DropdownMenuItem>
         </Link>
+        <DropdownMenuSeparator />
         <Link href={`/dashboard/animals/${animal.id}/edit`}>
           <DropdownMenuItem>Edit</DropdownMenuItem>
         </Link>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
-          Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

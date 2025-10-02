@@ -7,6 +7,7 @@ import { ApplicationStatuses } from "./adoption-applications-options";
 import { DataTableColumnHeader } from "../../../table-common/data-table-column-header";
 import { DataTableRowActions } from "./adoption-applications-table-row-actions";
 import { ApplicationWithAnimal } from "@/app/lib/data/user-application.data";
+import { formatTimeAgo } from "@/app/lib/utils/date-utils";
 
 export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
@@ -154,11 +155,8 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
       displayName: "Submitted At",
     },
     cell: ({ row }) => {
-      const date = row.getValue("submittedAt");
-
-      return date ? (
-        <span>{new Date(date as string).toLocaleDateString()}</span>
-      ) : null;
+      const date = row.getValue("submittedAt") as string | Date | null;
+      return <span>{formatTimeAgo(date)}</span>;
     },
   },
   {

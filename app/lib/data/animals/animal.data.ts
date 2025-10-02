@@ -1,7 +1,6 @@
 import { prisma } from "@/app/lib/prisma";
 import {
   AnimalListingStatus,
-  ApplicationStatus,
   Sex,
   Prisma,
 } from "@prisma/client";
@@ -12,85 +11,10 @@ import {
   PartnerPayload,
   AnimalWithDetailsPayload,
 } from "../../types";
-import {
-  cuidSchema,
-} from "../../zod-schemas/common.schemas";
+import { cuidSchema } from "../../zod-schemas/common.schemas";
 import { DashboardAnimalsFilterSchema as DashboardAnimalFilterSchema } from "../../zod-schemas/animal.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-
-const _fetchAnimalCardData = async () => {
-  try {
-    // Run count queries in parallel for efficiency
-    const [totalPets, adoptedPetsCount, pendingPetsCount, publishedPetsCount] =
-      await Promise.all([
-        prisma.animal.count(),
-        prisma.animal.count({
-          where: {
-            adoptionApplications: {
-              some: {
-                status: ApplicationStatus.ADOPTED,
-              },
-            },
-          },
-        }),
-        prisma.animal.count({
-          where: {
-            listingStatus: AnimalListingStatus.PENDING_ADOPTION,
-          },
-        }),
-        prisma.animal.count({
-          where: {
-            listingStatus: AnimalListingStatus.PUBLISHED,
-          },
-        }),
-      ]);
-
-    return {
-      totalPets,
-      adoptedPetsCount,
-      pendingPetsCount,
-      publishedPetsCount,
-    };
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching card data.", error);
-    }
-    throw new Error("Error fetching card data.");
-  }
-};
-
-const _fetchLatestPets = async () => {
-  // Get the latest pets
-  try {
-    const latestPets = await prisma.animal.findMany({
-      select: {
-        id: true,
-        name: true,
-        birthDate: true,
-        city: true,
-        state: true,
-        animalImages: {
-          select: {
-            url: true,
-          },
-          take: 1,
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: 5,
-    });
-
-    return latestPets;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching latest pets.", error);
-    }
-    throw new Error("Error fetching latest pets.");
-  }
-};
 
 // data for the animals table in the dashboard
 const _fetchFilteredAnimals = async (
@@ -293,18 +217,10 @@ export const fetchPartners = RequirePermission(Permissions.PARTNER_READ)(
   _fetchPartners
 );
 
-export const fetchPetCardData = RequirePermission(
-  Permissions.ANIMAL_READ_ANALYTICS
-)(_fetchAnimalCardData);
-
-export const fetchLatestPets = RequirePermission(
-  Permissions.ANIMAL_READ_ANALYTICS
-)(_fetchLatestPets);
-
 export const fetchFilteredAnimals = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchFilteredAnimals);
 
-export const fetchAnimalById = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
-  _fetchAnimalById
-);
+export const fetchAnimalById = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalById);

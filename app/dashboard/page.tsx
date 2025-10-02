@@ -1,37 +1,99 @@
-import { AppSidebar } from "@/components/dashboard/sidebar-links";
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/dashboard/data-table";
-import { SectionCards } from "@/components/section-cards";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SectionCards } from "@/components/dashboard/analytics/section-cards";
+import { Suspense } from "react";
+import ChartWrapper from "@/components/dashboard/analytics/chart-wrapper";
+import { SearchParamsType } from "../lib/types";
+import { fetchTaskAssigneeList } from "../lib/data/user.data";
+import {
+  fetchAnimalsRequiringAttention,
+  fetchTaskTableData,
+} from "../lib/data/analytics.data";
 
-import data from "./data.json";
+import TaskTable from "@/components/dashboard/analytics/tables/tasks/task-table";
+import { getColumns as getTaskColumns } from "@/components/dashboard/analytics/tables/tasks/task-table-columns";
+import TasksDataTableToolbar from "@/components/dashboard/analytics/tables/tasks/task-table-toolbar";
 
-export default function Page() {
-  return (
-    // <SidebarProvider
-    //   style={
-    //     {
-    //       "--sidebar-width": "calc(var(--spacing) * 72)",
-    //       "--header-height": "calc(var(--spacing) * 12)",
-    //     } as React.CSSProperties
-    //   }
-    // >
-    //   <AppSidebar variant="inset" />
-    //   <SidebarInset>
-    //     <SiteHeader />
-    //     <div className="flex flex-1 flex-col">
-    //       <div className="@container/main flex flex-1 flex-col gap-2">
-    //         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-    <>
-      <SectionCards />
-      <ChartAreaInteractive />
-      <DataTable data={data} />
-    </>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </SidebarInset>
-    // </SidebarProvider>
-  );
+import HealthTable from "@/components/dashboard/analytics/tables/animal-health/health-table";
+import { columns as getHealthColumns } from "@/components/dashboard/analytics/tables/animal-health/health-table-columns";
+import HealthDataTableToolbar from "@/components/dashboard/analytics/tables/animal-health/health-table-toolbar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const SectionCardsSkeleton = () => (
+  <div className="shimmer-animation grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <div key={i} className="h-[150px] bg-gray-100 border rounded-lg" />
+    ))}
+  </div>
+);
+
+interface Props {
+  searchParams: SearchParamsType;
 }
+
+const Page = async () => {
+  const tasks = await fetchTaskTableData();
+  const animalHealth = await fetchAnimalsRequiringAttention();
+
+  const assigneeList = await fetchTaskAssigneeList();
+
+  return (
+    <>
+      <Suspense fallback={<SectionCardsSkeleton />}>
+        <SectionCards />
+      </Suspense>
+      <ChartWrapper />
+
+      <Tabs defaultValue="animal-tasks">
+        <TabsList>
+          <TabsTrigger value="animal-tasks">Tasks</TabsTrigger>
+          <TabsTrigger value="health">Health</TabsTrigger>
+        </TabsList>
+        <TabsContent value="animal-tasks">
+          <Card>
+            <CardHeader>
+              <CardTitle>Animal Tasks</CardTitle>
+              <CardDescription>
+                This table provides a direct to-do list for shelter staff,
+                showing all tasks that are not yet completed.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TaskTable
+                data={tasks}
+                getColumns={getTaskColumns}
+                ToolbarComponent={TasksDataTableToolbar}
+                assigneeList={assigneeList}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="health">
+          <Card>
+            <CardHeader>
+              <CardTitle>Animal Health</CardTitle>
+              <CardDescription>
+                This tab flags animals that are in a special state requiring
+                administrative or medical oversight.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HealthTable
+                data={animalHealth}
+                columns={getHealthColumns}
+                ToolbarComponent={HealthDataTableToolbar}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </>
+  );
+};
+
+export default Page;

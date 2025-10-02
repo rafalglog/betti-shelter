@@ -27,7 +27,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { NoteCategory } from "@prisma/client";
-import { FilteredNotePayload } from "@/app/lib/data/animals/animal-note.data";
+import { NotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { noteCategoryOptions } from "@/app/lib/utils/enum-formatter";
 import { formatDateOrNA, formatTimeAgo } from "@/app/lib/utils/date-utils";
 import { NoteForm } from "./note-form";
@@ -48,7 +48,7 @@ export const noteCategoryColors: Record<NoteCategory, string> = {
 };
 
 interface Props {
-  notes: FilteredNotePayload[];
+  notes: NotePayload[];
   totalPages: number;
   animalId: string;
 }

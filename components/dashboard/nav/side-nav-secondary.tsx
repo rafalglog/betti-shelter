@@ -1,42 +1,47 @@
-"use client"
-
-import * as React from "react"
-import { type Icon } from "@tabler/icons-react"
+"use client";
 
 import {
   SidebarGroup,
-  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import Link from "next/link";
+import * as React from "react";
+import { NavItem } from "./nav-links.config";
+import { getIcon } from "./icon-map";
+import { usePathname } from "next/navigation";
 
 export function NavSecondary({
   items,
   ...props
 }: {
-  items: {
-    title: string
-    url: string
-    icon: Icon
-  }[]
+  items: NavItem[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const pathname = usePathname();
+
+  const isActive = (itemUrl: string) => {
+    return pathname === itemUrl || pathname.startsWith(itemUrl + "/");
+  };
+
   return (
     <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
+      <SidebarMenu>
+        {items.map((item) => {
+          const Icon = getIcon(item.icon);
+          const active = isActive(item.url);
+          return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
-                  <item.icon />
+              <SidebarMenuButton asChild isActive={active}>
+                <Link href={item.url}>
+                  <Icon className="size-4" />
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
+          );
+        })}
+      </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

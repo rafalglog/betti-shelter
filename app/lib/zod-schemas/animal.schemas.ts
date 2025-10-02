@@ -48,7 +48,7 @@ export const DashboardAnimalsFilterSchema = z.object({
   sort: z.string().optional(),
 });
 
-export const DashboardTasksFilterSchema = z.object({
+export const AnimalTasksSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   category: z.string().optional(),

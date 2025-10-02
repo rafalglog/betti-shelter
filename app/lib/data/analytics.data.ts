@@ -1,0 +1,409 @@
+import { prisma } from "@/app/lib/prisma";
+import {
+  AnimalHealthStatus,
+  AnimalLegalStatus,
+  AnimalListingStatus,
+  ApplicationStatus,
+  OutcomeType,
+  Prisma,
+} from "@prisma/client";
+import { Permissions } from "@/app/lib/auth/permissions";
+import { RequirePermission } from "../auth/protected-actions";
+import { TaskPayload } from "./animals/animal-task.data";
+import { Prettify } from "../utils/type-utils";
+
+export type PetCardDataType = {
+  totalPets: number;
+  adoptedPetsCount: number;
+  pendingPetsCount: number;
+  publishedPetsCount: number;
+  todoTasksCount: number;
+  trends: {
+    totalPetsChange: number;
+    adoptedPetsChange: number;
+    publishedPetsChange: number;
+    todoTasksChange: number;
+  };
+};
+
+const _fetchAnimalCardData = async (): Promise<PetCardDataType> => {
+  try {
+    const now = new Date();
+    const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    // Current totals
+    const [
+      totalPets,
+      adoptedPetsCount,
+      pendingPetsCount,
+      publishedPetsCount,
+      todoTasksCount,
+    ] = await Promise.all([
+      prisma.animal.count(),
+      prisma.animal.count({
+        where: {
+          adoptionApplications: {
+            some: {
+              status: ApplicationStatus.ADOPTED,
+            },
+          },
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          listingStatus: AnimalListingStatus.PENDING_ADOPTION,
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          listingStatus: AnimalListingStatus.PUBLISHED,
+        },
+      }),
+      prisma.task.count({
+        where: {
+          status: "TODO",
+        },
+      }),
+    ]);
+
+    // Current month counts (for trend calculation)
+    const [
+      currentMonthAnimals,
+      currentMonthAdoptions,
+      currentMonthPublished,
+      currentMonthTasks,
+    ] = await Promise.all([
+      prisma.animal.count({
+        where: {
+          createdAt: {
+            gte: startOfCurrentMonth,
+          },
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          adoptionApplications: {
+            some: {
+              status: ApplicationStatus.ADOPTED,
+              updatedAt: {
+                gte: startOfCurrentMonth,
+              },
+            },
+          },
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          listingStatus: AnimalListingStatus.PUBLISHED,
+          updatedAt: {
+            gte: startOfCurrentMonth,
+          },
+        },
+      }),
+      prisma.task.count({
+        where: {
+          status: "TODO",
+          createdAt: {
+            gte: startOfCurrentMonth,
+          },
+        },
+      }),
+    ]);
+
+    // Last month counts (for comparison)
+    const [
+      lastMonthAnimals,
+      lastMonthAdoptions,
+      lastMonthPublished,
+      lastMonthTasks,
+    ] = await Promise.all([
+      prisma.animal.count({
+        where: {
+          createdAt: {
+            gte: startOfLastMonth,
+            lte: endOfLastMonth,
+          },
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          adoptionApplications: {
+            some: {
+              status: ApplicationStatus.ADOPTED,
+              updatedAt: {
+                gte: startOfLastMonth,
+                lte: endOfLastMonth,
+              },
+            },
+          },
+        },
+      }),
+      prisma.animal.count({
+        where: {
+          listingStatus: AnimalListingStatus.PUBLISHED,
+          updatedAt: {
+            gte: startOfLastMonth,
+            lte: endOfLastMonth,
+          },
+        },
+      }),
+      prisma.task.count({
+        where: {
+          status: "TODO",
+          createdAt: {
+            gte: startOfLastMonth,
+            lte: endOfLastMonth,
+          },
+        },
+      }),
+    ]);
+
+    // Calculate percentage changes
+    const calculateChange = (current: number, previous: number) => {
+      if (previous === 0) return current > 0 ? 100 : 0;
+      return ((current - previous) / previous) * 100;
+    };
+
+    return {
+      totalPets,
+      adoptedPetsCount,
+      pendingPetsCount,
+      publishedPetsCount,
+      todoTasksCount,
+      trends: {
+        totalPetsChange: calculateChange(currentMonthAnimals, lastMonthAnimals),
+        adoptedPetsChange: calculateChange(
+          currentMonthAdoptions,
+          lastMonthAdoptions
+        ),
+        publishedPetsChange: calculateChange(
+          currentMonthPublished,
+          lastMonthPublished
+        ),
+        todoTasksChange: calculateChange(currentMonthTasks, lastMonthTasks),
+      },
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching card data.", error);
+    }
+    throw new Error("Error fetching card data.");
+  }
+};
+
+export type ChartDataPoint = {
+  date: string;
+  intakes: number;
+  adoptions: number;
+};
+
+export type ChartData = ChartDataPoint[];
+
+const _fetchChartData = async (): Promise<ChartData> => {
+  try {
+    const days = 90;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0); // Start from the beginning of the day
+
+    // Fetch daily intake and adoption counts in parallel
+    const [intakeData, adoptionData] = await Promise.all([
+      prisma.intake.groupBy({
+        by: ["intakeDate"],
+        where: { intakeDate: { gte: startDate } },
+        _count: { id: true },
+        orderBy: { intakeDate: "asc" },
+      }),
+      prisma.outcome.groupBy({
+        by: ["outcomeDate"],
+        where: {
+          type: OutcomeType.ADOPTION,
+          outcomeDate: { gte: startDate },
+        },
+        _count: { id: true },
+        orderBy: { outcomeDate: "asc" },
+      }),
+    ]);
+
+    // Create maps for quick lookups
+    const intakeMap = new Map(
+      intakeData.map((item) => [
+        item.intakeDate.toISOString().split("T")[0],
+        item._count.id,
+      ])
+    );
+    const adoptionMap = new Map(
+      adoptionData.map((item) => [
+        item.outcomeDate.toISOString().split("T")[0],
+        item._count.id,
+      ])
+    );
+
+    // Generate a complete list of dates for the last 90 days
+    const chartData = Array.from({ length: days }, (_, i) => {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const dateString = date.toISOString().split("T")[0];
+
+      return {
+        date: dateString,
+        intakes: intakeMap.get(dateString) || 0,
+        adoptions: adoptionMap.get(dateString) || 0,
+      };
+    });
+
+    return chartData;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching chart data.", error);
+    }
+    throw new Error("Error fetching chart data.");
+  }
+};
+
+const _fetchTaskTableData = async (): Promise<TaskPayload[]> => {
+  try {
+    const tasks = await prisma.task.findMany({
+      // Filter for tasks that are not yet completed
+      where: {
+        status: {
+          in: ["TODO", "IN_PROGRESS"],
+        },
+      },
+      // Limit the result to 10 records
+      take: 10,
+      orderBy: [
+        {
+          dueDate: "asc",
+        },
+        {
+          createdAt: "desc",
+        },
+      ],
+      select: {
+        id: true,
+        title: true,
+        details: true,
+        status: true,
+        priority: true,
+        category: true,
+        dueDate: true,
+        animal: { select: { id: true, name: true } },
+        assignee: { select: { id: true, name: true } },
+        medicationLog: {
+          select: {
+            id: true,
+            schedule: { select: { medicationName: true } },
+          },
+        },
+        createdBy: { select: { id: true, name: true } },
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    return tasks;
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching task table data.", error);
+    }
+    throw new Error("Error fetching task table data.");
+  }
+};
+
+
+type AnimalForAttentionQueryPayload = Prisma.AnimalGetPayload<{
+  select: {
+    id: true,
+    name: true,
+    healthStatus: true,
+    legalStatus: true,
+    intake: {
+      select: {
+        intakeDate: true,
+      },
+      take: 1,
+    },
+  },
+}>;
+
+export type AnimalsRequiringAttentionPayload = Prettify<
+  Omit<AnimalForAttentionQueryPayload, "intake"> & {
+    intakeDate: Date;
+  }
+>;
+
+const _fetchAnimalsRequiringAttention = async (): Promise<
+  AnimalsRequiringAttentionPayload[]
+> => {
+  try {
+    const animals = await prisma.animal.findMany({
+      where: {
+        OR: [
+          {
+            healthStatus: {
+              not: AnimalHealthStatus.HEALTHY,
+            },
+          },
+          {
+            legalStatus: {
+              not: AnimalLegalStatus.NONE,
+            },
+          },
+        ],
+      },
+      take: 10,
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        name: true,
+        healthStatus: true,
+        legalStatus: true,
+        intake: {
+          select: {
+            intakeDate: true,
+          },
+          orderBy: {
+            intakeDate: "asc",
+          },
+          take: 1,
+        },
+      },
+    });
+
+    // Map the data to the desired payload structure, ensuring an intake record exists
+    return animals
+      .filter((animal) => animal.intake.length > 0)
+      .map((animal) => ({
+        id: animal.id,
+        name: animal.name,
+        healthStatus: animal.healthStatus,
+        legalStatus: animal.legalStatus,
+        intakeDate: animal.intake[0].intakeDate,
+      }));
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Error fetching animals requiring attention data.", error);
+    }
+    throw new Error("Error fetching animals requiring attention data.");
+  }
+};
+
+export const fetchTaskTableData = RequirePermission(
+  Permissions.ANIMAL_READ_ANALYTICS
+)(_fetchTaskTableData);
+
+export const fetchPetCardData = RequirePermission(
+  Permissions.ANIMAL_READ_ANALYTICS
+)(_fetchAnimalCardData);
+
+export const fetchChartData = RequirePermission(
+  Permissions.ANIMAL_READ_ANALYTICS
+)(_fetchChartData);
+
+export const fetchAnimalsRequiringAttention = RequirePermission(
+  Permissions.ANIMAL_READ_ANALYTICS
+)(_fetchAnimalsRequiringAttention);

@@ -17,13 +17,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FilteredNotePayload } from "@/app/lib/data/animals/animal-note.data";
+import { NotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { NoteForm } from "./note-form";
 import { deleteAnimalNote, restoreAnimalNote } from "@/app/lib/actions/animal-note.actions";
 import { toast } from "sonner";
 
 interface NoteActionsProps {
-  note: FilteredNotePayload;
+  note: NotePayload;
   animalId: string;
 }
 

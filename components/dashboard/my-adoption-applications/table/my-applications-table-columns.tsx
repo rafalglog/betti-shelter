@@ -7,6 +7,7 @@ import { ApplicationStatuses } from "./my-applications-options";
 import { DataTableColumnHeader } from "../../../table-common/data-table-column-header";
 import { DataTableRowActions } from "./my-applications-table-row-actions";
 import { MyApplicationPayload } from "@/app/lib/types";
+import { formatTimeAgo } from "@/app/lib/utils/date-utils";
 
 export const columns: ColumnDef<MyApplicationPayload>[] = [
   {
@@ -140,11 +141,8 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
       displayName: "Submitted At",
     },
     cell: ({ row }) => {
-      const date = row.getValue("submittedAt");
-
-      return date ? (
-        <span>{new Date(date as string).toLocaleDateString()}</span>
-      ) : null;
+      const date = row.getValue("submittedAt") as string | Date | null;
+      return <span>{formatTimeAgo(date)}</span>;
     },
   },
   {

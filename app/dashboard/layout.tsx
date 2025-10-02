@@ -1,13 +1,10 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-// import DashboardTopBar from "../ui/dashboard/dashboard-top-nav";
-// import SidebarContent from "../ui/dashboard/sidebar-content";
-// import { navItems, quickActionItems } from "../ui/dashboard/nav-links.config";
-import { getFilteredLinks } from "../lib/getFilteredLinks";
-// import Breadcrumbs from "../ui/dashboard/breadcrumbs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/nav/sidebar-links";
 import { SiteHeader } from "@/components/site-header";
+import { getFilteredNavLinks, getFilteredDocuments } from "../lib/getFilteredLinks";
+import { documentItems, navMainItems, navSecondaryItems } from "@/components/dashboard/nav/nav-links.config";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,13 +16,13 @@ const Layout = async ({ children }: LayoutProps) => {
     redirect("/api/auth/signin");
   }
 
-  // Get user name and image
-  // const userImage = session?.user?.image ?? null;
-
-  // const [filteredNavLinks, filteredQuickActionLinks] = await Promise.all([
-  //   getFilteredLinks(navItems),
-  //   getFilteredLinks(quickActionItems),
-  // ]);
+  // Filter navigation links based on user permissions
+  const [filteredNavMain, filteredDocuments, filteredNavSecondary] =
+    await Promise.all([
+      getFilteredNavLinks(navMainItems),
+      getFilteredDocuments(documentItems),
+      getFilteredNavLinks(navSecondaryItems),
+    ]);
 
   return (
     <SidebarProvider
@@ -36,7 +33,13 @@ const Layout = async ({ children }: LayoutProps) => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar user={session.user} variant="inset" />
+      <AppSidebar
+        user={session.user}
+        navMainItems={filteredNavMain}
+        documentItems={filteredDocuments}
+        navSecondaryItems={filteredNavSecondary}
+        variant="inset"
+      />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">

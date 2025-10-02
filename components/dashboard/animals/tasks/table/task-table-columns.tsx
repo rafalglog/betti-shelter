@@ -5,10 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { categories, priorities, statuses } from "./task-options";
 import { DataTableRowActions } from "./task-table-row-actions";
-import { FilteredTaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
-import { formatDateOrNA } from "@/app/lib/utils/date-utils";
+import { formatDateOrNA, formatDueDate } from "@/app/lib/utils/date-utils";
 import { DataTableColumnHeader } from "@/components/table-common/data-table-column-header";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { updateAnimalTaskAssignee } from "@/app/lib/actions/animal-task.actions";
 
 interface GetColumnsProps {
   animalId: string;
@@ -18,7 +27,7 @@ interface GetColumnsProps {
 export const getColumns = ({
   animalId,
   assigneeList,
-}: GetColumnsProps): ColumnDef<FilteredTaskPayload>[] => [
+}: GetColumnsProps): ColumnDef<TaskPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -155,11 +164,37 @@ export const getColumns = ({
       <DataTableColumnHeader column={column} title="Assignee" />
     ),
     cell: ({ row }) => {
-      // The 'assignee' value is an object: { id: "...", name: "..." }
-      const assignee = row.getValue("assignee") as { name: string } | null;
+      const task = row.original;
+      const currentAssigneeId = task.assignee?.id || "unassigned";
 
-      // Render the 'name' property of the assignee object
-      return <span>{assignee?.name || "Unassigned"}</span>;
+      const handleAssigneeChange = async (newAssigneeId: string) => {
+        const result = await updateAnimalTaskAssignee(
+          task.id,
+          newAssigneeId === "unassigned" ? null : newAssigneeId
+        );
+
+        if (result?.error) {
+          toast.error(result.error);
+        } else {
+          toast.success("Assignee updated successfully.");
+        }
+      };
+
+      return (
+        <Select value={currentAssigneeId} onValueChange={handleAssigneeChange}>
+          <SelectTrigger className="w-full max-w-[180px]">
+            <SelectValue placeholder="Assign..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="unassigned">Unassigned</SelectItem>
+            {assigneeList.map((assignee) => (
+              <SelectItem key={assignee.id} value={assignee.id}>
+                {assignee.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      );
     },
   },
   {
@@ -167,12 +202,28 @@ export const getColumns = ({
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Due Date" />
     ),
+    meta: {
+      displayName: "Due Date",
+    },
     cell: ({ row }) => {
-      const date = row.getValue("dueDate");
+      // Get the entire task object from the row
+      const task = row.original;
+      const isOverdue = task.dueDate && new Date(task.dueDate) < new Date();
 
-      return date ? (
-        <span>{new Date(date as string).toLocaleDateString()}</span>
-      ) : null;
+      // Define active statuses
+      const activeStatuses = ["TODO", "IN_PROGRESS"];
+
+      return (
+        <span
+          className={
+            isOverdue && activeStatuses.includes(task.status)
+              ? "text-red-600 font-medium" // Apply a red color for overdue tasks
+              : ""
+          }
+        >
+          {formatDueDate(task.dueDate, task.status)}
+        </span>
+      );
     },
   },
   {
@@ -180,8 +231,11 @@ export const getColumns = ({
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Created At" />
     ),
+    meta: {
+      displayName: "Created At",
+    },
     cell: ({ row }) => {
-      const date = row.getValue("dueDate") as string | Date | null;
+      const date = row.getValue("createdAt") as string | Date | null;
       return <span>{formatDateOrNA(date)}</span>;
     },
   },
