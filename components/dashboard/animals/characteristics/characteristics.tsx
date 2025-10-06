@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useTransition } from "react";
+import React, { useState, useMemo, useTransition, useCallback } from "react";
 import { CharacteristicCategory } from "@prisma/client";
 import { clsx } from "clsx";
 import {
@@ -122,7 +122,6 @@ const AnimalCharacteristicsManager = ({
     [animalCharacteristics, activeIds]
   );
 
-  // THIS IS FOR THE MAIN DISPLAY - IT ONLY SHOWS THE SAVED STATE
   const savedGroupedCharacteristics = useMemo(() => {
     const savedChars = animalCharacteristics.filter((char) =>
       initialAssignedIds.has(char.id)
@@ -141,19 +140,17 @@ const AnimalCharacteristicsManager = ({
     [animalCharacteristics, stagedChanges]
   );
 
-  const handleOpenDialog = () => {
-    // Prime the staged changes when opening the dialog
+  const handleOpenDialog = useCallback(() => {
     setStagedChanges(new Set(initialAssignedIds));
     setIsDialogOpen(true);
-  };
+  }, [initialAssignedIds]);
 
-  const handleCancel = () => {
-    // Reset changes and close
+  const handleCancel = useCallback(() => {
     setStagedChanges(new Set());
     setIsDialogOpen(false);
-  };
+  }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(() => {
     startTransition(async () => {
       const result = await updateAnimalCharacteristics({
         animalId,
@@ -169,183 +166,189 @@ const AnimalCharacteristicsManager = ({
         toast.error(result.message || "An unexpected error occurred.");
       }
     });
-  };
+  }, [animalId, stagedChanges]);
 
-  const handleTagRemove = (charId: string) => {
-    const newStagedChanges = new Set(stagedChanges);
-    newStagedChanges.delete(charId);
-    setStagedChanges(newStagedChanges);
-  };
+  const handleTagRemove = useCallback(
+    (charId: string) => {
+      const newStagedChanges = new Set(stagedChanges);
+      newStagedChanges.delete(charId);
+      setStagedChanges(newStagedChanges);
+    },
+    [stagedChanges]
+  );
 
-  const handleTagAdd = (charId: string) => {
-    const newStagedChanges = new Set(stagedChanges);
-    newStagedChanges.add(charId);
-    setStagedChanges(newStagedChanges);
-    setOpenCombobox(false);
-  };
+  const handleTagAdd = useCallback(
+    (charId: string) => {
+      const newStagedChanges = new Set(stagedChanges);
+      newStagedChanges.add(charId);
+      setStagedChanges(newStagedChanges);
+      setOpenCombobox(false);
+    },
+    [stagedChanges]
+  );
 
   return (
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <Card className="w-full mx-auto">
-          <CardHeader className="relative">
-            <CardTitle>Characteristics</CardTitle>
-            <CardDescription>
-              Unique behavioral and medical traits for this animal.
-            </CardDescription>
-            <CardAction>
-              <DialogTrigger asChild>
-                <Button variant="default" size="sm" onClick={handleOpenDialog}>
-                  <Pencil className="size-4 mr-2" />
-                  Edit
-                </Button>
-              </DialogTrigger>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {CATEGORY_KEYS.map((key) => {
-                const Icon = CATEGORIES[key].icon;
-                const characteristicsForCategory =
-                  savedGroupedCharacteristics[key];
-                return (
-                  characteristicsForCategory &&
-                  characteristicsForCategory.length > 0 && (
-                    <div key={key} className="border rounded-lg p-4 bg-white">
-                      <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700">
-                        <Icon className="h-5 w-5 text-gray-500" />
-                        {CATEGORIES[key].label}
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {characteristicsForCategory.map((char) => (
-                          <Badge
-                            key={char.id}
-                            variant="secondary"
-                            className={clsx(
-                              "font-normal text-sm py-1 px-2.5",
-                              CATEGORIES[char.category]?.color
-                            )}
-                          >
-                            {char.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )
-                );
-              })}
-              {initialAssignedIds.size === 0 && (
-                <div className="text-center py-8 px-4 border-2 border-dashed rounded-lg">
-                  <p className="text-muted-foreground text-sm">
-                    This animal has no characteristics assigned.
-                  </p>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-4"
-                      onClick={handleOpenDialog}
-                    >
-                      <PlusCircle className="size-4 mr-2" />
-                      Add Characteristics
-                    </Button>
-                  </DialogTrigger>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <DialogContent className="sm:max-w-[625px]">
-          <DialogHeader>
-            <DialogTitle>Edit Characteristics</DialogTitle>
-            <DialogDescription>
-              Add or remove characteristics for this animal. Click save when
-              you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 py-4">
-            <div className="p-3 border rounded-lg space-y-3 bg-slate-50/50">
-              <Label>Selected Characteristics</Label>
-              <div className="flex flex-wrap gap-2 min-h-[2.5rem] max-h-40 overflow-y-auto">
-                {assignedCharacteristics.map((char) => (
-                  <Badge
-                    key={char.id}
-                    variant="secondary"
-                    className={clsx(
-                      "flex items-center gap-1.5 py-1",
-                      CATEGORIES[char.category]?.color
-                    )}
-                  >
-                    <span>{char.name}</span>
-                    <button
-                      onClick={() => handleTagRemove(char.id)}
-                      className="rounded-full hover:bg-black/10 p-0.5"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-                {assignedCharacteristics.length === 0 && (
-                  <p className="text-muted-foreground text-sm p-2">
-                    Search below to add characteristics.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={openCombobox}
-                  className="w-full justify-between font-normal text-muted-foreground"
-                >
-                  Add a characteristic...
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
-                <Command>
-                  <CommandInput placeholder="Search characteristics..." />
-                  <CommandList>
-                    <CommandEmpty>No characteristic found.</CommandEmpty>
-                    <CommandGroup>
-                      {availableForAdding.map((char) => (
-                        <CommandItem
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Card className="w-full mx-auto">
+        <CardHeader className="relative">
+          <CardTitle>Characteristics</CardTitle>
+          <CardDescription>
+            Unique behavioral and medical traits for this animal.
+          </CardDescription>
+          <CardAction>
+            <DialogTrigger asChild>
+              <Button variant="default" size="sm" onClick={handleOpenDialog}>
+                <Pencil className="size-4 mr-2" />
+                Edit
+              </Button>
+            </DialogTrigger>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {CATEGORY_KEYS.map((key) => {
+              const Icon = CATEGORIES[key].icon;
+              const characteristicsForCategory =
+                savedGroupedCharacteristics[key];
+              return (
+                characteristicsForCategory &&
+                characteristicsForCategory.length > 0 && (
+                  <div key={key} className="border rounded-lg p-4 bg-white">
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700">
+                      <Icon className="h-5 w-5 text-gray-500" />
+                      {CATEGORIES[key].label}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {characteristicsForCategory.map((char) => (
+                        <Badge
                           key={char.id}
-                          value={char.name}
-                          onSelect={() => handleTagAdd(char.id)}
+                          variant="secondary"
+                          className={clsx(
+                            "font-normal text-sm py-1 px-2.5",
+                            CATEGORIES[char.category]?.color
+                          )}
                         >
-                          <div className="flex-grow">{char.name}</div>
-                          <Badge variant="outline" className="ml-2">
-                            {CATEGORIES[char.category]?.label}
-                          </Badge>
-                        </CommandItem>
+                          {char.name}
+                        </Badge>
                       ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                    </div>
+                  </div>
+                )
+              );
+            })}
+            {initialAssignedIds.size === 0 && (
+              <div className="text-center py-8 px-4 border-2 border-dashed rounded-lg">
+                <p className="text-muted-foreground text-sm">
+                  This animal has no characteristics assigned.
+                </p>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={handleOpenDialog}
+                  >
+                    <PlusCircle className="size-4 mr-2" />
+                    Add Characteristics
+                  </Button>
+                </DialogTrigger>
+              </div>
+            )}
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={handleCancel} disabled={isPending}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave} disabled={isPending}>
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                "Save Changes"
+        </CardContent>
+      </Card>
+
+      <DialogContent className="sm:max-w-[625px]">
+        <DialogHeader>
+          <DialogTitle>Edit Characteristics</DialogTitle>
+          <DialogDescription>
+            Add or remove characteristics for this animal. Click save when
+            you&apos;re done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          <div className="p-3 border rounded-lg space-y-3 bg-slate-50/50">
+            <Label>Selected Characteristics</Label>
+            <div className="flex flex-wrap gap-2 min-h-[2.5rem] max-h-40 overflow-y-auto">
+              {assignedCharacteristics.map((char) => (
+                <Badge
+                  key={char.id}
+                  variant="secondary"
+                  className={clsx(
+                    "flex items-center gap-1.5 py-1",
+                    CATEGORIES[char.category]?.color
+                  )}
+                >
+                  <span>{char.name}</span>
+                  <button
+                    onClick={() => handleTagRemove(char.id)}
+                    className="rounded-full hover:bg-black/10 p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+              {assignedCharacteristics.length === 0 && (
+                <p className="text-muted-foreground text-sm p-2">
+                  Search below to add characteristics.
+                </p>
               )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </div>
+
+          <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openCombobox}
+                className="w-full justify-between font-normal text-muted-foreground"
+              >
+                Add a characteristic...
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+              <Command>
+                <CommandInput placeholder="Search characteristics..." />
+                <CommandList>
+                  <CommandEmpty>No characteristic found.</CommandEmpty>
+                  <CommandGroup>
+                    {availableForAdding.map((char) => (
+                      <CommandItem
+                        key={char.id}
+                        value={char.name}
+                        onSelect={() => handleTagAdd(char.id)}
+                      >
+                        <div className="flex-grow">{char.name}</div>
+                        <Badge variant="outline" className="ml-2">
+                          {CATEGORIES[char.category]?.label}
+                        </Badge>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={handleCancel} disabled={isPending}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isPending}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save Changes"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

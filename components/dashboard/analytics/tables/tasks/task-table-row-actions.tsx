@@ -121,7 +121,7 @@ export function DataTableRowActions({
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
           <DialogDescription>
-            Update the details for this task. Click update when you're done.
+            Update the details for this task. Click update when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <TaskForm

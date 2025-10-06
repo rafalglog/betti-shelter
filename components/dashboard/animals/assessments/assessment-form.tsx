@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, startTransition } from "react";
+import React, { useState, useEffect, startTransition, useMemo, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldType, AssessmentType } from "@prisma/client";
@@ -75,14 +75,14 @@ export function AssessmentForm({
       );
     });
 
-  const allFields: TemplateField[] = selectedTemplate
-    ? selectedTemplate.templateFields
-    : [];
+  const allFields = useMemo(() => {
+    return selectedTemplate ? selectedTemplate.templateFields : [];
+  }, [selectedTemplate]);
 
-  const generateDefaultValues = (
+  const generateDefaultValues = useCallback((
     fields: TemplateField[],
     currentAssessment?: AnimalAssessmentPayload
-  ) => {
+) => {
     const defaultVals: { [key: string]: any } = {};
 
     if (currentAssessment) {
@@ -115,7 +115,7 @@ export function AssessmentForm({
       });
     }
     return defaultVals;
-  };
+  }, []);
 
   const form = useForm<any>({
     resolver: zodResolver(createDynamicSchema(allFields)),
@@ -126,9 +126,10 @@ export function AssessmentForm({
 
   useEffect(() => {
     if (!isEditMode) {
-      reset(generateDefaultValues(allFields));
+      // The generateDefaultValues function is now stable
+      reset(generateDefaultValues(allFields, assessment));
     }
-  }, [allFields, reset, isEditMode]);
+  }, [allFields, reset, isEditMode, generateDefaultValues, assessment]);
 
   useEffect(() => {
     if (state.message && state.errors) {

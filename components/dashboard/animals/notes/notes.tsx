@@ -78,7 +78,7 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
                   <DialogTitle>Add Note</DialogTitle>
                   <DialogDescription>
                     Add a new note for this animal. Click create note when
-                    you're done.
+                    you&apos;re done.
                   </DialogDescription>
                 </DialogHeader>
                 <NoteForm
@@ -148,7 +148,7 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
                       </p>
 
                       <div className="text-xs text-gray-500 mt-3">
-                        <span>{note.author.name}</span> &middot;{" "}
+                        <span>{note.author?.name ?? "Unknown User"}</span> &middot;{" "}
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="underline decoration-dotted cursor-help">

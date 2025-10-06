@@ -59,7 +59,7 @@ const CreateOutcomePage = async ({ searchParams }: Props) => {
         >
           <p>
             An outcome has already been recorded for{" "}
-            <strong>{animal.name}</strong>. This animal's record is archived,
+            <strong>{animal.name}</strong>. This animal&apos;s record is archived,
             and no further outcomes can be processed.
           </p>
         </ActionBlockedMessage>

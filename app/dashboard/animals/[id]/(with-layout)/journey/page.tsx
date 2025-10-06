@@ -35,7 +35,7 @@ const PageContent = async ({ params }: Props) => {
       <CardHeader>
         <CardTitle>Journey</CardTitle>
         <CardDescription>
-          A timeline of significant events in the animal's story at the
+          A timeline of significant events in the animal&apos;s story at the
           shelter.
         </CardDescription>
       </CardHeader>

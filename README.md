@@ -1,8 +1,57 @@
-# Animal Shelter Web App
+# Animal Shelter and Operations platform
 
 ## Project Description
 
-This is an open-source web application designed to help animal shelters manage their operations efficiently. The app provides a user-friendly interface for potential adopters to view available pets and a comprehensive dashboard for staff members to manage pet and user information.
+This is an open-source, full-featured web application designed to be a comprehensive, end-to-end platform for animal shelters and rescue organizations. It moves beyond a simple pet listing site to provide a robust operational backbone for managing the entire lifecycle of an animal, from intake to outcome.
+
+The platform features a public-facing portal for potential adopters and a powerful, permission-controlled dashboard for staff and volunteers to manage all aspects of shelter operations with a focus on data integrity and workflow automation.
+
+---
+
+## Core Features
+
+The application is built around distinct, interconnected modules that handle the complex needs of a modern animal shelter.
+
+### Animal Lifecycle Management
+
+The system meticulously tracks an animal's entire journey through the shelter.
+
+* **Intake Processing**: Handles various intake scenarios, including **owner surrenders**, **strays**, and **transfers** from partner organizations. It captures detailed information about the animal's origin and the people involved.
+* **Re-Intake Workflow**: Provides a dedicated process for animals returning to the shelter. It automatically reactivates archived animal profiles, resets their status to `DRAFT`, and logs a new intake event, preserving the animal's complete history.
+* **Outcome Management**: Manages all possible outcomes, including **adoptions**, **transfers out**, and **return-to-owner**. The system ensures data consistency with atomic operations. For example, processing an adoption:
+    1.  Archives the animal's public profile.
+    2.  Sets the appropriate `archiveReason` (e.g., `ADOPTED_INTERNAL`).
+    3.  Updates the winning adoption application's status to `ADOPTED`.
+    4.  **Automatically rejects all other open applications** for that animal, preventing conflicts and saving administrative time.
+
+### Comprehensive Animal Profiles
+
+Each animal has a rich, detailed profile that serves as the central hub for all its information. Staff can manage:
+
+* **Core Details**: Update fundamental information like name, species, breed, age, weight, photos, and microchip number.
+* **Characteristics Tagging**: Assign filterable tags (e.g., "Good with Kids," "Housebroken," "Heartworm Positive") to help match animals with suitable adopters. The system intelligently handles adding and removing tags in a single operation.
+* **Dynamic Assessments**: Conduct standardized assessments (e.g., behavioral evaluations, medical intake exams) using **customizable templates**. The application dynamically generates forms and validation based on the selected template, ensuring consistent data collection.
+* **Notes & History**: Add categorized notes (`BEHAVIORAL`, `MEDICAL`, `GENERAL`) to an animal's record. A full history of an animal's journey, status changes, and key events is logged automatically.
+* **Task Management**: Create, assign, and track tasks related to a specific animal, such as "Administer medication," "Schedule vet visit," or "Behavioral follow-up." Tasks have statuses, priorities, and optional due dates.
+
+### Adoption Application Workflow
+
+The platform includes a complete system for managing adoption applications for both applicants and staff.
+
+* **Public Application Portal**: Potential adopters can browse published animals, "like" their favorites, and submit detailed adoption applications directly through the platform.
+* **Applicant Dashboard**: Applicants can view their submitted applications, edit them (if still pending), or withdraw them. They can also reactivate a previously withdrawn application if the animal becomes available again.
+* **Staff Review & Management**: Staff have a dedicated dashboard to review and manage all incoming applications. Key features include:
+    * **Status Management**: Update an application's status (`REVIEWING`, `APPROVED`, `REJECTED`, etc.) with a required reason for the change, creating a clear audit trail.
+    * **Atomic Status Changes**: Approving an application automatically changes the animal's listing status to `PENDING_ADOPTION`, making it unavailable for new applications and preventing double-adoptions. If that application is later withdrawn or rejected, the system automatically makes the animal available again by setting its status back to `PUBLISHED`.
+    * **Internal Notes**: Staff can add private notes to an application during the review process.
+
+### User & Data Integrity
+
+The system is built with security and data consistency as top priorities.
+
+* **Role-Based Access Control (RBAC)**: Actions are protected by a permission system (`RequirePermission`). This ensures that only authorized users (e.g., `STAFF`, `ADMIN`) can perform sensitive operations like updating animal records or managing applications.
+* **Transactional Integrity**: Critical multi-step database operations are wrapped in **Prisma transactions**. This guarantees that all steps in a process (like an adoption or intake) either complete successfully or fail together, preventing the database from ever being left in an inconsistent state.
+* **Soft Deletes**: Important records like notes and assessments are soft-deleted rather than being permanently erased, preserving historical data for auditing and potential restoration.
 
 ## Tech Stack
 

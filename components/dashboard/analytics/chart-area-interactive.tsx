@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Card,
@@ -25,18 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { ChartData } from "@/app/lib/data/analytics.data";
 
-// Define the component's props to accept the fetched data.
 type ChartAreaInteractiveProps = {
   data: ChartData;
 };
 
-// Configure the chart with new labels and colors for our data.
 const chartConfig = {
   intakes: {
     label: "Intakes",
@@ -54,7 +48,7 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
 
   React.useEffect(() => {
     if (isMobile) {
-      setTimeRange("30d"); // Default to a shorter, more readable range on mobile
+      setTimeRange("30d");
     }
   }, [isMobile]);
 

@@ -88,7 +88,7 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
         <DialogHeader>
           <DialogTitle>Edit Note</DialogTitle>
           <DialogDescription>
-            Update the details for this note. Click update when you're done.
+            Update the details for this note. Click update when you&apos;re done.
           </DialogDescription>
         </DialogHeader>
         <NoteForm

@@ -485,7 +485,7 @@ export function StaffApplicationUpdateForm({
                 </FormItem>
                 {application.hasChildren && (
                   <FormItem>
-                    <FormLabel>Children's Ages</FormLabel>
+                    <FormLabel>Children&apos;s Ages</FormLabel>
                     <FormControl>
                       <Input
                         value={application.childrenAges?.join(", ") ?? "N/A"}

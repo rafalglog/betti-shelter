@@ -102,7 +102,7 @@ const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTable
             <DialogHeader>
               <DialogTitle>Create Task</DialogTitle>
               <DialogDescription>
-                Create a new task for this animal. Click create task when you're done.
+                Create a new task for this animal. Click create task when you&apos;re done.
               </DialogDescription>
             </DialogHeader>
             <TaskForm
