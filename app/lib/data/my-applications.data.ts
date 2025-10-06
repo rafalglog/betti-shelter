@@ -30,16 +30,7 @@ const _fetchMyApplications = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchFilteredMyApplications:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching filtered applications."
-    );
+    throw new Error("Invalid arguments for fetching applications.");
   }
   const { query, currentPage, sort, status } = validatedArgs.data;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -72,16 +63,8 @@ const _fetchMyApplications = async (
   };
 
   if (status) {
-    // Split the status string by comma into an array
     const statuses = status.split(",") as ApplicationStatus[];
-
-    // If there are multiple statuses, use the 'in' operator.
-    // Otherwise, use the single status value.
-    if (statuses.length > 1) {
-      whereClause.status = { in: statuses };
-    } else {
-      whereClause.status = statuses[0];
-    }
+    whereClause.status = { in: statuses };
   }
 
   try {
@@ -97,6 +80,7 @@ const _fetchMyApplications = async (
           applicantPhone: true,
           animal: {
             select: {
+              id: true,
               name: true,
               species: {
                 select: {
@@ -122,9 +106,7 @@ const _fetchMyApplications = async (
 
     return { myApplications, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching applications.", error);
-    }
+    console.error("Error fetching applications.", error);
     throw new Error("Error fetching applications.");
   }
 };
@@ -139,16 +121,7 @@ const _fetchMyAppById = async (
   const parsedAdoptionAppId = cuidSchema.safeParse(adoptionAppId);
 
   if (!parsedAdoptionAppId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchMyAppById:",
-        parsedAdoptionAppId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedAdoptionAppId.error.errors[0]?.message ||
-        "Invalid Application ID format."
-    );
+    throw new Error("Invalid Application ID format.");
   }
   const validatedAdoptionAppId = parsedAdoptionAppId.data;
 
@@ -186,14 +159,12 @@ const _fetchMyAppById = async (
 
     return myApplication;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching Application.", error);
-    }
+    console.error("Error fetching Application.", error);
     throw new Error("Error fetching application.");
   }
 };
 
-// Fetch the animal information the user is trying to adopt
+// Fetch the animal information the user is trying to adopt (for edit/create application form)
 const _getAnimalForApplication = async (
   user: SessionUser,
   animalId: string
@@ -204,15 +175,7 @@ const _getAnimalForApplication = async (
   const parsedId = cuidSchema.safeParse(animalId);
 
   if (!parsedId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in getAnimalForApplication:",
-        parsedId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedId.error.errors[0]?.message || "Invalid animal ID format."
-    );
+    throw new Error("Invalid animal ID format.");
   }
   const validatedAnimalId = parsedId.data;
 

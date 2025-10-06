@@ -55,7 +55,7 @@ const _updateAnimalCharacteristics = async (data: {
 
     // Start a transaction to ensure atomicity
     const result = await prisma.$transaction(async (tx) => {
-      // 1. Fetch the animal and its current characteristics
+      // Fetch the animal and its current characteristics
       const animal = await tx.animal.findUnique({
         where: { id: animalId },
         select: {
@@ -66,12 +66,15 @@ const _updateAnimalCharacteristics = async (data: {
       });
 
       if (!animal) {
-        throw new Error("Animal not found.");
+        return {
+          success: false,
+          message: "Animal not found.",
+        };
       }
 
       const currentIds = new Set(animal.characteristics.map((c) => c.id));
 
-      // 2. Determine which characteristics to add (connect) and remove (disconnect)
+      // Determine which characteristics to add (connect) and remove (disconnect)
       const toConnect = characteristicIds
         .filter((id) => !currentIds.has(id))
         .map((id) => ({ id }));
@@ -80,7 +83,7 @@ const _updateAnimalCharacteristics = async (data: {
         .filter((id) => !newIds.has(id))
         .map((id) => ({ id }));
 
-      // 3. Perform the update in a single operation
+      // Perform the update in a single operation
       // The Animal-Characteristic relationship is many-to-many
       await tx.animal.update({
         where: { id: animalId },
@@ -94,8 +97,8 @@ const _updateAnimalCharacteristics = async (data: {
     });
 
     // Revalidate the animal's detail page to show updated characteristics
-    revalidatePath(`/animals/${animalId}`);
-
+    revalidatePath(`/dashboard/animals/${animalId}/characteristics`);
+    revalidatePath(`/pets/${animalId}`);
     return {
       success: true,
       message: "Characteristics updated successfully.",
@@ -104,15 +107,11 @@ const _updateAnimalCharacteristics = async (data: {
     console.error("Failed to update animal characteristics:", error);
     return {
       success: false,
-      message:
-        error instanceof Error &&
-        error.message !== "An unexpected error occurred."
-          ? error.message
-          : "Failed to update characteristics due to a server error.",
+      message: "Failed to update characteristics due to a server error.",
     };
   }
 };
 
 export const updateAnimalCharacteristics = RequirePermission(
-  Permissions.ANIMAL_CREATE
+  Permissions.ANIMAL_CHARACTERISTICS_UPDATE
 )(_updateAnimalCharacteristics);

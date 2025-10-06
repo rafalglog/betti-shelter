@@ -1,4 +1,4 @@
-import { fetchPublicPagePetById } from "@/app/lib/data/animals/public.data";
+import { fetchPublicPagePetById } from "@/app/lib/data/public.data";
 import { IDParamType } from "@/app/lib/types";
 import {
   calculateAgeString,

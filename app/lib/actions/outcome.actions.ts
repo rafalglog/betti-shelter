@@ -2,8 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "../prisma";
-import { auth } from "@/auth";
-import { RequirePermission } from "../auth/protected-actions";
+import {
+  RequirePermission,
+  SessionUser,
+  withAuthenticatedUser,
+} from "../auth/protected-actions";
 import { Permissions } from "../auth/permissions";
 import { OutcomeFormSchema } from "../zod-schemas/outcome.schema";
 import {
@@ -13,6 +16,12 @@ import {
   OutcomeType,
 } from "@prisma/client";
 import { OutcomeFormState } from "../form-state-types";
+import { redirect } from "next/navigation";
+import {
+  ConflictError,
+  NotFoundError,
+  PreconditionFailedError,
+} from "../utils/errors";
 
 // Helper function to map OutcomeType to AnimalArchiveReason
 const getArchiveReasonFromOutcomeType = (
@@ -38,15 +47,13 @@ interface CreateOutcomeIds {
 }
 
 const _createOutcome = async (
+  user: SessionUser,
   ids: CreateOutcomeIds,
   prevState: OutcomeFormState,
   formData: FormData
 ): Promise<OutcomeFormState> => {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { message: "Unauthorized: You must be logged in." };
-  }
-  const staffMemberId = session.user.id;
+  const staffMemberId = user.personId;
+
   const { animalId, adoptionApplicationId } = ids;
 
   // Validate form fields
@@ -70,14 +77,45 @@ const _createOutcome = async (
 
   try {
     await prisma.$transaction(async (tx) => {
-      // Ensure animal is not already archived
-      const animal = await tx.animal.findUnique({
-        where: { id: animalId },
-        select: { listingStatus: true },
+      // ATOMIC UPDATE: Attempt to archive the animal first.
+      // This update will only succeed if the animal is not already archived.
+      const updateResult = await tx.animal.updateMany({
+        where: {
+          id: animalId,
+          listingStatus: { not: AnimalListingStatus.ARCHIVED },
+        },
+        data: {
+          listingStatus: AnimalListingStatus.ARCHIVED,
+          archiveReason: archiveReason,
+        },
       });
 
-      if (animal?.listingStatus === AnimalListingStatus.ARCHIVED) {
-        throw new Error("This animal has already been archived.");
+      // VERIFY: Check if the update succeeded.
+      if (updateResult.count === 0) {
+        // If count is 0, another process archived the animal first. Abort.
+        throw new ConflictError(
+          "This animal has already been processed for an outcome."
+        );
+      }
+
+      // If the outcome is an ADOPTION, ensure it was published
+      if (outcomeType === OutcomeType.ADOPTION) {
+        if (!adoptionApplicationId) {
+          throw new PreconditionFailedError(
+            "An adoption application ID is required for adoption outcomes."
+          );
+        }
+
+        const application = await tx.adoptionApplication.findUnique({
+          where: { id: adoptionApplicationId },
+          select: { status: true },
+        });
+
+        if (application?.status !== ApplicationStatus.APPROVED) {
+          throw new PreconditionFailedError(
+            "Cannot process adoption: The application has not been approved."
+          );
+        }
       }
 
       // Create the Outcome record
@@ -98,24 +136,13 @@ const _createOutcome = async (
         },
       });
 
-      // Update the Animal to be ARCHIVED
-      await tx.animal.update({
-        where: { id: animalId },
-        data: {
-          listingStatus: AnimalListingStatus.ARCHIVED,
-          archiveReason: archiveReason,
-        },
-      });
-
-      // If this is from an application, update it and reject others
+      // If this is an adoption, update the winning application's status
       if (adoptionApplicationId) {
-        // Update the application status to ADOPTED
         await tx.adoptionApplication.update({
           where: { id: adoptionApplicationId },
           data: { status: ApplicationStatus.ADOPTED },
         });
 
-        // Create a history record for the adoption
         await tx.applicationStatusHistory.create({
           data: {
             applicationId: adoptionApplicationId,
@@ -124,62 +151,70 @@ const _createOutcome = async (
             changedById: staffMemberId,
           },
         });
+      }
 
-        // Reject other open applications for this animal
-        const otherApps = await tx.adoptionApplication.findMany({
-          where: {
-            animalId: animalId,
-            id: { not: adoptionApplicationId },
-            status: {
-              in: [
-                ApplicationStatus.PENDING,
-                ApplicationStatus.REVIEWING,
-                ApplicationStatus.APPROVED,
-              ],
-            },
+      // Find and reject ALL other open applications for this animal
+      const otherAppsToReject = await tx.adoptionApplication.findMany({
+        where: {
+          animalId: animalId,
+          // Exclude the winning application if this is an adoption
+          id: { not: adoptionApplicationId },
+          status: {
+            in: [
+              ApplicationStatus.PENDING,
+              ApplicationStatus.REVIEWING,
+              ApplicationStatus.WAITLISTED,
+              ApplicationStatus.APPROVED, // Also reject previously approved apps
+            ],
           },
-          select: { id: true },
+        },
+        select: { id: true },
+      });
+
+      const appIdsToReject = otherAppsToReject.map((app) => app.id);
+
+      if (appIdsToReject.length > 0) {
+        await tx.adoptionApplication.updateMany({
+          where: { id: { in: appIdsToReject } },
+          data: { status: ApplicationStatus.REJECTED },
         });
 
-        const otherAppIds = otherApps.map((app) => app.id);
-        if (otherAppIds.length > 0) {
-          await tx.adoptionApplication.updateMany({
-            where: { id: { in: otherAppIds } },
-            data: { status: ApplicationStatus.REJECTED },
-          });
-
-          const rejectionReason =
-            "Application rejected as the animal has been adopted.";
-          const historyRecords = otherAppIds.map((appId) => ({
-            applicationId: appId,
-            status: ApplicationStatus.REJECTED,
-            statusChangeReason: rejectionReason,
-            changedById: staffMemberId,
-          }));
-          await tx.applicationStatusHistory.createMany({
-            data: historyRecords,
-          });
-        }
+        // Use a generic reason that works for all outcomes
+        const rejectionReason =
+          "Application rejected as the animal is no longer available.";
+        const historyRecords = appIdsToReject.map((appId) => ({
+          applicationId: appId,
+          status: ApplicationStatus.REJECTED,
+          statusChangeReason: rejectionReason,
+          changedById: staffMemberId,
+        }));
+        await tx.applicationStatusHistory.createMany({
+          data: historyRecords,
+        });
       }
     });
   } catch (error) {
     console.error("Database error processing outcome:", error);
+    if (
+      error instanceof ConflictError ||
+      error instanceof PreconditionFailedError
+    ) {
+      return { message: error.message };
+    }
     return {
-      message:
-        error instanceof Error
-          ? error.message
-          : "Database Error: Failed to process outcome.",
+      message: "Database Error: Failed to process outcome.",
     };
   }
 
   revalidatePath("/dashboard/animals");
   revalidatePath(`/dashboard/animals/${animalId}`);
+
   if (adoptionApplicationId) {
     revalidatePath("/dashboard/applications");
     revalidatePath(`/dashboard/applications/${adoptionApplicationId}`);
   }
 
-  return { message: "Outcome processed successfully." };
+  redirect("/dashboard/outcomes");
 };
 
 const _updateOutcome = async (
@@ -187,11 +222,6 @@ const _updateOutcome = async (
   prevState: OutcomeFormState,
   formData: FormData
 ): Promise<OutcomeFormState> => {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { message: "Unauthorized: You must be logged in." };
-  }
-
   // Validate form fields
   const validatedFields = OutcomeFormSchema.safeParse({
     outcomeDate: new Date(formData.get("outcomeDate") as string),
@@ -218,8 +248,10 @@ const _updateOutcome = async (
     });
 
     if (!existingOutcome) {
-      return { message: "Error: Outcome record not found." };
+      throw new NotFoundError("Error: Outcome record not found.");
     }
+
+    const animalId = existingOutcome.animalId;
 
     await prisma.$transaction(async (tx) => {
       await tx.outcome.update({
@@ -239,24 +271,24 @@ const _updateOutcome = async (
         data: { archiveReason: archiveReason },
       });
     });
+
+    revalidatePath("/dashboard/outcomes");
+    revalidatePath(`/dashboard/animals/${animalId}`);
   } catch (error) {
     console.error("Database error updating outcome:", error);
+    if (error instanceof NotFoundError) {
+      return { message: error.message };
+    }
     return { message: "Database Error: Failed to update outcome." };
   }
 
-  revalidatePath("/dashboard/outcomes");
-  revalidatePath(
-    `/dashboard/animals/${
-      (await prisma.outcome.findUnique({ where: { id: outcomeId } }))?.animalId
-    }`
-  );
-
-  return { message: "Outcome updated successfully." };
+  redirect("/dashboard/outcomes");
 };
 
-export const createOutcome = RequirePermission(Permissions.OUTCOMES_MANAGE)(
-  _createOutcome
+export const createOutcome = withAuthenticatedUser(
+  RequirePermission(Permissions.OUTCOMES_MANAGE)(_createOutcome)
 );
+
 export const updateOutcome = RequirePermission(Permissions.OUTCOMES_MANAGE)(
   _updateOutcome
 );

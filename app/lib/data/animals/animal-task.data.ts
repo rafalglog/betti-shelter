@@ -1,8 +1,9 @@
 import { prisma } from "@/app/lib/prisma";
-import { Prisma, TaskCategory, TaskStatus } from "@prisma/client";
+import { Prisma, Role, TaskCategory, TaskStatus } from "@prisma/client";
 import { AnimalTasksSchema } from "../../zod-schemas/animal.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { TaskAssignee } from "../../types";
 
 export type TaskPayload = Prisma.TaskGetPayload<{
   select: {
@@ -44,16 +45,7 @@ const _fetchAnimalTasks = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchAnimalTasks:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching tasks."
-    );
+    throw new Error("Invalid arguments for fetching tasks.");
   }
 
   const { query, currentPage, category, status, pageSize, sort, animalId } =
@@ -114,70 +106,53 @@ const _fetchAnimalTasks = async (
 
     return { tasks, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching tasks:", error);
-    }
+    console.error("Error fetching tasks:", error);
     throw new Error("Error fetching tasks.");
   }
 };
 
-export type FetchAnimalTaskByIdPayload = Prisma.TaskGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    details: true;
-    status: true;
-    priority: true;
-    category: true;
-    dueDate: true;
-    animal: { select: { id: true; name: true } };
-    assignee: { select: { id: true; name: true } };
-    medicationLog: {
-      select: { id: true; schedule: { select: { medicationName: true } } };
-    };
-    createdBy: { select: { id: true; name: true } };
-    createdAt: true;
-    updatedAt: true;
-  };
-}>;
-
-const _fetchAnimalTaskById = async (
-  id: string
-): Promise<FetchAnimalTaskByIdPayload | null> => {
+const _fetchTaskAssigneeList = async (): Promise<TaskAssignee[]> => {
   try {
-    const task = await prisma.task.findUnique({
-      where: { id },
+    const assignees = await prisma.person.findMany({
+      where: {
+        // Filter based on the role of the associated User
+        user: {
+          role: {
+            in: [Role.STAFF, Role.ADMIN, Role.VOLUNTEER],
+          },
+        },
+      },
       select: {
         id: true,
-        title: true,
-        details: true,
-        status: true,
-        priority: true,
-        category: true,
-        dueDate: true,
-        animal: { select: { id: true, name: true } },
-        assignee: { select: { id: true, name: true } },
-        medicationLog: {
-          select: { id: true, schedule: { select: { medicationName: true } } },
+        name: true,
+        email: true,
+        user: {
+          select: {
+            image: true,
+          },
         },
-        createdBy: { select: { id: true, name: true } },
-        createdAt: true,
-        updatedAt: true,
+      },
+      orderBy: {
+        name: "asc",
       },
     });
-    return task;
+    const mappedList = assignees.map((person) => ({
+      id: person.id,
+      name: person.name,
+      email: person.email,
+      image: person.user?.image,
+    }));
+    return mappedList;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(`Error fetching task with ID ${id}:`, error);
-    }
-    throw new Error(`Error fetching task with ID ${id}.`);
+    console.error("Error fetching assignee list:", error);
+    throw new Error("Failed to fetch assignee list.");
   }
 };
 
-export const fetchAnimalTasks = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
-)(_fetchAnimalTasks);
+export const fetchTaskAssigneeList = RequirePermission(
+  Permissions.ANIMAL_TASK_CREATE
+)(_fetchTaskAssigneeList);
 
-export const fetchAnimalTaskById = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
-)(_fetchAnimalTaskById);
+export const fetchAnimalTasks = RequirePermission(
+  Permissions.ANIMAL_TASK_READ_LISTING
+)(_fetchAnimalTasks);

@@ -9,10 +9,12 @@ import {
 } from "@/components/ui/card";
 import { fetchApplicationById } from "@/app/lib/data/user-application.data";
 import { StaffApplicationUpdateForm } from "@/components/dashboard/adoption-applications/adoption-staff-edit-application-form";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface Props {
   params: Promise<{ applicationId: string }>;
-  
 }
 
 const Page = async ({ params }: Props) => {
@@ -27,24 +29,22 @@ const Page = async ({ params }: Props) => {
   const animal = userApplication.animal;
   
   if (!animal) {
-    console.error("Application found, but it has no associated animal.");
     notFound();
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit User Adoption Application</CardTitle>
-        <CardDescription>
+    <main className="container mx-auto">
+      <Button asChild variant="ghost" className="mb-4">
+        <Link href="/dashboard/adoption-applications">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Applications
+        </Link>
+      </Button>
 
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Suspense fallback={<div>Loading user application edit form...</div>}>
-          <StaffApplicationUpdateForm application={userApplication} animal={animal} />
-        </Suspense>
-      </CardContent>
-    </Card>
+      <Suspense fallback={<div>Loading application...</div>}>
+        <StaffApplicationUpdateForm application={userApplication} animal={animal} />
+      </Suspense>
+    </main>
   );
 };
 

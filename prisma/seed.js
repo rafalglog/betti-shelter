@@ -650,6 +650,7 @@ async function seedAnimalsAndRelations() {
           state: "NY",
           description: "A wonderful companion looking for a home.",
           listingStatus: AnimalListingStatus.PUBLISHED,
+          publishedAt: getRandomDate(),
           healthStatus: animalData.healthStatus,
           legalStatus: animalData.legalStatus,
           species: { connect: { id: species.id } },

@@ -3,21 +3,23 @@ import { z } from "zod";
 import {
   currentPageSchema,
   searchQuerySchema,
-} from "../zod-schemas/common.schemas";
-import { prisma } from "../prisma";
+} from "../../zod-schemas/common.schemas";
+import { prisma } from "../../prisma";
+import { RequirePermission } from "../../auth/protected-actions";
+import { Permissions } from "../../auth/permissions";
 
 // The number of outcomes to display per page
 const OUTCOMES_PER_PAGE = 10;
 
 // Zod schema for validating the search parameters
-export const DashboardOutcomesSchema = z.object({
+export const OutcomesSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   sort: z.string().optional(),
   type: z.string().optional(),
 });
 
-export const fetchOutcomeById = async (outcomeId: string) => {
+export const _fetchOutcomeById = async (outcomeId: string) => {
   try {
     const outcome = await prisma.outcome.findUnique({
       where: {
@@ -71,8 +73,8 @@ export const fetchOutcomeById = async (outcomeId: string) => {
     });
     return outcome;
   } catch (error) {
-    console.error("Database Error: Failed to fetch outcome by ID.", error);
-    return null;
+    console.error("Database Error: Failed to fetch outcome.", error);
+    throw new Error("Failed to fetch outcome.")
   }
 };
 
@@ -96,13 +98,13 @@ export type OutcomeWithDetails = Prisma.OutcomeGetPayload<{
   };
 }>;
 
-export const fetchOutcomes = async (
+export const _fetchOutcomes = async (
   queryInput: string,
   currentPageInput: number,
   sortInput: string | undefined,
   typeInput: string | undefined
 ): Promise<{ outcomes: OutcomeWithDetails[]; totalPages: number }> => {
-  const validatedArgs = DashboardOutcomesSchema.safeParse({
+  const validatedArgs = OutcomesSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     sort: sortInput,
@@ -190,3 +192,11 @@ export const fetchOutcomes = async (
     throw new Error("Failed to fetch outcomes.");
   }
 };
+
+export const fetchOutcomeById = RequirePermission(
+  Permissions.OUTCOMES_READ_DETAIL
+)(_fetchOutcomeById);
+
+export const fetchOutcomes = RequirePermission(
+  Permissions.OUTCOMES_READ_LISTING
+)(_fetchOutcomes);

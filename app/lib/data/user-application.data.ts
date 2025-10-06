@@ -22,6 +22,7 @@ export type ApplicationWithAnimal = Prisma.AdoptionApplicationGetPayload<{
     submittedAt: true;
     animal: {
       select: {
+        id: true;
         name: true;
         species: {
           select: {
@@ -89,16 +90,7 @@ const _fetchUserApplications = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in _fetchUserApplications:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching applications."
-    );
+    throw new Error("Invalid arguments for fetching applications.");
   }
 
   const { query, currentPage, sort, status } = validatedArgs.data;
@@ -167,6 +159,7 @@ const _fetchUserApplications = async (
           animal: {
             select: {
               name: true,
+              id: true,
               species: {
                 select: {
                   name: true,
@@ -188,9 +181,7 @@ const _fetchUserApplications = async (
 
     return { userApplications, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching user applications.", error);
-    }
+    console.error("Error fetching user applications.", error);
     throw new Error("Error fetching user applications.");
   }
 };
@@ -200,15 +191,7 @@ const _fetchUserApplicationById = async (
 ): Promise<ApplicationWithOutcome | null> => {
   const parsedId = cuidSchema.safeParse(id);
   if (!parsedId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in _fetchUserApplicationById:",
-        parsedId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedId.error.errors[0]?.message || "Invalid Application ID format."
-    );
+    throw new Error("Invalid Application ID format.");
   }
   const validatedId = parsedId.data;
 
@@ -249,9 +232,7 @@ const _fetchUserApplicationById = async (
     });
     return application;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching application by ID.", error);
-    }
+    console.error("Error fetching application by ID.", error);
     throw new Error("Error fetching application by ID.");
   }
 };

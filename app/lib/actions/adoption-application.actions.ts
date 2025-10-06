@@ -10,6 +10,7 @@ import { RequirePermission } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { ApplicationStatus, AnimalListingStatus, Prisma } from "@prisma/client";
 import { auth } from "@/auth";
+import { ConflictError } from "../utils/errors";
 
 const _staffUpdateAdoptionApp = async (
   adoptionAppId: string,
@@ -109,21 +110,26 @@ const _staffUpdateAdoptionApp = async (
     await prisma.$transaction(async (tx) => {
       // Animal status management based on application status changes.
       if (existingApplication.animalId && isStatusActuallyChanging) {
-        // If an application is approved, set animal status to PENDING_ADOPTION.
         if (newStatus === ApplicationStatus.APPROVED) {
-          const animal = await tx.animal.findUnique({
-            where: { id: existingApplication.animalId },
-            select: { listingStatus: true },
+          // Perform an atomic update. This command will only succeed if the animal's
+          // ID matches AND its listingStatus is currently 'PUBLISHED'.
+          const updateResult = await tx.animal.updateMany({
+            where: {
+              id: existingApplication.animalId,
+              listingStatus: AnimalListingStatus.PUBLISHED,
+            },
+            data: {
+              listingStatus: AnimalListingStatus.PENDING_ADOPTION,
+            },
           });
 
-          if (animal?.listingStatus !== AnimalListingStatus.PUBLISHED) {
-            throw new Error("This animal is not available for adoption.");
+          // If updateResult.count is 0, it means the 'where' clause failed.
+          // This happens if another request already changed the status from PUBLISHED.
+          if (updateResult.count === 0) {
+            throw new ConflictError(
+              "This animal is no longer available for adoption. Another application may have just been approved."
+            );
           }
-
-          await tx.animal.update({
-            where: { id: existingApplication.animalId },
-            data: { listingStatus: AnimalListingStatus.PENDING_ADOPTION },
-          });
         }
         // If a previously approved application is withdrawn or rejected, make the animal available again.
         else if (
@@ -131,8 +137,11 @@ const _staffUpdateAdoptionApp = async (
           (newStatus === ApplicationStatus.WITHDRAWN ||
             newStatus === ApplicationStatus.REJECTED)
         ) {
-          await tx.animal.update({
-            where: { id: existingApplication.animalId },
+          await tx.animal.updateMany({
+            where: {
+              id: existingApplication.animalId,
+              listingStatus: AnimalListingStatus.PENDING_ADOPTION,
+            },
             data: { listingStatus: AnimalListingStatus.PUBLISHED },
           });
         }
@@ -159,11 +168,7 @@ const _staffUpdateAdoptionApp = async (
     });
   } catch (error) {
     console.error("Database Error during transaction:", error);
-    if (
-      error instanceof Error &&
-      (error.message.includes("This animal has already been adopted") ||
-        error.message.includes("This animal is not available for adoption"))
-    ) {
+    if (error instanceof ConflictError) {
       return { message: error.message };
     }
     return {
@@ -174,6 +179,7 @@ const _staffUpdateAdoptionApp = async (
 
   revalidatePath("/dashboard/adoption-applications");
   revalidatePath(`/dashboard/adoption-applications/${validatedAdoptionAppId}`);
+
   redirect(`/dashboard/adoption-applications/`);
 };
 

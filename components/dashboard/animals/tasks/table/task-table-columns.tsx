@@ -96,12 +96,13 @@ export const getColumns = ({
       }
 
       return (
-        <div className="flex w-[100px] items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
+
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{status.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -119,12 +120,12 @@ export const getColumns = ({
       );
 
       return category ? (
-        <div className="flex items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {category.icon && (
             <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{category.label}</span>
-        </div>
+        </Badge>
       ) : null;
     },
     filterFn: (row, id, value) => {
@@ -146,12 +147,12 @@ export const getColumns = ({
       }
 
       return (
-        <div className="flex items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {priority.icon && (
             <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{priority.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -173,8 +174,8 @@ export const getColumns = ({
           newAssigneeId === "unassigned" ? null : newAssigneeId
         );
 
-        if (result?.error) {
-          toast.error(result.error);
+        if (!result.success) {
+          toast.error(result.message);
         } else {
           toast.success("Assignee updated successfully.");
         }

@@ -13,7 +13,6 @@ import MyAppTableToolbar from "@/components/dashboard/my-adoption-applications/t
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { fetchMyApplications } from "@/app/lib/data/my-applications.data";
-export const dynamic = "force-dynamic";
 
 interface Props {
   searchParams: SearchParamsType;

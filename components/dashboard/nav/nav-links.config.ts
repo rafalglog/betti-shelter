@@ -75,6 +75,12 @@ export const navMainItems: readonly NavItem[] = [
     icon: "IconUsers",
     permission: Permissions.OUTCOMES_MANAGE,
   },
+  {
+    title: "Animal Tasks",
+    url: "/dashboard/animal-tasks",
+    icon: "IconUsers",
+    permission: Permissions.OUTCOMES_MANAGE,
+  },
 ] as const;
 
 // Navigation with collapsible sub-items

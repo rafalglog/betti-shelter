@@ -113,19 +113,19 @@ export const authConfig = {
 
       // This runs only on initial sign-in.
       if (token.sub) {
-        // Step 1: Fetch the user from the database to get their personId.
+        // Fetch the user from the database to get their personId.
         const existingUser = await prisma.user.findUnique({
           where: { id: token.sub },
         });
 
         if (existingUser) {
-          // Step 2: Now that you have the personId, fetch the person.
+          // Now that you have the personId, fetch the person.
           const person = await prisma.person.findUnique({
             where: { id: existingUser.personId }, // Use the ID from the user
             select: { name: true },
           });
 
-          // Step 3: Populate the token with all the necessary data.
+          // Populate the token with all the necessary data.
           token.personId = existingUser.personId;
           token.role = existingUser.role;
           if (person) {

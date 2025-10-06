@@ -9,7 +9,7 @@ import {
 import DataTable from "@/components/dashboard/animals/table/animal-table";
 import { columns } from "@/components/dashboard/animals/table/animal-table-columns";
 import {
-  fetchFilteredAnimals,
+  fetchAnimals,
 } from "@/app/lib/data/animals/animal.data";
 import { SearchParamsType } from "@/app/lib/types";
 import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-table-toolbar";
@@ -35,7 +35,7 @@ const Page = async ({ searchParams }: Props) => {
   const currentPageSize = Number(pageSize);
 
   // Pass all parameters, including the potentially undefined ones, to the function.
-  const { animals, totalPages } = await fetchFilteredAnimals(
+  const { animals, totalPages } = await fetchAnimals(
     query,
     currentPage,
     listingStatus,
@@ -55,7 +55,7 @@ const Page = async ({ searchParams }: Props) => {
           <CardAction>
           <Button asChild>
             <Link href="/dashboard/animals/create">
-              New Intake
+              Add Animal
             </Link>
           </Button>
         </CardAction>

@@ -1,4 +1,4 @@
-import { fetchAnimalTasks } from "@/app/lib/data/animals/animal-task.data";
+import { fetchAnimalTasks, fetchTaskAssigneeList } from "@/app/lib/data/animals/animal-task.data";
 import { getColumns } from "@/components/dashboard/animals/tasks/table/task-table-columns";
 import DataTable from "@/components/dashboard/animals/tasks/table/task-table";
 import TasksDataTableToolbar from "@/components/dashboard/animals/tasks/table/task-table-toolbar";
@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchTaskAssigneeList } from "@/app/lib/data/user.data";
 
 interface Props {
   params: IDParamType;

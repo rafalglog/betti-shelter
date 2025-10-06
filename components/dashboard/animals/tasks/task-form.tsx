@@ -36,10 +36,7 @@ import {
   TaskPriorityOptions,
   TaskStatusOptions,
 } from "@/app/lib/utils/enum-formatter";
-import {
-  INITIAL_FORM_STATE,
-  AnimalTaskFormState,
-} from "@/app/lib/form-state-types";
+import { AnimalTaskFormState } from "@/app/lib/form-state-types";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { TaskFormSchema } from "@/app/lib/zod-schemas/animal.schemas";
 import { TaskAssignee } from "@/app/lib/types";
@@ -48,15 +45,18 @@ import {
   createAnimalTask,
   updateAnimalTask,
 } from "@/app/lib/actions/animal-task.actions";
-import { FetchAnimalTaskByIdPayload } from "@/app/lib/data/animals/animal-task.data";
+import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { toast } from "sonner";
 
 type TaskFormValues = z.infer<typeof TaskFormSchema>;
+
+const INITIAL_FORM_STATE = { success: false, message: null, errors: {} };
 
 interface TaskFormProps {
   animalId: string;
   onFormSubmit: () => void; // To close the dialog on success
   assigneeList: TaskAssignee[];
-  task?: FetchAnimalTaskByIdPayload;
+  task?: TaskPayload;
 }
 
 export const TaskForm = ({
@@ -98,16 +98,26 @@ export const TaskForm = ({
   });
 
   useEffect(() => {
-    if (state.message && !state.errors) {
+    // If there's no message, do nothing.
+    if (!state.message) {
+      return;
+    }
+
+    // If the action was successful, show a success toast and close the form.
+    if (state.success) {
+      toast.success(state.message);
       onFormSubmit(); // Close dialog on success
     }
-    if (state.errors) {
+    // If it failed and there are specific field errors, set them on the form.
+    else if (state.errors) {
       for (const [key, value] of Object.entries(state.errors)) {
         form.setError(key as keyof TaskFormValues, {
           type: "server",
           message: value?.join(", "),
         });
       }
+    } else {
+      toast.error(state.message);
     }
   }, [state, form, onFormSubmit]);
 

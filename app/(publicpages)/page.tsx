@@ -1,6 +1,6 @@
 import Link from "next/link";
 import WelcomeImage from "../../components/public-pages/welcome-image";
-import { fetchLatestPublicAnimals } from "../lib/data/animals/public.data";
+import { fetchLatestPublicAnimals } from "../lib/data/public.data";
 import Image from "next/image";
 import { shimmer, toBase64 } from "../lib/utils/image-loading-placeholder";
 import { calculateAgeString } from "../lib/utils/date-utils";
@@ -123,12 +123,14 @@ const LatestPetsContent = async () => {
   const latestAnimals = await fetchLatestPublicAnimals();
 
   const session = await auth();
-  const currentUserId = session?.user?.id;
+  const currentUserPersonId = session?.user?.personId;
 
   return (
     <div className="mt-6 grid gap-4 gap-y-14 grid-cols-[repeat(auto-fit,minmax(theme('spacing.40'),1fr))]">
       {latestAnimals.map((animal) => {
-        const isLikedByCurrentUser = !!(currentUserId && animal.likes?.length > 0);
+        const isLikedByCurrentUser = !!(
+          currentUserPersonId && animal.likes?.length > 0
+        );
         const ageString = calculateAgeString({
           birthDate: animal.birthDate,
           simple: true,
@@ -167,41 +169,13 @@ const LatestPetsContent = async () => {
                 <div className="absolute -top-4 right-2 z-10">
                   <LikeButton
                     animalId={animal.id}
-                    currentUserId={currentUserId}
+                    currentUserPersonId={currentUserPersonId}
                     isLikedByCurrentUser={isLikedByCurrentUser}
                   />
                 </div>
               </div>
             </div>
           </Link>
-          // <Link
-          //   href={`/pets/${pet.id}`}
-          //   key={pet.id}
-          //   className="group block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden"
-          // >
-          //   {/* Consider using Next/Image for optimized images */}
-          //   {/* eslint-disable-next-line @next/next/no-img-element */}
-          //   <Image
-          //     src={`${pet.animalImages[0].url}`}
-          //     width={300}
-          //     height={200}
-          //     placeholder={`data:image/svg+xml;base64,${toBase64(
-          //       shimmer(300, 200)
-          //     )}`}
-          //     alt={`Photo of ${pet.name}`}
-          //     className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
-          //   />
-          //   <div className="p-4">
-          //     <h3 className="text-xl font-semibold text-slate-800">
-          //       {pet.name}
-          //     </h3>
-          //     <p className="text-sm text-gray-600 mb-1">{pet.breed}</p>
-          //     <p className="text-sm text-gray-600 mb-1">{ageString}</p>
-          //     <span className="text-orange-600 group-hover:text-orange-700 font-medium text-sm">
-          //       Learn more &rarr;
-          //     </span>
-          //   </div>
-          // </Link>
         );
       })}
     </div>

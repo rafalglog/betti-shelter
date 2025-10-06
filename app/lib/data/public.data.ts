@@ -2,10 +2,10 @@ import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { auth } from "@/auth";
 import { AnimalListingStatus, Prisma } from "@prisma/client";
-import { cuidSchema } from "../../zod-schemas/common.schemas";
-import { PublishedPetsFilterSchema } from "../../zod-schemas/animal.schemas";
+import { cuidSchema } from "../zod-schemas/common.schemas";
+import { PublishedPetsSchema } from "../zod-schemas/animal.schemas";
 
-export type FilteredPetsPayload = Prisma.AnimalGetPayload<{
+export type PetsPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
@@ -28,25 +28,18 @@ export type FilteredPetsPayload = Prisma.AnimalGetPayload<{
   };
 }>;
 
-// The new, combined function
-export const fetchFilteredPublishedPets = async (
+export const fetchPublishedPets = async (
   queryInput: string,
   currentPageInput: number,
   speciesNameInput?: string
-): Promise<{ pets: FilteredPetsPayload[]; totalPages: number }> => {
-  const validatedArgs = PublishedPetsFilterSchema.safeParse({
+): Promise<{ pets: PetsPayload[]; totalPages: number }> => {
+  const validatedArgs = PublishedPetsSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     speciesName: speciesNameInput,
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Validation error in fetchFilteredPublishedPets:",
-        validatedArgs.error.flatten()
-      );
-    }
     throw new Error("Invalid arguments for fetching pets.");
   }
   const { query, currentPage, speciesName } = validatedArgs.data;
@@ -111,9 +104,7 @@ export const fetchFilteredPublishedPets = async (
     const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
     return { pets, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching pets.", error);
-    }
+    console.error("Error fetching pets.", error);
     throw new Error("Error fetching pets.");
   }
 };
@@ -123,9 +114,7 @@ export const fetchSpecies = async () => {
     const species = await prisma.species.findMany();
     return species;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching species.", error);
-    }
+    console.error("Error fetching species.", error);
     throw new Error("Error fetching species.");
   }
 };
@@ -133,23 +122,24 @@ export const fetchSpecies = async () => {
 export const fetchPublicPagePetById = async (id: string) => {
   // Validate the id at runtime
   const parsedId = cuidSchema.safeParse(id);
-  if (!parsedId.success) { 
-    console.error(`Invalid Pet ID format for update: ${parsedId.error.flatten().formErrors.join(", ")}`); 
-    throw new Error("Invalid Pet ID format."); 
+  if (!parsedId.success) {
+    throw new Error("Invalid Pet ID format.");
   }
   // Pet ID is valid, extract the data
   const validatedId = parsedId.data;
 
-  const session = await auth(); 
-  const personId = session?.user?.personId; 
+  const session = await auth();
+  const personId = session?.user?.personId;
 
   try {
     const pet = await prisma.animal.findUnique({
       where: {
         id: validatedId,
-        // Update the where clause to include both PUBLISHED and PENDING_ADOPTION
         listingStatus: {
-          in: [AnimalListingStatus.PUBLISHED, AnimalListingStatus.PENDING_ADOPTION],
+          in: [
+            AnimalListingStatus.PUBLISHED,
+            AnimalListingStatus.PENDING_ADOPTION,
+          ],
         },
       },
       select: {
@@ -158,16 +148,16 @@ export const fetchPublicPagePetById = async (id: string) => {
         listingStatus: true,
         city: true,
         state: true,
-        birthDate: true, 
-        weightKg: true, 
-        heightCm: true, 
+        birthDate: true,
+        weightKg: true,
+        heightCm: true,
         species: {
           select: {
             name: true,
           },
         },
-        description: true, 
-        animalImages: true, 
+        description: true,
+        animalImages: true,
         // Conditionally include likes if userId is available
         ...(personId && {
           likes: {
@@ -187,22 +177,20 @@ export const fetchPublicPagePetById = async (id: string) => {
               userId: personId,
             },
             select: {
-              id: true, 
-              userId: true, 
-              status: true, 
+              id: true,
+              userId: true,
+              status: true,
             },
             take: 1,
           },
         }),
       },
     });
-    // return the pet
-    return pet; 
+
+    return pet;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching pet.", error); 
-    }
-    throw new Error("Error fetching pet."); 
+    console.error("Error fetching pet.", error);
+    throw new Error("Error fetching pet.");
   }
 };
 
@@ -219,10 +207,8 @@ export const fetchLatestPublicAnimals = async () => {
       select: {
         id: true,
         name: true,
-        // breed: true,
         birthDate: true,
         city: true,
-        state: true,
         animalImages: {
           select: {
             url: true,
@@ -239,7 +225,6 @@ export const fetchLatestPublicAnimals = async () => {
             },
             take: 1,
           },
-          listingStatus: true,
         }),
       },
       orderBy: {
@@ -247,12 +232,9 @@ export const fetchLatestPublicAnimals = async () => {
       },
       take: 4,
     });
-    // simulate delay 
-    // await new Promise((resolve) => setTimeout(resolve, 10000));
-
-    // return the latest pets
     return latestPets;
   } catch (error) {
+    console.error("Error fetching latest pets.", error);
     throw new Error("Error fetching latest pets.");
   }
-}
+};

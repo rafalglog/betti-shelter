@@ -3,6 +3,7 @@ import {
   AnimalListingStatus,
   Sex,
   Prisma,
+  ApplicationStatus,
 } from "@prisma/client";
 import {
   AnimalsPayload,
@@ -10,14 +11,15 @@ import {
   ColorPayload,
   PartnerPayload,
   AnimalWithDetailsPayload,
+  AnimalForCardPayload,
 } from "../../types";
 import { cuidSchema } from "../../zod-schemas/common.schemas";
-import { DashboardAnimalsFilterSchema as DashboardAnimalFilterSchema } from "../../zod-schemas/animal.schemas";
+import { DashboardAnimalsSchema } from "../../zod-schemas/animal.schemas";
 import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 
 // data for the animals table in the dashboard
-const _fetchFilteredAnimals = async (
+const _fetchAnimals = async (
   queryInput: string,
   currentPageInput: number,
   listingStatusInput: string | undefined,
@@ -26,7 +28,7 @@ const _fetchFilteredAnimals = async (
   sortInput: string | undefined
 ): Promise<{ animals: AnimalsPayload[]; totalPages: number }> => {
   // Parse the query and currentPage
-  const validatedArgs = DashboardAnimalFilterSchema.safeParse({
+  const validatedArgs = DashboardAnimalsSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     listingStatus: listingStatusInput,
@@ -36,16 +38,7 @@ const _fetchFilteredAnimals = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchFilteredPets:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching filtered pets."
-    );
+    throw new Error("Invalid arguments for fetching animals.");
   }
   const { query, currentPage, listingStatus, sex, pageSize, sort } =
     validatedArgs.data;
@@ -104,46 +97,124 @@ const _fetchFilteredAnimals = async (
 
     return { animals, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching animals.", error);
-    }
+    console.error("Error fetching animals.", error);
     throw new Error("Error fetching animals.");
+  }
+};
+
+const _fetchAnimalData = async (
+  id: string
+): Promise<AnimalForCardPayload | null> => {
+  const parsedId = cuidSchema.safeParse(id);
+
+  if (!parsedId.success) {
+    throw new Error("Invalid animal ID format.");
+  }
+
+  const validatedAnimalId = parsedId.data;
+
+  try {
+    const animal = await prisma.animal.findUnique({
+      where: { id: validatedAnimalId },
+      select: {
+        id: true,
+        name: true,
+        birthDate: true,
+        sex: true,
+        size: true,
+        microchipNumber: true,
+        listingStatus: true,
+        isSpayedNeutered: true,
+        city: true,
+        state: true,
+        healthStatus: true,
+        legalStatus: true,
+        species: {
+          select: {
+            name: true,
+          },
+        },
+        breeds: {
+          select: {
+            name: true,
+          },
+        },
+        colors: {
+          select: {
+            name: true,
+          },
+        },
+        adoptionApplications: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+        intake: {
+          select: {
+            intakeDate: true,
+          },
+          orderBy: {
+            intakeDate: 'desc',
+          },
+          take: 1,
+        },
+        likes: {
+          select: {
+            id: true,
+          },
+        },
+        tasks: {
+          where: {
+            status: {
+              in: ['TODO', 'IN_PROGRESS'],
+            },
+          },
+          select: {
+            id: true,
+            status: true,
+          },
+        },
+      },
+    });
+
+    return animal;
+  } catch (error) {
+    console.error("Error fetching animal by ID.", error);
+    throw new Error("Error fetching animal details.");
   }
 };
 
 const _fetchAnimalById = async (
   id: string
 ): Promise<AnimalWithDetailsPayload | null> => {
-  // Validate the incoming animal ID
   const parsedId = cuidSchema.safeParse(id);
 
   if (!parsedId.success) {
-    console.error("Invalid CUID format in _fetchAnimalById:", parsedId.error);
-    // Return null for an invalid ID format to prevent crashes
-    return null;
+    throw new Error("Invalid animal ID format.");
   }
 
   const validatedAnimalId = parsedId.data;
 
   try {
-    // Fetch the animal record from the database
     const animal = await prisma.animal.findUnique({
       where: { id: validatedAnimalId },
-      // Include related data required by the AnimalForm in edit mode
       include: {
         species: true,
         breeds: true,
         colors: true,
+        adoptionApplications: {
+          select: {
+            id: true,
+            status: true,
+          },
+        },
       },
     });
-
     return animal;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching animal by ID.", error);
-    }
-    // Propagate the error to be handled by the calling component
-    throw new Error("Error fetching animal details.");
+    console.error("Error fetching animal data.", error);
+    throw new Error("Error fetching animal data.");
   }
 };
 
@@ -160,9 +231,7 @@ const _fetchPartners = async (): Promise<PartnerPayload[]> => {
     });
     return partners;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching partners.", error);
-    }
+    console.error("Error fetching partners.", error);
     throw new Error("Error fetching partners.");
   }
 };
@@ -180,9 +249,7 @@ export const fetchColors = async (): Promise<ColorPayload[]> => {
     });
     return colors;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching colors.", error);
-    }
+    console.error("Error fetching colors.", error);
     throw new Error("Error fetching colors.");
   }
 };
@@ -206,9 +273,7 @@ export const fetchSpecies = async (): Promise<SpeciesPayload[]> => {
     });
     return species;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching species.", error);
-    }
+    console.error("Error fetching species.", error);
     throw new Error("Error fetching species.");
   }
 };
@@ -217,10 +282,14 @@ export const fetchPartners = RequirePermission(Permissions.PARTNER_READ)(
   _fetchPartners
 );
 
-export const fetchFilteredAnimals = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
-)(_fetchFilteredAnimals);
+export const fetchAnimals = RequirePermission(Permissions.ANIMAL_READ_LISTING)(
+  _fetchAnimals
+);
 
 export const fetchAnimalById = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchAnimalById);
+
+export const fetchAnimalData = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
+  _fetchAnimalData
+);

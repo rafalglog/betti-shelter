@@ -1,12 +1,14 @@
+import { cache } from "react";
 import { auth } from "@/auth";
 import { rolePermissions } from "./roles.config";
 
 /**
  * Checks if the current user has a specific permission.
+ * This function is memoized per-request using React's `cache`.
  * @param requiredPermission The permission string to check for.
  * @returns A boolean indicating if the user has the permission.
  */
-export const hasPermission = async (requiredPermission: string) => {
+export const hasPermission = cache(async (requiredPermission: string) => {
   const session = await auth();
   if (!session?.user) {
     return false;
@@ -22,4 +24,4 @@ export const hasPermission = async (requiredPermission: string) => {
 
   // Check if the required permission is in the user's list
   return userPermissions.includes(requiredPermission);
-};
+});

@@ -12,10 +12,11 @@ import { Permissions } from "../auth/permissions";
 const UpdateUserRoleSchema = z.object({
   userId: cuidSchema,
   // Ensure the role is one of the valid, non-admin enum values
-  role: z.nativeEnum(Role).refine(
-    (role) => role !== Role.ADMIN,
-    { message: "Assigning the Admin role is not permitted here." }
-  ),
+  role: z
+    .nativeEnum(Role)
+    .refine((role) => role !== Role.ADMIN, {
+      message: "Assigning the Admin role is not permitted here.",
+    }),
 });
 
 const _updateUserRole = async (userId: string, newRole: Role) => {
@@ -59,4 +60,6 @@ const _updateUserRole = async (userId: string, newRole: Role) => {
   }
 };
 
-export const updateUserRole = RequirePermission(Permissions.MANAGE_ROLES)(_updateUserRole);
+export const updateUserRole = RequirePermission(Permissions.MANAGE_ROLES)(
+  _updateUserRole
+);

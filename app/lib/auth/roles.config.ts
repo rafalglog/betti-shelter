@@ -17,8 +17,14 @@ const volunteerPermissions = [
   Permissions.ANIMAL_READ_DETAIL,    // Volunteers can view detailed pet information (read-only)
   Permissions.APPLICATIONS_READ_LISTING, // Volunteers can view the list of all user applications (read-only)
   Permissions.APPLICATIONS_READ_DETAIL,  // Volunteers can view detailed application information (read-only)
-
+  Permissions.ANIMAL_ACTIVITY_READ,
+  Permissions.ANIMAL_JOURNEY_READ,
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL,
+  Permissions.ANIMAL_NOTE_READ_LISTING,
+  Permissions.ANIMAL_TASK_READ_LISTING,
+  Permissions.ANIMAL_ASSESSMENT_READ_LISTING,
+  Permissions.OUTCOMES_READ_LISTING,
+  Permissions.OUTCOMES_READ_DETAIL,
 ] as const;
 
 // Staff inherits all USER permissions and gets additional ones
@@ -28,6 +34,16 @@ const staffPermissions = [
   Permissions.ANIMAL_UPDATE, 
   Permissions.ANIMAL_DELETE_IMAGE,
   Permissions.APPLICATIONS_MANAGE_STATUS, // Staff can manage the status of applications
+
+  Permissions.ANIMAL_CHARACTERISTICS_UPDATE,
+
+  Permissions.ANIMAL_NOTE_CREATE,
+  Permissions.ANIMAL_NOTE_UPDATE,
+  Permissions.ANIMAL_NOTE_DELETE,
+
+  Permissions.ANIMAL_TASK_CREATE,
+  Permissions.ANIMAL_TASK_UPDATE,
+  Permissions.ANIMAL_TASK_DELETE,
 
   Permissions.ANIMAL_ASSESSMENT_CREATE,
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL,

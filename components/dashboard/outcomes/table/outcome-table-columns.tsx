@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OutcomeTypesOptions } from "./outcome-options";
 import { DataTableColumnHeader } from "../../../table-common/data-table-column-header";
 import { DataTableRowActions } from "./outcome-table-row-actions";
-import { OutcomeWithDetails } from "@/app/lib/data/outcome.data";
+import { OutcomeWithDetails } from "@/app/lib/data/animals/outcome.data";
 import { formatDateOrNA } from "@/app/lib/utils/date-utils";
 
 export const columns: ColumnDef<OutcomeWithDetails>[] = [
@@ -42,14 +42,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
     ),
     cell: ({ row }) => {
       const { animal } = row.original;
-      return (
-        <div>
-          <div className="font-medium">{animal.name}</div>
-          <div className="text-sm text-muted-foreground">
-            {animal.species.name}
-          </div>
-        </div>
-      );
+      return <div className="font-medium">{animal.name}</div>;
     },
   },
   {
@@ -115,7 +108,11 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
       displayName: "Outcome Date",
     },
     cell: ({ row }) => {
-      const date = row.getValue("outcomeDate") as string | Date | undefined | null;
+      const date = row.getValue("outcomeDate") as
+        | string
+        | Date
+        | undefined
+        | null;
       return <span>{formatDateOrNA(date)}</span>;
     },
   },
@@ -128,11 +125,8 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
       displayName: "Staff Name",
     },
     cell: ({ row }) => {
-      return (
-        <span className="max-w-[400px] truncate">
-          {row.getValue("staffMember.name")}
-        </span>
-      );
+      const staffName = row.original.staffMember.name;
+      return <span>{staffName}</span>;
     },
   },
   {

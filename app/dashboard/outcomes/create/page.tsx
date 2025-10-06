@@ -1,4 +1,3 @@
-import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import {
   fetchPartners,
   fetchAnimalById,
@@ -7,48 +6,72 @@ import { OutcomeForm } from "@/components/dashboard/outcomes/outcome-form";
 import { fetchApplicationById } from "@/app/lib/data/user-application.data";
 import { Suspense } from "react";
 import { SearchParamsType } from "@/app/lib/types";
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft, ArchiveIcon } from "lucide-react";
+import { AnimalListingStatus } from "@prisma/client";
+import ActionBlockedMessage from "@/components/action-blocked-message";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const CreateOutcomePage = async ({ searchParams }: Props) => {
-  const { animalId, applicationId } = await searchParams || {};
+  const { animalId, applicationId } = (await searchParams) || {};
 
-  let animal = null;
+  let animal: Awaited<ReturnType<typeof fetchAnimalById>> = null;
   let application = null;
 
   if (applicationId) {
-    // Mode 1: Adoption Outcome
     application = await fetchApplicationById(applicationId);
     if (!application || !application.animal) {
-      return <PageNotFoundOrAccessDenied type="notFound" />;
+      return notFound();
     }
-    // The animal data is nested inside the application object
-    animal = application.animal;
+    animal = await fetchAnimalById(application.animal.id);
   } else if (animalId) {
-    // Mode 2: General Outcome
     animal = await fetchAnimalById(animalId);
   }
 
   if (!animal) {
-    return <PageNotFoundOrAccessDenied type="notFound" />;
+    return notFound();
   }
 
   const partners = await fetchPartners();
   if (!partners) {
-    return <PageNotFoundOrAccessDenied type="notFound" />;
+    return notFound();
   }
 
   return (
-    <main>
-      <Suspense fallback={<div>Loading form...</div>}>
-        <OutcomeForm
-          animal={{ id: animal.id, name: animal.name }}
-          application={application || undefined}
-          partners={partners}
-        />
-      </Suspense>
+    <main className="container mx-auto">
+      <Button asChild variant="ghost" className="mb-4">
+        <Link href={`/dashboard/animals/${animal.id}`}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Animal Profile
+        </Link>
+      </Button>
+
+      {/* Conditional Rendering Logic now uses the reusable component */}
+      {animal.listingStatus === AnimalListingStatus.ARCHIVED ? (
+        <ActionBlockedMessage
+          icon={ArchiveIcon}
+          title="Outcome Already Processed"
+        >
+          <p>
+            An outcome has already been recorded for{" "}
+            <strong>{animal.name}</strong>. This animal's record is archived,
+            and no further outcomes can be processed.
+          </p>
+        </ActionBlockedMessage>
+      ) : (
+        <Suspense fallback={<div>Loading form...</div>}>
+          <OutcomeForm
+            animal={{ id: animal.id, name: animal.name }}
+            application={application || undefined}
+            partners={partners}
+          />
+        </Suspense>
+      )}
     </main>
   );
 };

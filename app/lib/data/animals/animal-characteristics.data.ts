@@ -14,8 +14,7 @@ const _fetchAnimalCharacteristics = async (
 
   const validation = cuidSchema.safeParse(animalId);
   if (!validation.success) {
-    console.error("Invalid animalId format:", validation.error);
-    throw new Error("Invalid animalId format. Expected a valid CUID.");
+    throw new Error("Invalid animalId format.");
   }
 
   try {
@@ -39,7 +38,7 @@ const _fetchAnimalCharacteristics = async (
 
     // Handle the case where the animal ID does not exist.
     if (!animal) {
-      throw new Error(`Animal with ID ${animalId} not found.`);
+      throw new Error("Animal not found.");
     }
 
     const assignedCharIds = new Set(animal.characteristics.map((c) => c.id));
@@ -56,7 +55,6 @@ const _fetchAnimalCharacteristics = async (
   }
 };
 
-
 export const fetchAnimalCharacteristics = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
+  Permissions.ANIMAL_CHARACTERISTICS_UPDATE
 )(_fetchAnimalCharacteristics);

@@ -5,7 +5,7 @@ import { cuidSchema } from "../zod-schemas/common.schemas";
 import { prisma } from "../prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { ApplicationStatus } from "@prisma/client";
+import { AnimalListingStatus, ApplicationStatus } from "@prisma/client";
 import { MyAdoptionAppFormSchema } from "../zod-schemas/myApplication.schema";
 import { SessionUser, withAuthenticatedUser } from "../auth/protected-actions";
 import { ActionResult } from "../types";
@@ -168,11 +168,14 @@ const _withdrawMyApplication = async (
   }
   const validatedApplicationId = parsedApplicationId.data;
 
+  // Declare 'application' here to make it accessible in the transaction block
+  let application;
+
   // Verify ownership and status
   try {
-    const application = await prisma.adoptionApplication.findUnique({
+    application = await prisma.adoptionApplication.findUnique({
       where: { id: validatedApplicationId },
-      select: { userId: true, status: true },
+      select: { userId: true, status: true, animalId: true }, // Select animalId
     });
 
     if (!application) {
@@ -212,22 +215,34 @@ const _withdrawMyApplication = async (
 
   // Update the application status and create a history record
   try {
-    await prisma.$transaction([
-      // Update the application's current status
-      prisma.adoptionApplication.update({
+    await prisma.$transaction(async (tx) => {
+      // Update the application's status to WITHDRAWN
+      await tx.adoptionApplication.update({
         where: { id: validatedApplicationId },
         data: { status: ApplicationStatus.WITHDRAWN },
-      }),
-      // Create the history record for the audit trail
-      prisma.applicationStatusHistory.create({
+      });
+
+      // Create the history record
+      await tx.applicationStatusHistory.create({
         data: {
           applicationId: validatedApplicationId,
           status: ApplicationStatus.WITHDRAWN,
           statusChangeReason: "Application withdrawn by user.",
-          changedById: user.personId, // Link to the user who performed the action
+          changedById: user.personId,
         },
-      }),
-    ]);
+      });
+
+      if (application.status === ApplicationStatus.APPROVED) {
+        // it will only update if the animal is PENDING_ADOPTION
+        await tx.animal.updateMany({
+          where: {
+            id: application.animalId,
+            listingStatus: AnimalListingStatus.PENDING_ADOPTION,
+          },
+          data: { listingStatus: AnimalListingStatus.PUBLISHED },
+        });
+      }
+    });
   } catch (error) {
     console.error(
       `Database Error withdrawing adoption application ${validatedApplicationId}:`,
@@ -239,11 +254,9 @@ const _withdrawMyApplication = async (
     };
   }
 
-  // On success, revalidate paths and return success
-  revalidatePath("/dashboard/my-applications");
   revalidatePath(`/dashboard/my-applications/${validatedApplicationId}`);
 
-  redirect("/dashboard/my-applications");
+  return { success: true, message: "Application withdrawn successfully." };
 };
 
 const _reactivateMyApplication = async (
@@ -264,7 +277,11 @@ const _reactivateMyApplication = async (
   try {
     const application = await prisma.adoptionApplication.findUnique({
       where: { id: validatedApplicationId },
-      select: { userId: true, status: true },
+      select: {
+        userId: true,
+        status: true,
+        animal: { select: { listingStatus: true } },
+      },
     });
 
     if (!application) {
@@ -276,6 +293,14 @@ const _reactivateMyApplication = async (
         success: false,
         message:
           "Access Denied. You can only reactivate your own applications.",
+      };
+    }
+
+    if (application.animal.listingStatus !== "PUBLISHED") {
+      return {
+        success: false,
+        message:
+          "Cannot reactivate application. This animal is no longer available for adoption.",
       };
     }
 
@@ -324,9 +349,7 @@ const _reactivateMyApplication = async (
     };
   }
 
-  // On success, revalidate paths and return success
   revalidatePath("/dashboard/my-applications");
-  revalidatePath(`/dashboard/my-applications/${validatedApplicationId}`);
 
   return { success: true, message: "Application reactivated successfully." };
 };
@@ -338,13 +361,13 @@ const _createMyAdoptionApp = async (
   prevState: MyAdoptionAppFormState,
   formData: FormData
 ): Promise<MyAdoptionAppFormState> => {
-  const parsedanimalId = cuidSchema.safeParse(animalId);
-  if (!parsedanimalId.success) {
+  const parsedAnimalId = cuidSchema.safeParse(animalId);
+  if (!parsedAnimalId.success) {
     return {
-      message: "Invalid Adoption Application ID format.",
+      message: "Invalid Animal ID format.",
     };
   }
-  const validatedAnimalId = parsedanimalId.data;
+  const validatedAnimalId = parsedAnimalId.data;
 
   // Validate form fields using Zod
   const validatedFields = MyAdoptionAppFormSchema.safeParse({
@@ -367,7 +390,6 @@ const _createMyAdoptionApp = async (
     reasonForAdoption: formData.get("reasonForAdoption"),
   });
 
-  // If form validation fails, return errors early. Otherwise, continue.
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
@@ -375,7 +397,6 @@ const _createMyAdoptionApp = async (
     };
   }
 
-  // Prepare data for insertion into the database
   const {
     applicantName,
     applicantEmail,
@@ -399,31 +420,50 @@ const _createMyAdoptionApp = async (
   const dataToCreate = {
     ...validatedFields.data,
     userId: user.personId,
-    animalId: animalId,
-    hasYard: hasYard === "true", // Convert string "true" to boolean true
-    landlordPermission: landlordPermission === "true", // Convert string "true" to boolean true
-    householdSize: parseInt(householdSize, 10), // Convert string to number
-    hasChildren: hasChildren === "true", // Convert string "true" to boolean true
+    animalId: validatedAnimalId,
+    hasYard: hasYard === "true",
+    landlordPermission: landlordPermission === "true",
+
+    householdSize: parseInt(householdSize, 10),
+    hasChildren: hasChildren === "true",
     childrenAges:
       childrenAges.trim() === ""
         ? []
-        : childrenAges.split(",").map((age) => parseInt(age.trim(), 10)), // Convert comma-separated string to number array
+        : childrenAges.split(",").map((age) => parseInt(age.trim(), 10)),
   };
 
   try {
-    await prisma.adoptionApplication.create({
-      data: {
-        ...dataToCreate,
-        // Create the initial history record at the same time
-        history: {
-          create: {
-            status: ApplicationStatus.PENDING, // The initial status
-            statusChangeReason: "Application submitted by user.",
-            changedById: user.personId,
+    await prisma.$transaction(
+      async (tx) => {
+        // Fetch the animal's CURRENT status from the database
+        const animal = await tx.animal.findUnique({
+          where: { id: validatedAnimalId },
+          select: { listingStatus: true },
+        });
+
+        // Perform the critical check
+        if (animal?.listingStatus !== "PUBLISHED") {
+          throw new Error("This animal is no longer available for adoption.");
+        }
+
+        // If the check passes, proceed to create the application
+        await tx.adoptionApplication.create({
+          data: {
+            ...dataToCreate,
+            history: {
+              create: {
+                status: "PENDING",
+                statusChangeReason: "Application submitted by user.",
+                changedById: user.personId,
+              },
+            },
           },
-        },
+        });
       },
-    });
+      {
+        isolationLevel: "Serializable",
+      }
+    );
   } catch (error: unknown) {
     console.error("Error submitting adoption application:", error);
     return {
@@ -438,10 +478,13 @@ const _createMyAdoptionApp = async (
 };
 
 export const updateMyAdoptionApp = withAuthenticatedUser(_updateMyAdoptionApp);
+
 export const withdrawMyApplication = withAuthenticatedUser(
   _withdrawMyApplication
 );
+
 export const createMyAdoptionApp = withAuthenticatedUser(_createMyAdoptionApp);
+
 export const reactivateMyApplication = withAuthenticatedUser(
   _reactivateMyApplication
 );

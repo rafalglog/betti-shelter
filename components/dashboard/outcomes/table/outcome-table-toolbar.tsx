@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { outcomeTypeOptions } from "@/app/lib/utils/enum-formatter";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
-import { OutcomeWithDetails } from "@/app/lib/data/outcome.data";
+import { OutcomeWithDetails } from "@/app/lib/data/animals/outcome.data";
 import { ServerSideSort } from "@/components/table-common/server-side-sort";
 
 interface OutcomeTableToolbarProps {

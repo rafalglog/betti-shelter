@@ -7,19 +7,29 @@ export const Permissions = {
   ANIMAL_READ_DETAIL: "animal:read_detail", // For viewing detailed pet information (including the edit form in read-only)
   ANIMAL_READ_LISTING: "animal:read_listing",   // For viewing the pets list page (e.g., dashboard/pets)
 
+  ANIMAL_ACTIVITY_READ: "animal_activity:read",
+
   // Animal Assessment Permissions
   ANIMAL_ASSESSMENT_CREATE: "animal_assessment:create",
   ANIMAL_ASSESSMENT_UPDATE: "animal_assessment:update",
   ANIMAL_ASSESSMENT_READ_DETAIL: "animal_assessment:read_detail",
   ANIMAL_ASSESSMENT_DELETE: "animal_assessment:delete",
+  ANIMAL_ASSESSMENT_READ_LISTING: "animal_assessment:read_listing",
 
   // Animal Note Permissions
   ANIMAL_NOTE_CREATE: "animal_note:create",
   ANIMAL_NOTE_UPDATE: "animal_note:update",
   ANIMAL_NOTE_DELETE: "animal_note:delete",
+  ANIMAL_NOTE_READ_LISTING: "animal_note:read_listing",
 
-  // Animal Outcome Permissions
-  OUTCOMES_MANAGE: "outcome:manage",
+  ANIMAL_TASK_CREATE: "animal_task:create",
+  ANIMAL_TASK_UPDATE: "animal_task:update",
+  ANIMAL_TASK_DELETE: "animal_task:delete",
+  ANIMAL_TASK_READ_LISTING: "animal_task:read_listing",
+
+  ANIMAL_CHARACTERISTICS_UPDATE: "animal:characteristics_update",
+
+  ANIMAL_JOURNEY_READ: "animal_journey:read",
 
   PARTNER_READ: "partner:read_analytics",
 
@@ -27,6 +37,10 @@ export const Permissions = {
   APPLICATIONS_READ_LISTING: "applications:read_listing", // View list of ALL user applications
   APPLICATIONS_READ_DETAIL: "applications:read_detail", 
   APPLICATIONS_MANAGE_STATUS: "applications:manage_status", // Update status (approve/reject) of any application
+  
+  OUTCOMES_READ_LISTING: "outcome:read_listing",
+  OUTCOMES_READ_DETAIL: "outcome:read_detail",
+  OUTCOMES_MANAGE: "outcome:manage",
 
   // My Application Management (for users managing their own applications)
   MY_APPLICATIONS_READ: "my_applications:read",   // View list of own applications

@@ -15,10 +15,18 @@ import {
   withAuthenticatedUser,
 } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
-import { AnimalActivityType, AnimalSize, IntakeType, PersonType } from "@prisma/client";
+import {
+  AnimalActivityType,
+  AnimalListingStatus,
+  ApplicationStatus,
+  IntakeType,
+  PersonType,
+} from "@prisma/client";
+import { getAnimalSize } from "../utils/animal-size";
 
+import { ConflictError, NotFoundError } from "../utils/errors";
 const _createAnimal = async (
-  user: SessionUser, // Injected by withAuthenticatedUser
+  user: SessionUser,
   prevState: AnimalFormState,
   formData: FormData
 ): Promise<AnimalFormState> => {
@@ -54,6 +62,7 @@ const _createAnimal = async (
     estimatedBirthDate,
     sex,
     healthStatus,
+    listingStatus,
     microchipNumber,
     description,
     species: speciesId,
@@ -83,7 +92,6 @@ const _createAnimal = async (
         throw new Error("Invalid Species ID provided.");
       }
 
-      // Calculate the size based on weight and species name
       const calculatedSize = getAnimalSize(
         speciesRecord.name,
         weightKg as number | null
@@ -101,6 +109,10 @@ const _createAnimal = async (
         surrenderingPersonId = person.id;
       }
 
+      // Set publishedAt if listing status is PUBLISHED
+      const publishedAt =
+        listingStatus === AnimalListingStatus.PUBLISHED ? new Date() : null;
+
       const newAnimal = await tx.animal.create({
         data: {
           name: animalName,
@@ -111,6 +123,8 @@ const _createAnimal = async (
           weightKg: weightKg ? Number(weightKg) : undefined,
           heightCm: heightCm ? Number(heightCm) : undefined,
           healthStatus: healthStatus,
+          listingStatus: listingStatus,
+          publishedAt: publishedAt,
           microchipNumber: microchipNumber,
           city: validatedFields.data.foundCity || null,
           state: validatedFields.data.foundState || null,
@@ -139,7 +153,7 @@ const _createAnimal = async (
           foundState: intakeType === IntakeType.STRAY ? foundState : undefined,
         },
       });
-      
+
       await tx.animalActivityLog.create({
         data: {
           animalId: newAnimal.id,
@@ -151,6 +165,17 @@ const _createAnimal = async (
         },
       });
 
+      // Log status change if published
+      if (listingStatus === AnimalListingStatus.PUBLISHED) {
+        await tx.animalActivityLog.create({
+          data: {
+            animalId: newAnimal.id,
+            activityType: AnimalActivityType.STATUS_CHANGE,
+            changedById: staffMemberId,
+            changeSummary: `Listing status changed to PUBLISHED.`,
+          },
+        });
+      }
     });
   } catch (error) {
     console.error("Database Error creating intake record:", error);
@@ -164,7 +189,7 @@ const _createAnimal = async (
 };
 
 const _updateAnimal = async (
-  user: SessionUser, // Injected by withAuthenticatedUser
+  user: SessionUser,
   animalId: string,
   prevState: AnimalFormState,
   formData: FormData
@@ -174,6 +199,7 @@ const _updateAnimal = async (
     return { message: "Invalid Animal ID." };
   }
   const validatedAnimalId = parsedId.data;
+  const staffMemberId = user.personId;
 
   const validatedFields = AnimalFormSchema.safeParse(
     Object.fromEntries(formData.entries())
@@ -191,6 +217,7 @@ const _updateAnimal = async (
     estimatedBirthDate,
     sex,
     healthStatus,
+    listingStatus,
     microchipNumber,
     description,
     species: speciesId,
@@ -203,44 +230,84 @@ const _updateAnimal = async (
     notes,
   } = validatedFields.data;
 
+  // This guard prevents archiving from the intake form.
+  if (
+    listingStatus === AnimalListingStatus.ARCHIVED ||
+    listingStatus === AnimalListingStatus.PENDING_ADOPTION
+  ) {
+    return {
+      message:
+        "Invalid Action: This status can only be set via the outcome or application approval process.",
+    };
+  }
+
   const numericWeight = weightKg === "" ? undefined : weightKg;
   const numericHeight = heightCm === "" ? undefined : heightCm;
 
   try {
     await prisma.$transaction(async (tx) => {
-      // Fetch species name to calculate the size
+      const currentAnimal = await tx.animal.findUnique({
+        where: { id: validatedAnimalId },
+        select: { listingStatus: true, publishedAt: true },
+      });
+
+      if (!currentAnimal) {
+        throw new NotFoundError("Animal not found.");
+      }
+
+      if (currentAnimal.listingStatus === AnimalListingStatus.ARCHIVED) {
+        throw new ConflictError(
+          "This animal is archived. To make it available again, please use the re-intake process."
+        );
+      }
+
+      const isChangingToAvailable =
+        listingStatus === AnimalListingStatus.PUBLISHED ||
+        listingStatus === AnimalListingStatus.DRAFT;
+
+      if (
+        currentAnimal.listingStatus === AnimalListingStatus.PENDING_ADOPTION &&
+        isChangingToAvailable
+      ) {
+        const approvedApplication = await tx.adoptionApplication.findFirst({
+          where: {
+            animalId: validatedAnimalId,
+            status: ApplicationStatus.APPROVED,
+          },
+        });
+
+        if (approvedApplication) {
+          throw new ConflictError(
+            "Cannot change status. This animal has an approved adoption application. Please reject or withdraw the application first."
+          );
+        }
+      }
+
       const speciesRecord = await tx.species.findUnique({
         where: { id: speciesId },
         select: { name: true },
       });
 
       if (!speciesRecord) {
-        throw new Error("Invalid Species ID provided.");
+        throw new NotFoundError("The specified species does not exist.");
       }
 
-      // Re-calculate size based on potentially updated weight/species
       const calculatedSize = getAnimalSize(
         speciesRecord.name,
         numericWeight as number | null
       );
 
-      if (notes !== undefined) {
-        // Find the intake record associated with this animal
-        const intakeRecord = await tx.intake.findFirst({
-          where: { animalId: validatedAnimalId },
-          select: { id: true },
-        });
-
-        if (intakeRecord) {
-          await tx.intake.update({
-            where: { id: intakeRecord.id },
-            data: { notes: notes },
-          });
-        }
+      let publishedAt = currentAnimal.publishedAt;
+      if (
+        listingStatus === AnimalListingStatus.PUBLISHED &&
+        !currentAnimal.publishedAt
+      ) {
+        publishedAt = new Date();
       }
 
       await tx.animal.update({
         where: { id: validatedAnimalId },
+
         data: {
           name: animalName,
           birthDate: estimatedBirthDate,
@@ -250,6 +317,8 @@ const _updateAnimal = async (
           weightKg: numericWeight,
           heightCm: numericHeight,
           healthStatus: healthStatus,
+          listingStatus: listingStatus,
+          publishedAt: publishedAt,
           microchipNumber: microchipNumber,
           city: city,
           state: state,
@@ -258,104 +327,65 @@ const _updateAnimal = async (
           colors: { set: [{ id: primaryColorId }] },
         },
       });
+
+      if (currentAnimal.listingStatus !== listingStatus && staffMemberId) {
+        await tx.animalActivityLog.create({
+          data: {
+            animalId: validatedAnimalId,
+            activityType: AnimalActivityType.STATUS_CHANGE,
+            changedById: staffMemberId,
+            changeSummary: `Listing status changed from ${currentAnimal.listingStatus} to ${listingStatus}.`,
+          },
+        });
+      }
     });
   } catch (error) {
     console.error("Database Error updating animal:", error);
+    if (error instanceof ConflictError) {
+      return { message: error.message };
+    }
     return {
       message: "Database Error: Failed to update animal record.",
     };
   }
 
-  // Revalidate paths to clear cache and show updated data
   revalidatePath("/dashboard/animals");
   revalidatePath(`/dashboard/animals/${validatedAnimalId}`);
   redirect(`/dashboard/animals/${validatedAnimalId}`);
 };
 
-/**
- * Calculates the animal's size category based on its species and weight.
- * @param speciesName The name of the species (e.g., "Dog", "Cat").
- * @param weightKg The animal's weight in kilograms.
- * @returns The calculated AnimalSize enum or null if unable to determine.
- */
-const getAnimalSize = (
-  speciesName: string,
-  weightKg: number | undefined | null
-): AnimalSize | null => {
-  if (!weightKg || weightKg <= 0) {
-    return null;
-  }
-
-  const species = speciesName.toLowerCase();
-
-  if (species === "dog") {
-    if (weightKg < 10) return AnimalSize.SMALL;
-    if (weightKg < 25) return AnimalSize.MEDIUM;
-    if (weightKg < 45) return AnimalSize.LARGE;
-    return AnimalSize.XLARGE;
-  }
-
-  if (species === "cat") {
-    if (weightKg < 4) return AnimalSize.SMALL;
-    if (weightKg < 7) return AnimalSize.MEDIUM;
-    return AnimalSize.LARGE;
-  }
-
-  // A generic fallback for other species
-  if (weightKg < 5) return AnimalSize.SMALL;
-  if (weightKg < 20) return AnimalSize.MEDIUM;
-  return AnimalSize.LARGE;
-};
-
 const _togglePetLike = async (
-  user: SessionUser, // Injected by withAuthenticatedUser
+  user: SessionUser,
   animalId: string
-): Promise<void> => {
+): Promise<{ success: boolean; message: string }> => {
   const personId = user.personId;
-
-  // Validate Pet ID
   const parsedPetId = cuidSchema.safeParse(animalId);
   if (!parsedPetId.success) {
-    console.error(
-      "Invalid Pet ID format in _togglePetLike:",
-      parsedPetId.error
-    );
-    throw new Error("Invalid Pet ID format.");
+    return { success: false, message: "Invalid Pet ID format." };
   }
   const validatedAnimalId = parsedPetId.data;
 
-  let pet;
   try {
-    // Fetch the pet from the database
-    pet = await prisma.animal.findUnique({
+    const pet = await prisma.animal.findUnique({
       where: { id: validatedAnimalId },
       select: { listingStatus: true },
     });
-  } catch (error) {
-    console.error(
-      `Database error fetching pet ${validatedAnimalId} in _togglePetLike:`,
-      error
-    );
-    throw new Error("Failed to retrieve pet information. Please try again.");
-  }
 
-  // Check if the pet exists and is likeable
-  if (!pet) {
-    throw new Error("Pet not found.");
-  }
+    if (!pet) {
+      return { success: false, message: "Pet not found." };
+    }
 
-  const isLikeableStatus =
-    pet.listingStatus === "PUBLISHED" ||
-    pet.listingStatus === "PENDING_ADOPTION";
+    const isLikeableStatus =
+      pet.listingStatus === "PUBLISHED" ||
+      pet.listingStatus === "PENDING_ADOPTION";
+    if (!isLikeableStatus) {
+      return {
+        success: false,
+        message:
+          "This pet is not available for interaction at its current status.",
+      };
+    }
 
-  if (!isLikeableStatus) {
-    throw new Error(
-      "This pet is not available for interaction at its current status."
-    );
-  }
-
-  try {
-    // Check if the user has already liked the pet
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_animalId: {
@@ -366,7 +396,6 @@ const _togglePetLike = async (
     });
 
     if (existingLike) {
-      // If like exists, delete it
       await prisma.like.delete({
         where: {
           userId_animalId: {
@@ -375,27 +404,33 @@ const _togglePetLike = async (
           },
         },
       });
+
+      revalidatePath("/pets");
+      revalidatePath(`/pets/${validatedAnimalId}`);
+
+      return { success: true, message: "Removed from favorites." };
     } else {
-      // If like does not exist, create it
       await prisma.like.create({
         data: {
           userId: personId,
           animalId: validatedAnimalId,
         },
       });
+
+      revalidatePath("/pets");
+      revalidatePath(`/pets/${validatedAnimalId}`);
+      return { success: true, message: "Added to favorites!" };
     }
   } catch (error) {
     console.error(
       `Database error toggling like for pet ${validatedAnimalId} and user ${personId}:`,
       error
     );
-    throw new Error(
-      "An error occurred while updating the like status. Please try again."
-    );
+    return {
+      success: false,
+      message: "An error occurred. Please try again.",
+    };
   }
-
-  revalidatePath("/pets");
-  revalidatePath(`/pets/${validatedAnimalId}`);
 };
 
 export const createAnimal = withAuthenticatedUser(

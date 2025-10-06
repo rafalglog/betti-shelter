@@ -1,4 +1,4 @@
-import { fetchFilteredPublishedPets } from "@/app/lib/data/animals/public.data";
+import { fetchPublishedPets } from "@/app/lib/data/public.data";
 import { auth } from "@/auth";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
@@ -18,7 +18,7 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
   const session = await auth();
   const currentUserPersonId = session?.user?.personId;
 
-  const { pets, totalPages } = await fetchFilteredPublishedPets(
+  const { pets, totalPages } = await fetchPublishedPets(
     query,
     currentPage,
     speciesName

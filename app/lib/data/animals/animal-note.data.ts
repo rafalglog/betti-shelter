@@ -8,6 +8,14 @@ import z from "zod";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { RequirePermission } from "../../auth/protected-actions";
 
+export type FetchAnimalNotePayload = Prisma.NoteGetPayload<{
+  select: {
+    id: true;
+    category: true;
+    content: true;
+  };
+}>;
+
 export type NotePayload = Prisma.NoteGetPayload<{
   select: {
     id: true;
@@ -32,9 +40,10 @@ export const AnimalNotesSchema = z.object({
   sort: z.string().optional(),
   showDeleted: z.boolean().optional(),
 });
+
 const NOTES_PER_PAGE = 10;
 
-const _fetchFilteredAnimalNotes = async (
+const _fetchAnimalNotes = async (
   currentPageInput: number,
   categoryInput: string | undefined,
   sortInput: string | undefined,
@@ -51,19 +60,16 @@ const _fetchFilteredAnimalNotes = async (
   });
   // If validation fails, log the error and throw an exception
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchFilteredAnimalNotes:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching filtered notes."
-    );
+    throw new Error("Invalid arguments for fetching notes.");
   }
 
-  const { currentPage, category, sort, animalId, showDeleted: includeDeleted } = validatedArgs.data;
+  const {
+    currentPage,
+    category,
+    sort,
+    animalId,
+    showDeleted: includeDeleted,
+  } = validatedArgs.data;
   // Determine the sorting order for the query, defaulting to newest first
   const orderBy: Prisma.NoteOrderByWithRelationInput = (() => {
     if (!sort) return { createdAt: "desc" };
@@ -109,47 +115,11 @@ const _fetchFilteredAnimalNotes = async (
     const totalPages = Math.ceil(totalCount / NOTES_PER_PAGE);
     return { notes, totalPages };
   } catch (error) {
-    // Catch and handle any database errors
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching notes:", error);
-    }
+    console.error("Error fetching notes:", error);
     throw new Error("Error fetching notes.");
   }
 };
 
-export type FetchAnimalNoteByIdPayload = Prisma.NoteGetPayload<{
-  select: {
-    id: true;
-    category: true;
-    content: true;
-  };
-}>;
-
-const _fetchAnimalNoteById = async (
-  id: string
-): Promise<FetchAnimalNoteByIdPayload | null> => {
-  try {
-    const note = await prisma.note.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        category: true,
-        content: true,
-      },
-    });
-    return note;
-  } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(`Error fetching note with ID ${id}:`, error);
-    }
-    throw new Error(`Error fetching note with ID ${id}.`);
-  }
-};
-
-export const fetchAnimalNoteById = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
-)(_fetchAnimalNoteById);
-
-export const fetchFilteredAnimalNotes = RequirePermission(
-  Permissions.ANIMAL_READ_DETAIL
-)(_fetchFilteredAnimalNotes);
+export const fetchAnimalNotes = RequirePermission(
+  Permissions.ANIMAL_NOTE_READ_LISTING
+)(_fetchAnimalNotes);

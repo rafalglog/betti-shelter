@@ -1,8 +1,11 @@
 import { Suspense } from "react";
-import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { fetchPartners } from "@/app/lib/data/animals/animal.data";
 import { OutcomeForm } from "@/components/dashboard/outcomes/outcome-form";
-import { fetchOutcomeById } from "@/app/lib/data/outcome.data";
+import { fetchOutcomeById } from "@/app/lib/data/animals/outcome.data";
+import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 interface Props {
   params: Promise<{ outcomeId: string }>;
@@ -17,17 +20,24 @@ const EditOutcomePage = async ({ params }: Props) => {
   ]);
 
   if (!outcome || !outcome.animal) {
-    return <PageNotFoundOrAccessDenied type="notFound" />;
+    return notFound();
   }
   if (!partners) {
-    return <PageNotFoundOrAccessDenied type="notFound"/>;
+    return notFound();
   }
 
   const animal = outcome.animal;
   const application = outcome.adoptionApplication;
 
   return (
-    <main>
+    <main className="container mx-auto">
+      <Button asChild variant="ghost" className="mb-4">
+        <Link href="/dashboard/outcomes">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Outcomes
+        </Link>
+      </Button>
+
       <Suspense fallback={<div>Loading form...</div>}>
         <OutcomeForm
           outcome={outcome}

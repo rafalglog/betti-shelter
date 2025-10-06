@@ -30,6 +30,7 @@ const _fetchAssessmentTemplates = async (): Promise<
       },
       orderBy: { name: "asc" },
     });
+
     return templates;
   } catch (error) {
     console.error("Error fetching assessment templates:", error);
@@ -72,13 +73,7 @@ const _fetchAnimalAssessments = async (
     showDeleted: showDeletedInput,
   });
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchFilteredAnimalAssessments:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error("Invalid arguments for fetching filtered assessments.");
+    throw new Error("Invalid arguments for fetching animal assessments.");
   }
 
   const { currentPage, type, outcome, sort, showDeleted } = validatedArgs.data;
@@ -139,10 +134,8 @@ const _fetchAnimalAssessmentById = async (
     });
     return assessment;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(`Error fetching assessment with ID ${id}:`, error);
-    }
-    throw new Error(`Error fetching assessment with ID ${id}.`);
+    console.error(`Error fetching assessment with ID ${id}:`, error);
+    throw new Error(`Error fetching assessment.`);
   }
 };
 
@@ -154,6 +147,6 @@ export const fetchAssessmentTemplates = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
 )(_fetchAssessmentTemplates);
 
-export const fetchFilteredAnimalAssessments = RequirePermission(
+export const fetchAnimalAssessments = RequirePermission(
   Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
 )(_fetchAnimalAssessments);

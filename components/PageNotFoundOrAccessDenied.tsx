@@ -1,14 +1,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button'; // Import the Button component
 
+// The props for the component
 interface PageNotFoundOrAccessDeniedProps {
-  type: 'notFound' | 'accessDenied';
+  type: 'notFound' | 'accessDenied' | 'genericError';
   actionButton?: React.ReactNode;
   itemName?: string;
   redirectUrl?: string;
   buttonGoTo?: string;
 }
 
+// The structure for each error type's content
 interface ErrorContent {
   errorCode: string;
   title: string;
@@ -16,7 +19,7 @@ interface ErrorContent {
   icon: React.ReactNode;
 }
 
-const errorTypeDetails: Record<'notFound' | 'accessDenied', ErrorContent> = {
+const errorTypeDetails: Record<'notFound' | 'accessDenied' | 'genericError', ErrorContent> = {
   notFound: {
     errorCode: '404',
     title: 'Page Not Found',
@@ -49,6 +52,21 @@ const errorTypeDetails: Record<'notFound' | 'accessDenied', ErrorContent> = {
       />
     ),
   },
+  genericError: {
+    errorCode: '500',
+    title: 'Something Went Wrong',
+    description: "We've encountered an unexpected server error. Please try refreshing the page or click the button below to try again.",
+    icon: (
+        <Image
+        src="/icons/racoon.svg"
+        alt="A racoon looking surprised."
+        width={80}
+        height={80}
+        className="mb-5 sm:mb-6 size-20 sm:size-50"
+        aria-hidden="true"
+      />
+    ),
+  },
 };
 
 const PageNotFoundOrAccessDenied = ({ type, actionButton, itemName, redirectUrl, buttonGoTo }: PageNotFoundOrAccessDeniedProps) => {
@@ -57,13 +75,13 @@ const PageNotFoundOrAccessDenied = ({ type, actionButton, itemName, redirectUrl,
 
   const title = type === 'notFound' && itemName ? `${itemName} Not Found` : details.title;
 
+  // Updated to use the shadcn/ui Button component
   const defaultActionButton = (
-    <Link
-      href={redirectUrl || '/'}
-      className="mt-8 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
-    >
-      {buttonGoTo ? `Back to ${buttonGoTo}` : 'Go to Homepage'}
-    </Link>
+    <Button asChild className="mt-8">
+      <Link href={redirectUrl || '/'}>
+        {buttonGoTo ? `Back to ${buttonGoTo}` : 'Go to Homepage'}
+      </Link>
+    </Button>
   );
 
   return (
@@ -78,7 +96,7 @@ const PageNotFoundOrAccessDenied = ({ type, actionButton, itemName, redirectUrl,
       <p className="mt-3 text-base text-gray-600 max-w-md sm:max-w-lg">
         {description}
       </p>
-  
+
       {actionButton !== null && (actionButton === undefined ? defaultActionButton : actionButton)}
     </div>
   );

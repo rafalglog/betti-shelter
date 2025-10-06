@@ -1,8 +1,6 @@
 import { SectionCards } from "@/components/dashboard/analytics/section-cards";
 import { Suspense } from "react";
 import ChartWrapper from "@/components/dashboard/analytics/chart-wrapper";
-import { SearchParamsType } from "../lib/types";
-import { fetchTaskAssigneeList } from "../lib/data/user.data";
 import {
   fetchAnimalsRequiringAttention,
   fetchTaskTableData,
@@ -23,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { fetchTaskAssigneeList } from "../lib/data/animals/animal-task.data";
 
 const SectionCardsSkeleton = () => (
   <div className="shimmer-animation grid grid-cols-1 gap-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
@@ -32,15 +31,12 @@ const SectionCardsSkeleton = () => (
   </div>
 );
 
-interface Props {
-  searchParams: SearchParamsType;
-}
-
 const Page = async () => {
-  const tasks = await fetchTaskTableData();
-  const animalHealth = await fetchAnimalsRequiringAttention();
-
-  const assigneeList = await fetchTaskAssigneeList();
+  const [tasks, animalHealth, assigneeList] = await Promise.all([
+    fetchTaskTableData(),
+    fetchAnimalsRequiringAttention(),
+    fetchTaskAssigneeList()
+  ]);
 
   return (
     <>

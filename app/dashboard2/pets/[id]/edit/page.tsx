@@ -1,6 +1,6 @@
 import EditPetForm from "@/app/ui/dashboard/pets/edit-pet-form";
 import { fetchAnimalById } from "@/app/lib/data/animals/animal.data";
-import { fetchSpecies } from "@/app/lib/data/animals/public.data";
+import { fetchSpecies } from "@/app/lib/data/public.data";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";

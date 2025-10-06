@@ -32,16 +32,7 @@ const _fetchAllTasks = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in fetchAllTasks:",
-        validatedArgs.error.flatten()
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching all tasks."
-    );
+    throw new Error("Invalid arguments for fetching all tasks.");
   }
 
   const { query, currentPage, category, status, pageSize, sort } =
@@ -101,13 +92,11 @@ const _fetchAllTasks = async (
 
     return { tasks, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching all tasks:", error);
-    }
+    console.error("Error fetching all tasks:", error);
     throw new Error("Error fetching all tasks.");
   }
 };
 
 export const fetchAllTasks = RequirePermission(
-  Permissions.ANIMAL_READ_ANALYTICS
+  Permissions.ANIMAL_TASK_READ_LISTING
 )(_fetchAllTasks);

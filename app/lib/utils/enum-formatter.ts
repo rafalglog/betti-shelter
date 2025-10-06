@@ -60,7 +60,7 @@ function formatEnumAsOptions<T extends string>(enumObject: {
  * @example
  * formatSingleEnumOption("FOSTER_CARE") // Returns "Foster Care"
  */
-export const formatSingleEnumOption = (type: string) => {
+export const formatSingleEnumOption = (type: string | null | undefined) => {
   if (!type) return "N/A";
   return type
     .split("_")

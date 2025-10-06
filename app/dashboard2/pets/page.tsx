@@ -3,7 +3,7 @@ import Search from "@/components/search";
 import { TableSkeleton } from "@/components/skeletons";
 import { Suspense } from "react";
 import {
-  fetchFilteredAnimals,
+  fetchAnimals,
   fetchPetsPages,
 } from "@/app/lib/data/animals/animal.data";
 import { AnimalsPayload, SearchParamsType } from "@/app/lib/types";
@@ -50,7 +50,7 @@ const PageContent = async ({ searchParams }: Props) => {
 
       <Suspense key={query + currentPage} fallback={<TableSkeleton />}>
         <ReusableTable<AnimalsPayload>
-          fetchData={fetchFilteredAnimals}
+          fetchData={fetchAnimals}
           query={query}
           currentPage={currentPage}
           columns={petTableColumns}

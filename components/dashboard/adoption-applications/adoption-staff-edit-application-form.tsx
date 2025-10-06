@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ApplicationWithOutcome } from "@/app/lib/data/user-application.data";
-import { staffUpdateAdoptionApp } from "@/app/lib/actions/user-application.actions";
+import { staffUpdateAdoptionApp } from "@/app/lib/actions/adoption-application.actions";
 import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { AnimalForApplicationPayload } from "@/app/lib/types";
 import {
@@ -111,8 +111,13 @@ export function StaffApplicationUpdateForm({
   const isStatusChanging = newStatus && newStatus !== currentStatus;
 
   useEffect(() => {
-    if (state.message && state.errors) {
+    // If the server returns any message, it's an error. Show a toast.
+    if (state.message) {
       toast.error(state.message);
+    }
+
+    // If there are specific field errors, update the form fields.
+    if (state.errors) {
       for (const [key, value] of Object.entries(state.errors)) {
         if (value) {
           form.setError(key as keyof StaffUpdateFormData, {
@@ -121,10 +126,8 @@ export function StaffApplicationUpdateForm({
           });
         }
       }
-    } else if (state.message && !state.errors) {
-      toast.error(state.message);
     }
-  }, [state, form.setError]);
+  }, [state, form]);
 
   const handleFormSubmit = (data: StaffUpdateFormData) => {
     if (isAdopted) return;
@@ -174,7 +177,7 @@ export function StaffApplicationUpdateForm({
                     This application was finalized on{" "}
                     {new Date(outcome.outcomeDate).toLocaleDateString()}.
                     <Link
-                      href={`/dashboard/outcomes/${outcome.id}`}
+                      href={`/dashboard/outcomes/${outcome.id}/edit`}
                       className="ml-2 font-semibold text-blue-800 underline hover:text-blue-600"
                     >
                       View Outcome Record

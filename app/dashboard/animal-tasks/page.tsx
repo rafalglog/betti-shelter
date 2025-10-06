@@ -9,15 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchTaskAssigneeList } from "@/app/lib/data/user.data";
 import { fetchAllTasks } from "@/app/lib/data/tasks.data";
+import { fetchTaskAssigneeList } from "@/app/lib/data/animals/animal-task.data";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
-
   const {
     query = "",
     page = "1",
@@ -37,15 +36,17 @@ const Page = async ({ searchParams }: Props) => {
     category,
     status,
     currentPageSize,
-    sort,
+    sort
   );
 
   const assigneeList = await fetchTaskAssigneeList();
 
   return (
-    <Card>
+    <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Tasks</CardTitle>
+        <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
+          Tasks
+        </CardTitle>
         <CardDescription>
           This page displays all tasks that are associated with all the animals.
         </CardDescription>

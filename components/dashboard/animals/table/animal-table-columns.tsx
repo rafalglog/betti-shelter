@@ -88,12 +88,12 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
       const sex = sexOptions.find((sex) => sex.value === row.getValue("sex"));
 
       return sex ? (
-        <div className="flex items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {sex.icon && (
             <sex.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{sex.label}</span>
-        </div>
+        </Badge>
       ) : null;
     },
     filterFn: (row, id, value) => {
@@ -115,12 +115,12 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
       }
 
       return (
-        <div className="flex w-[100px] items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {size.icon && (
             <size.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{size.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {

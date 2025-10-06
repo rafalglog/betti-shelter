@@ -43,6 +43,7 @@ const _fetchAnimalActivityLogs = async (
       // Limit the result to the last 10 entries
       take: 10,
     });
+    
     return activityLogs;
   } catch (error) {
     console.error("Error fetching animal activity logs:", error);
@@ -51,5 +52,5 @@ const _fetchAnimalActivityLogs = async (
 };
 
 export const fetchAnimalActivityLogs = RequirePermission(
-  Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
+  Permissions.ANIMAL_ACTIVITY_READ
 )(_fetchAnimalActivityLogs);

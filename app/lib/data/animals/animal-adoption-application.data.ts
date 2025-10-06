@@ -2,11 +2,14 @@ import { Permissions } from "@/app/lib/auth/permissions";
 import { ApplicationStatus, Prisma } from "@prisma/client";
 import { prisma } from "../../prisma";
 import { RequirePermission } from "../../auth/protected-actions";
-import { cuidSchema, currentPageSchema, searchQuerySchema } from "../../zod-schemas/common.schemas";
+import {
+  cuidSchema,
+  currentPageSchema,
+  searchQuerySchema,
+} from "../../zod-schemas/common.schemas";
 import z from "zod";
 import { ApplicationWithAnimal } from "../user-application.data";
 import { ITEMS_PER_PAGE } from "../../constants/constants";
-
 
 export const fetchAnimalApplicationsSchema = z.object({
   animalId: cuidSchema,
@@ -21,7 +24,7 @@ const _fetchAnimalApplications = async (
   queryInput: string,
   currentPageInput: number,
   sortInput: string | undefined,
-  statusInput: string | undefined,
+  statusInput: string | undefined
 ): Promise<{
   applications: ApplicationWithAnimal[];
   totalPages: number;
@@ -35,16 +38,7 @@ const _fetchAnimalApplications = async (
   });
 
   if (!validatedArgs.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in _fetchAnimalApplications:",
-        validatedArgs.error.flatten(),
-      );
-    }
-    throw new Error(
-      validatedArgs.error.errors[0]?.message ||
-        "Invalid arguments for fetching animal applications.",
-    );
+    throw new Error("Invalid input provided.");
   }
 
   const { animalId, query, currentPage, sort, status } = validatedArgs.data;
@@ -123,13 +117,11 @@ const _fetchAnimalApplications = async (
 
     return { applications, totalPages };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching animal applications.", error);
-    }
+    console.error("Error fetching animal applications.", error);
     throw new Error("Error fetching animal applications.");
   }
 };
 
 export const fetchAnimalApplications = RequirePermission(
-  Permissions.APPLICATIONS_READ_LISTING,
+  Permissions.APPLICATIONS_READ_DETAIL
 )(_fetchAnimalApplications);

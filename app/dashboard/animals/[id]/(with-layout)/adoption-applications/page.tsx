@@ -12,8 +12,9 @@ import { columns } from "@/components/dashboard/adoption-applications/table/adop
 import UserAppTableToolbar from "@/components/dashboard/adoption-applications/table/adoption-applications-table-toolbar";
 import { fetchAnimalApplications } from "@/app/lib/data/animals/animal-adoption-application.data";
 import { notFound } from "next/navigation";
-
-export const dynamic = "force-dynamic";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
+import { Permissions } from "@/app/lib/auth/permissions";
 
 interface Props {
   searchParams: SearchParamsType;
@@ -21,14 +22,26 @@ interface Props {
 }
 
 const Page = async ({ searchParams, params }: Props) => {
-  const { query = "", page = "1", sort, status } = await searchParams;
+  return (
+    <Authorize
+      permission={Permissions.APPLICATIONS_READ_LISTING}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent searchParams={searchParams} params={params} />
+    </Authorize>
+  );
+};
+
+const PageContent = async ({ searchParams, params }: Props) => {
   const { id: animalId } = await params;
+
+  const { query = "", page = "1", sort, status } = await searchParams;
   const currentPage = Number(page);
 
   if (!animalId) {
     return notFound();
   }
-  
+
   const { applications, totalPages } = await fetchAnimalApplications(
     animalId,
     query,
@@ -38,35 +51,31 @@ const Page = async ({ searchParams, params }: Props) => {
   );
 
   return (
-    <>
-      <Card className="@container/card">
-        <CardHeader>
-          <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-            Adoption Applications
-          </CardTitle>
-          <CardDescription>
-            Review and compare all adoption applications received for this
-            animal.
-          </CardDescription>
-          <CardAction>
-          </CardAction>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-1 flex-col">
-            <div className="@container/main flex flex-1 flex-col gap-2">
-              <div className="flex flex-col gap-4 md:gap-6">
-                <DataTable
-                  data={applications}
-                  columns={columns}
-                  ToolbarComponent={UserAppTableToolbar}
-                  totalPages={totalPages}
-                />
-              </div>
+    <Card className="@container/card">
+      <CardHeader>
+        <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
+          Adoption Applications
+        </CardTitle>
+        <CardDescription>
+          Review and compare all adoption applications received for this animal.
+        </CardDescription>
+        <CardAction></CardAction>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 md:gap-6">
+              <DataTable
+                data={applications}
+                columns={columns}
+                ToolbarComponent={UserAppTableToolbar}
+                totalPages={totalPages}
+              />
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

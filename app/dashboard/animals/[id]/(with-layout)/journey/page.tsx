@@ -1,38 +1,3 @@
-// import { fetchAnimalJourney } from "@/app/lib/data/animals/animal-journey.data";
-// import { IDParamType } from "@/app/lib/types";
-// import {
-//   Card,
-//   CardContent,
-//   CardDescription,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
-// import { Suspense } from "react";
-
-// interface Props {
-//   params: IDParamType;
-// }
-
-// const Page = async ({ params }: Props) => {
-//   const { id: animalId } = await params;
-
-//   const journey = await fetchAnimalJourney(animalId);
-
-//   return (
-//     <Card>
-//       <CardHeader>
-//         <CardTitle>Journey</CardTitle>
-//         <CardDescription>The journey of the animal.</CardDescription>
-//       </CardHeader>
-//       <CardContent>
-//         <Suspense fallback={<div>Loading Journey...</div>}>
-//         </Suspense>
-//       </CardContent>
-//     </Card>
-//   );
-// };
-
-
 import { IDParamType } from "@/app/lib/types";
 import AnimalJourney from "@/components/dashboard/animals/journey/animal-journey";
 import {
@@ -43,12 +8,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Suspense } from "react";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
+import { Permissions } from "@/app/lib/auth/permissions";
 
 interface Props {
   params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {
+  return (
+    <Authorize
+      permission={Permissions.ANIMAL_JOURNEY_READ}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent params={params} />
+    </Authorize>
+  );
+};
+
+const PageContent = async ({ params }: Props) => {
   const { id: animalId } = await params;
 
   return (

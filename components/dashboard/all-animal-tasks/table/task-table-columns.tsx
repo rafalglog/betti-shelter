@@ -6,10 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableRowActions } from "./task-table-row-actions";
 import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
-import {
-  formatDateOrNA,
-  formatDueDate,
-} from "@/app/lib/utils/date-utils";
+import { formatDateOrNA, formatDueDate } from "@/app/lib/utils/date-utils";
 import { DataTableColumnHeader } from "@/components/table-common/data-table-column-header";
 import {
   Select,
@@ -20,7 +17,12 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { updateAnimalTaskAssignee } from "@/app/lib/actions/animal-task.actions";
-import { categories, priorities, statuses } from "../../animals/tasks/table/task-options";
+import {
+  categories,
+  priorities,
+  statuses,
+} from "../../animals/tasks/table/task-options";
+import Link from "next/link";
 
 interface GetColumnsProps {
   assigneeList: TaskAssignee[];
@@ -54,22 +56,40 @@ export const getColumns = ({
     enableHiding: false,
   },
   {
-    accessorKey: "title",
+    accessorKey: "animal.id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title="Animal" />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(
         (priority) => priority.value === row.original.priority
       );
 
+      const animal = row.original.animal;
+
       return (
         <div className="flex space-x-2">
           {priority && <Badge variant="outline">{priority.label}</Badge>}
-          <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("title")}
-          </span>
+          <Link
+            href={`/dashboard/animals/${animal.id}/tasks`}
+            className="font-medium hover:underline"
+          >
+            {animal.name}
+          </Link>
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: "title",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Title" />
+    ),
+    cell: ({ row }) => {
+      return (
+        <span className="max-w-[500px] truncate font-medium">
+          {row.getValue("title")}
+        </span>
       );
     },
   },
@@ -97,12 +117,12 @@ export const getColumns = ({
       }
 
       return (
-        <div className="flex w-[100px] items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{status.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -120,12 +140,12 @@ export const getColumns = ({
       );
 
       return category ? (
-        <div className="flex items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {category.icon && (
             <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{category.label}</span>
-        </div>
+        </Badge>
       ) : null;
     },
     filterFn: (row, id, value) => {
@@ -147,12 +167,12 @@ export const getColumns = ({
       }
 
       return (
-        <div className="flex items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {priority.icon && (
             <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{priority.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -174,8 +194,8 @@ export const getColumns = ({
           newAssigneeId === "unassigned" ? null : newAssigneeId
         );
 
-        if (result?.error) {
-          toast.error(result.error);
+        if (!result.success) {
+          toast.error(result.message);
         } else {
           toast.success("Assignee updated successfully.");
         }

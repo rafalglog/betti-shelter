@@ -3,7 +3,6 @@ import {
   AnimalHealthStatus,
   AnimalLegalStatus,
   AnimalListingStatus,
-  ApplicationStatus,
   OutcomeType,
   Prisma,
 } from "@prisma/client";
@@ -42,13 +41,9 @@ const _fetchAnimalCardData = async (): Promise<PetCardDataType> => {
       todoTasksCount,
     ] = await Promise.all([
       prisma.animal.count(),
-      prisma.animal.count({
+      prisma.outcome.count({
         where: {
-          adoptionApplications: {
-            some: {
-              status: ApplicationStatus.ADOPTED,
-            },
-          },
+          type: OutcomeType.ADOPTION,
         },
       }),
       prisma.animal.count({
@@ -82,22 +77,17 @@ const _fetchAnimalCardData = async (): Promise<PetCardDataType> => {
           },
         },
       }),
-      prisma.animal.count({
+      prisma.outcome.count({
         where: {
-          adoptionApplications: {
-            some: {
-              status: ApplicationStatus.ADOPTED,
-              updatedAt: {
-                gte: startOfCurrentMonth,
-              },
-            },
+          type: OutcomeType.ADOPTION,
+          outcomeDate: {
+            gte: startOfCurrentMonth,
           },
         },
       }),
       prisma.animal.count({
         where: {
-          listingStatus: AnimalListingStatus.PUBLISHED,
-          updatedAt: {
+          publishedAt: {
             gte: startOfCurrentMonth,
           },
         },
@@ -127,23 +117,18 @@ const _fetchAnimalCardData = async (): Promise<PetCardDataType> => {
           },
         },
       }),
-      prisma.animal.count({
+      prisma.outcome.count({
         where: {
-          adoptionApplications: {
-            some: {
-              status: ApplicationStatus.ADOPTED,
-              updatedAt: {
-                gte: startOfLastMonth,
-                lte: endOfLastMonth,
-              },
-            },
+          type: OutcomeType.ADOPTION,
+          outcomeDate: {
+            gte: startOfLastMonth,
+            lte: endOfLastMonth,
           },
         },
       }),
       prisma.animal.count({
         where: {
-          listingStatus: AnimalListingStatus.PUBLISHED,
-          updatedAt: {
+          publishedAt: {
             gte: startOfLastMonth,
             lte: endOfLastMonth,
           },
@@ -186,9 +171,7 @@ const _fetchAnimalCardData = async (): Promise<PetCardDataType> => {
       },
     };
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching card data.", error);
-    }
+    console.error("Error fetching card data.", error);
     throw new Error("Error fetching card data.");
   }
 };
@@ -256,9 +239,7 @@ const _fetchChartData = async (): Promise<ChartData> => {
 
     return chartData;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching chart data.", error);
-    }
+    console.error("Error fetching chart data.", error);
     throw new Error("Error fetching chart data.");
   }
 };
@@ -305,27 +286,24 @@ const _fetchTaskTableData = async (): Promise<TaskPayload[]> => {
     });
     return tasks;
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching task table data.", error);
-    }
+    console.error("Error fetching task table data.", error);
     throw new Error("Error fetching task table data.");
   }
 };
 
-
 type AnimalForAttentionQueryPayload = Prisma.AnimalGetPayload<{
   select: {
-    id: true,
-    name: true,
-    healthStatus: true,
-    legalStatus: true,
+    id: true;
+    name: true;
+    healthStatus: true;
+    legalStatus: true;
     intake: {
       select: {
-        intakeDate: true,
-      },
-      take: 1,
-    },
-  },
+        intakeDate: true;
+      };
+      take: 1;
+    };
+  };
 }>;
 
 export type AnimalsRequiringAttentionPayload = Prettify<
@@ -374,7 +352,6 @@ const _fetchAnimalsRequiringAttention = async (): Promise<
       },
     });
 
-    // Map the data to the desired payload structure, ensuring an intake record exists
     return animals
       .filter((animal) => animal.intake.length > 0)
       .map((animal) => ({
@@ -385,9 +362,7 @@ const _fetchAnimalsRequiringAttention = async (): Promise<
         intakeDate: animal.intake[0].intakeDate,
       }));
   } catch (error) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Error fetching animals requiring attention data.", error);
-    }
+    console.error("Error fetching animals requiring attention data.", error);
     throw new Error("Error fetching animals requiring attention data.");
   }
 };

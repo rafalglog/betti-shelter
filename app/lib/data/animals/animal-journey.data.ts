@@ -14,6 +14,11 @@ export type AnimalJourneyLogPayload = Prisma.AnimalActivityLogGetPayload<{
             type: true;
           };
         };
+        intake: {
+          select: {
+            type: true;
+          };
+        };
       };
     };
     changedBy: {
@@ -56,6 +61,11 @@ const _fetchAnimalJourney = async (
                 type: true,
               },
             },
+            intake: {
+              select: {
+                type: true,
+              },
+            },
           },
         },
         changedBy: {
@@ -77,5 +87,5 @@ const _fetchAnimalJourney = async (
 };
 
 export const fetchAnimalJourney = RequirePermission(
-  Permissions.ANIMAL_ASSESSMENT_READ_DETAIL
+  Permissions.ANIMAL_JOURNEY_READ
 )(_fetchAnimalJourney);

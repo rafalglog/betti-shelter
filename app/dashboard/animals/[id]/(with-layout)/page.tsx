@@ -1,4 +1,4 @@
-import { IDParamType, SearchParamsType } from "@/app/lib/types";
+import { IDParamType } from "@/app/lib/types";
 import {
   Card,
   CardContent,
@@ -11,10 +11,9 @@ import { fetchAnimalActivityLogs } from "@/app/lib/data/animals/animal-activity.
 
 interface Props {
   params: IDParamType;
-  searchParams: SearchParamsType;
 }
 
-const Page = async ({ params, searchParams }: Props) => {
+const Page = async ({ params }: Props) => {
   const { id: animalId } = await params;
 
   const animalActivityFeed = await fetchAnimalActivityLogs(animalId);

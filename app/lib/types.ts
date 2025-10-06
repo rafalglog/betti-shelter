@@ -1,4 +1,4 @@
-import { Animal, AssessmentOutcome, AssessmentType, Breed, Color, FieldType, Prisma, Species } from "@prisma/client";
+import { AdoptionApplication, Animal, AssessmentOutcome, AssessmentType, Breed, Color, FieldType, Intake, Like, Prisma, Species, Task } from "@prisma/client";
 
 export type SearchParamsType = Promise<{ [key: string]: string | undefined }>;
 export type IDParamType = Promise<{ id: string }>;
@@ -44,10 +44,35 @@ export type OutcomePayload = Prisma.OutcomeGetPayload<{
   };
 }>;
 
+export type AnimalForCardPayload = Pick<
+  Animal,
+  | "id"
+  | "name"
+  | "birthDate"
+  | "sex"
+  | "size"
+  | "microchipNumber"
+  | "listingStatus"
+  | "isSpayedNeutered"
+  | "city"
+  | "state"
+  | "healthStatus"
+  | "legalStatus"
+> & {
+  species: Pick<Species, "name">;
+  breeds: Pick<Breed, "name">[];
+  colors: Pick<Color, "name">[];
+  adoptionApplications: Pick<AdoptionApplication, "id" | "status">[];
+  intake: Pick<Intake, "intakeDate">[];
+  likes: Pick<Like, "id">[];
+  tasks: Pick<Task, "id" | "status">[];
+};
+
 export type AnimalWithDetailsPayload = Animal & {
   species: Species;
   breeds: Breed[];
   colors: Color[];
+  adoptionApplications?: Pick<AdoptionApplication, 'id' | 'status'>[];
 };
 
 export type ActionResult = {
@@ -136,6 +161,7 @@ export type MyApplicationPayload =
       submittedAt: true;
       animal: {
         select: {
+          id: true;
           name: true;
           species: {
             select: {
@@ -229,43 +255,3 @@ export interface AssessmentFormData {
   customFields?: TemplateField[];
   [key: string]: any; // For dynamic field values
 }
-
-// export type OutcomeWithDetails = Prisma.OutcomeGetPayload<{
-//   include: {
-//     animal: {
-//       select: {
-//         id: true;
-//         name: true;
-//         species: {
-//           select: {
-//             name: true;
-//           };
-//         };
-//       };
-//     };
-//     staffMember: {
-//       select: {
-//         id: true;
-//         name: true;
-//       };
-//     };
-//     destinationPartner: {
-//       select: {
-//         id: true;
-//         name: true;
-//       };
-//     };
-//     owner: {
-//       select: {
-//         id: true;
-//         name: true;
-//       };
-//     };
-//     adoptionApplication: {
-//       select: {
-//         id: true;
-//         applicantName: true;
-//       };
-//     };
-//   };
-// }>;

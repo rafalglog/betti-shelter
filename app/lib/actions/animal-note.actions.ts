@@ -12,6 +12,7 @@ import { Permissions } from "@/app/lib/auth/permissions";
 import { NoteFormSchema } from "../zod-schemas/animal.schemas";
 
 export interface AnimalNoteFormState {
+  success?: boolean;
   message?: string | null;
   errors?: {
     category?: string[];
@@ -29,15 +30,7 @@ const _createAnimalNote = async (
 
   const parsedAnimalId = cuidSchema.safeParse(animalId);
   if (!parsedAnimalId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in createAnimalNote:",
-        parsedAnimalId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedAnimalId.error.errors[0]?.message || "Invalid animal ID format."
-    );
+    return { success: false, message: "Invalid animal ID format." };
   }
 
   const validatedFields = NoteFormSchema.safeParse(
@@ -46,6 +39,7 @@ const _createAnimalNote = async (
 
   if (!validatedFields.success) {
     return {
+      success: false,
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing or invalid fields. Failed to create animal.",
     };
@@ -65,14 +59,15 @@ const _createAnimalNote = async (
   } catch (error) {
     console.error("Database Error creating notes:", error);
     return {
+      success: false,
       message: "Database Error: Failed to create notes.",
     };
   }
 
-  console.log("Note created successfully.");
-  revalidatePath(`dashboard/animals/${animalId}/notes`);
+  revalidatePath(`/dashboard/animals/${animalId}/notes`);
 
   return {
+    success: true,
     message: "Note created successfully.",
   };
 };
@@ -85,25 +80,18 @@ const _updateAnimalNote = async (
 ): Promise<AnimalNoteFormState> => {
   const parsedNoteId = cuidSchema.safeParse(noteId);
   if (!parsedNoteId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in updateAnimalNote:",
-        parsedNoteId.error.flatten()
-      );
-    }
-    throw new Error("Invalid animal ID format.");
+    return {
+      success: false,
+      message: "Invalid note ID format.",
+    };
   }
 
-  // Validate the animal ID
   const parsedAnimalId = cuidSchema.safeParse(animalId);
   if (!parsedAnimalId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in updateAnimalNote:",
-        parsedAnimalId.error.flatten()
-      );
-    }
-    throw new Error("Invalid animal ID format.");
+    return {
+      success: false,
+      message: "Invalid animal ID format.",
+    };
   }
 
   // Validate the form fields
@@ -113,6 +101,7 @@ const _updateAnimalNote = async (
 
   if (!validatedFields.success) {
     return {
+      success: false,
       errors: validatedFields.error.flatten().fieldErrors,
       message: "Missing or invalid fields. Failed to update note.",
     };
@@ -134,22 +123,30 @@ const _updateAnimalNote = async (
   } catch (error) {
     console.error("Database Error updating note:", error);
     return {
+      success: false,
       message: "Database Error: Failed to update note.",
     };
   }
 
-  revalidatePath(`dashboard/animals/${animalId}/notes`);
+  revalidatePath(`/dashboard/animals/${animalId}/notes`);
   return {
+    success: true,
     message: "Note updated successfully.",
   };
 };
 
-const _deleteAnimalNote = async (noteId: string, animalId: string) => {
+const _deleteAnimalNote = async (
+  noteId: string,
+  animalId: string
+): Promise<{ success: boolean; message: string }> => {
   const parsedNoteId = cuidSchema.safeParse(noteId);
   if (!parsedNoteId.success) {
-    throw new Error("Invalid note ID format.");
+    return {
+      success: false,
+      message: "Invalid note ID format.",
+    };
   }
-  
+
   try {
     await prisma.note.update({
       where: {
@@ -160,19 +157,29 @@ const _deleteAnimalNote = async (noteId: string, animalId: string) => {
       },
     });
     revalidatePath(`/dashboard/animals/${animalId}/notes`);
-    return { message: "Note deleted successfully." };
+    return {
+      success: true,
+      message: "Note deleted successfully.",
+    };
   } catch (error) {
     console.error("Database Error deleting note:", error);
     return {
+      success: false,
       message: "Database Error: Failed to delete note.",
     };
   }
 };
 
-const _restoreAnimalNote = async (noteId: string, animalId: string) => {
+const _restoreAnimalNote = async (
+  noteId: string,
+  animalId: string
+): Promise<{ success: boolean; message: string }> => {
   const parsedNoteId = cuidSchema.safeParse(noteId);
   if (!parsedNoteId.success) {
-    throw new Error("Invalid note ID format.");
+    return {
+      success: false,
+      message: "Invalid note ID format.",
+    };
   }
 
   try {
@@ -186,27 +193,31 @@ const _restoreAnimalNote = async (noteId: string, animalId: string) => {
     });
 
     revalidatePath(`/dashboard/animals/${animalId}/notes`);
-    return { message: "Note restored successfully." };
+    return {
+      success: true,
+      message: "Note restored successfully.",
+    };
   } catch (error) {
     console.error("Database Error restoring note:", error);
     return {
+      success: false,
       message: "Database Error: Failed to restore note.",
     };
   }
 };
 
-export const deleteAnimalNote = RequirePermission(Permissions.ANIMAL_CREATE)(
-  _deleteAnimalNote
-);
+export const deleteAnimalNote = RequirePermission(
+  Permissions.ANIMAL_NOTE_DELETE
+)(_deleteAnimalNote);
 
-export const restoreAnimalNote = RequirePermission(Permissions.ANIMAL_CREATE)(
-  _restoreAnimalNote
-);
+export const restoreAnimalNote = RequirePermission(
+  Permissions.ANIMAL_NOTE_UPDATE
+)(_restoreAnimalNote);
 
 export const createAnimalNote = withAuthenticatedUser(
-  RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimalNote)
+  RequirePermission(Permissions.ANIMAL_NOTE_CREATE)(_createAnimalNote)
 );
 
-export const updateAnimalNote = RequirePermission(Permissions.ANIMAL_UPDATE)(
-  _updateAnimalNote
-);
+export const updateAnimalNote = RequirePermission(
+  Permissions.ANIMAL_NOTE_UPDATE
+)(_updateAnimalNote);

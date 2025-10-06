@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { OutcomeWithDetails } from "@/app/lib/data/outcome.data";
+import { OutcomeWithDetails } from "@/app/lib/data/animals/outcome.data";
 
 interface DataTableRowActionsProps {
   row: Row<OutcomeWithDetails>;

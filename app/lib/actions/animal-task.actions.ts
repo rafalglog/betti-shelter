@@ -24,15 +24,7 @@ const _createAnimalTask = async (
 
   const parsedId = cuidSchema.safeParse(animalId);
   if (!parsedId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in createAnimalTask:",
-        parsedId.error.flatten()
-      );
-    }
-    throw new Error(
-      parsedId.error.errors[0]?.message || "Invalid animal ID format."
-    );
+    return { message: "Invalid animal ID format." };
   }
 
   const validatedFields = TaskFormSchema.safeParse(
@@ -66,14 +58,17 @@ const _createAnimalTask = async (
   } catch (error) {
     console.error("Database Error creating task:", error);
     return {
+      success: false,
       message: "Database Error: Failed to create task.",
     };
   }
 
-  console.log("Task created successfully.");
-  revalidatePath(`dashboard/animals/${animalId}/tasks`);
+  revalidatePath(`/dashboard`);
+  revalidatePath(`/dashboard/animals/${animalId}/tasks`);
+  revalidatePath(`/dashboard/animal-tasks`);
 
   return {
+    success: true,
     message: "Task created successfully.",
   };
 };
@@ -84,28 +79,14 @@ const _updateAnimalTask = async (
   prevState: AnimalTaskFormState,
   formData: FormData
 ): Promise<AnimalTaskFormState> => {
-  // Validate the task ID
   const parsedTaskId = cuidSchema.safeParse(taskId);
   if (!parsedTaskId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in updateAnimalTask (taskId):",
-        parsedTaskId.error.flatten()
-      );
-    }
-    throw new Error("Invalid task ID format.");
+    return { message: "Invalid task ID format." };
   }
 
-  // Validate the animal ID
   const parsedAnimalId = cuidSchema.safeParse(animalId);
   if (!parsedAnimalId.success) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "Zod validation error in updateAnimalTask (animalId):",
-        parsedAnimalId.error.flatten()
-      );
-    }
-    throw new Error("Invalid animal ID format.");
+    return { message: "Invalid animal ID format." };
   }
 
   // Validate the form fields
@@ -143,13 +124,17 @@ const _updateAnimalTask = async (
   } catch (error) {
     console.error("Database Error updating task:", error);
     return {
+      success: false,
       message: "Database Error: Failed to update task.",
     };
   }
 
-  console.log("Task updated successfully.");
-  revalidatePath(`dashboard/animals/${animalId}/tasks`);
+  revalidatePath(`/dashboard/animals/${animalId}/tasks`);
+  revalidatePath(`/dashboard/animal-tasks`);
+  revalidatePath(`/dashboard`);
+
   return {
+    success: true,
     message: "Task updated successfully.",
   };
 };
@@ -158,15 +143,15 @@ const _updateTaskStatus = async (
   animalId: string,
   taskId: string,
   status: TaskStatus
-): Promise<{ message: string }> => {
+): Promise<{ success: boolean; message: string }> => {
   const parsedTaskId = cuidSchema.safeParse(taskId);
   if (!parsedTaskId.success) {
-    throw new Error("Invalid task ID format.");
+    return { success: false, message: "Invalid task ID format." };
   }
 
   const parsedAnimalId = cuidSchema.safeParse(animalId);
   if (!parsedAnimalId.success) {
-    throw new Error("Invalid animal ID format.");
+    return { success: false, message: "Invalid animal ID format." };
   }
 
   try {
@@ -176,11 +161,17 @@ const _updateTaskStatus = async (
     });
   } catch (error) {
     console.error("Database Error updating task status:", error);
-    return { message: "Database Error: Failed to update task status." };
+    return {
+      success: false,
+      message: "Database Error: Failed to update task status.",
+    };
   }
 
+  revalidatePath(`/dashboard`);
   revalidatePath(`/dashboard/animals/${animalId}/tasks`);
-  return { message: `Task status updated to ${status}.` };
+  revalidatePath(`/dashboard/animal-tasks`);
+
+  return { success: true, message: `Task status updated to ${status}.` };
 };
 
 const UpdateAssigneeSchema = z.object({
@@ -191,7 +182,7 @@ const UpdateAssigneeSchema = z.object({
 const _updateAnimalTaskAssignee = async (
   taskId: string,
   assigneeId: string | null
-) => {
+): Promise<{ success: boolean; message: string }> => {
   try {
     const validatedData = UpdateAssigneeSchema.parse({ taskId, assigneeId });
 
@@ -203,27 +194,32 @@ const _updateAnimalTaskAssignee = async (
     });
 
     // Revalidate the path to refresh the data on the page
-    revalidatePath("/dashboard/tasks");
-    return { success: true };
+    revalidatePath("/dashboard");
+    revalidatePath("/dashboard/animals");
+    revalidatePath("/dashboard/animal-tasks");
+
+    return { success: true, message: "Assignee updated successfully." };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return { error: "Invalid data provided." };
-    }
-    return { error: "Failed to update assignee. Please try again." };
+    console.error("Database Error updating assignee:", error);
+    return {
+      success: false,
+      message: "Failed to update assignee. Please try again.",
+    };
   }
 };
 
 export const updateAnimalTaskAssignee = RequirePermission(
-  Permissions.ANIMAL_UPDATE
+  Permissions.ANIMAL_TASK_UPDATE
 )(_updateAnimalTaskAssignee);
 
 export const updateAnimalTaskStatus = RequirePermission(
-  Permissions.ANIMAL_UPDATE
+  Permissions.ANIMAL_TASK_UPDATE
 )(_updateTaskStatus);
 
-export const updateAnimalTask = RequirePermission(Permissions.ANIMAL_UPDATE)(
-  _updateAnimalTask
-);
+export const updateAnimalTask = RequirePermission(
+  Permissions.ANIMAL_TASK_UPDATE
+)(_updateAnimalTask);
+
 export const createAnimalTask = withAuthenticatedUser(
-  RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimalTask)
+  RequirePermission(Permissions.ANIMAL_TASK_CREATE)(_createAnimalTask)
 );

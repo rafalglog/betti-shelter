@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "../../../table-common/data-table-column-h
 import { DataTableRowActions } from "./adoption-applications-table-row-actions";
 import { ApplicationWithAnimal } from "@/app/lib/data/user-application.data";
 import { formatTimeAgo } from "@/app/lib/utils/date-utils";
+import Link from "next/link";
 
 export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
@@ -100,12 +101,12 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
       }
 
       return (
-        <div className="flex w-[100px] items-center">
+        <Badge variant="outline" className="flex w-fit items-center">
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
           <span>{status.label}</span>
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {
@@ -116,15 +117,16 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
     id: "animalName",
     accessorFn: (row) => row.animal.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pet Name" />
+      <DataTableColumnHeader column={column} title="Animal Name" />
     ),
     meta: {
       displayName: "Animal Name",
     },
     cell: ({ row }) => {
+      const animal = row.original.animal;
       return (
-        <span className="max-w-[400px] truncate">
-          {row.original.animal.name}
+        <span className="font-medium hover:underline">
+          <Link href={`/dashboard/animals/${animal.id}`}>{animal.name}</Link>
         </span>
       );
     },
@@ -133,7 +135,7 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
     id: "animalSpecies",
     accessorFn: (row) => row.animal.species.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pet Species" />
+      <DataTableColumnHeader column={column} title="Animal Species" />
     ),
     meta: {
       displayName: "Species",

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,7 +23,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { noteCategoryOptions } from "@/app/lib/utils/enum-formatter";
-import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { NoteCategory } from "@prisma/client";
 import {
@@ -31,15 +30,22 @@ import {
   createAnimalNote,
   updateAnimalNote,
 } from "@/app/lib/actions/animal-note.actions";
-import { FetchAnimalNoteByIdPayload } from "@/app/lib/data/animals/animal-note.data";
+import { FetchAnimalNotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { NoteFormSchema } from "@/app/lib/zod-schemas/animal.schemas";
+import { toast } from "sonner";
+
+const INITIAL_FORM_STATE: AnimalNoteFormState = {
+  success: false,
+  message: null,
+  errors: {},
+};
 
 type NoteFormValues = z.infer<typeof NoteFormSchema>;
 
 interface Props {
   animalId: string;
   onFormSubmit: () => void; // To close the dialog on success
-  note?: FetchAnimalNoteByIdPayload;
+  note?: FetchAnimalNotePayload;
 }
 
 export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
@@ -66,16 +72,28 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
   });
 
   useEffect(() => {
-    if (state.message && !state.errors) {
-      onFormSubmit();
+    if (!state.message) {
+      return;
     }
-    if (state.errors) {
+
+    // If the action was successful, show a success toast and close the form.
+    if (state.success) {
+      toast.success(state.message);
+      onFormSubmit(); // Close the dialog
+    }
+    // If it failed and there are specific field errors, set them on the form.
+    else if (state.errors) {
+      toast.error(state.message || "Please check the form for errors.");
       for (const [key, value] of Object.entries(state.errors)) {
         form.setError(key as keyof NoteFormValues, {
           type: "server",
           message: value?.join(", "),
         });
       }
+    }
+    // Handle other general errors (e.g., database, invalid ID)
+    else {
+      toast.error(state.message);
     }
   }, [state, form, onFormSubmit]);
 

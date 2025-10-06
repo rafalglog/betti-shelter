@@ -6,6 +6,7 @@ import { HeartIcon as OutlineHeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as SolidHeartIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import LoginPromptModal from "../login-prompt-modal";
+import { toast } from "sonner";
 
 interface LikeButtonProps {
   animalId: string;
@@ -27,8 +28,12 @@ const LikeButton = ({
       return;
     }
 
-    startTransition(() => {
-      togglePetLike(animalId);
+    startTransition(async () => {
+      const result = await togglePetLike(animalId);
+
+      if (!result.success) {
+        toast.error(result.message);
+      }
     });
   };
 
@@ -37,7 +42,6 @@ const LikeButton = ({
     event.preventDefault();
     handleLikeClick();
   };
-
   return (
     <>
       <button

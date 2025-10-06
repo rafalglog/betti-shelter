@@ -185,8 +185,8 @@ export const getColumns = ({
           newAssigneeId === "unassigned" ? null : newAssigneeId
         );
 
-        if (result?.error) {
-          toast.error(result.error);
+        if (!result.success) {
+          toast.error(result.message);
         } else {
           toast.success("Assignee updated successfully.");
         }

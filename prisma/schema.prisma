@@ -137,7 +137,10 @@ enum AnimalHealthStatus {
 enum AnimalListingStatus {
   DRAFT // Profile is being prepared, not yet ready for public view.
   PUBLISHED // Profile is live, publicly accessible, and available for applications.
+  
   PENDING_ADOPTION // An application has been approved; animal is temporarily reserved. Not accepting new applications.
+  
+  // for the outcome process
   ARCHIVED // Profile is no longer public (e.g., animal adopted, transferred, or otherwise unavailable) and is kept for records.
 }
 
@@ -247,6 +250,9 @@ model Intake {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([animalId])
+  @@index([sourcePartnerId])
+  @@index([staffMemberId])
   @@map("intakes")
 }
 
@@ -281,6 +287,7 @@ model Outcome {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([animalId])
   @@map("outcomes")
 }
 
@@ -333,8 +340,9 @@ model Animal {
   MedicationLog      MedicationLog[]
   assessments        Assessment[]
 
-  createdAt DateTime @default(now()) @map(name: "created_at")
-  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  createdAt   DateTime  @default(now()) @map(name: "created_at")
+  updatedAt   DateTime  @updatedAt @map(name: "updated_at")
+  publishedAt DateTime? @map(name: "published_at")
 
   @@map(name: "animals")
 }
@@ -400,13 +408,14 @@ model Note {
   animalId String @map(name: "animal_id")
   animal   Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
 
-  authorId String @map(name: "author_id")
-  author   Person @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String? @map(name: "author_id")
+  author   Person? @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? @map(name: "deleted_at")
 
+  @@index([animalId])
   @@map(name: "notes")
 }
 
@@ -435,6 +444,9 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([animalId])
+  @@index([assigneeId])
+  @@index([status])
   @@map(name: "tasks")
 }
 
@@ -452,6 +464,7 @@ model MedicalRecord {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([animalId])
   @@map(name: "medical_records")
 }
 
@@ -479,11 +492,11 @@ model FosterProfile {
   childrenAges            Int[]
   otherAnimalsDescription String?
   experience              String? // General experience with animals
-  
-  internalNotes           String? // For staff notes about the foster applicant
+
+  internalNotes   String? // For staff notes about the foster applicant
   /// A list of all animals this user has fostered in the past or is currently fostering.
   /// To see ONLY the currently fostered animals, query the Animal model for this fosterProfileId.
-  animalsFostered         Animal[]
+  animalsFostered Animal[]
 
   userId String @unique @map(name: "user_id")
   user   Person @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -517,21 +530,27 @@ model AdoptionApplication {
   reasonForAdoption       String          @map(name: "reason_for_adoption")
 
   // Status and Workflow Management
-  status        ApplicationStatus          @default(PENDING)
+  status        ApplicationStatus @default(PENDING)
   internalNotes String? // For persistent staff notes about the application as a whole
-  
-  outcome       Outcome?
-  
-  history       ApplicationStatusHistory[]
-  
+
+  outcome Outcome?
+
+  history ApplicationStatusHistory[]
+
   // Relations
   userId   String @map(name: "user_id")
-  user     Person @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     Person @relation(fields: [userId], references: [id], onDelete: Restrict) // Prevent deleting a user with applications
   animalId String @map(name: "animal_id")
   animal   Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
 
   submittedAt DateTime @default(now()) @map(name: "submitted_at")
   updatedAt   DateTime @updatedAt @map(name: "updated_at")
+
+  @@index([animalId])
+  @@index([userId])
+  @@index([status])
+
+  @@index([animalId, status]) // For quickly finding applications for an animal in a certain status
 
   @@map(name: "adoption_applications")
 }
@@ -549,6 +568,7 @@ model ApplicationStatusHistory {
   changedById String? @map(name: "changed_by_id")
   changedBy   Person? @relation(fields: [changedById], references: [id], onDelete: SetNull)
 
+  @@index([applicationId])
   @@map(name: "application_status_history")
 }
 
@@ -650,12 +670,15 @@ model User {
 
   // The one-to-one link to the master Person record
   personId String @unique
-  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  // Restrict to prevent accidental deletion of a Person with history
+  person   Person @relation(fields: [personId], references: [id], onDelete: Restrict)
 
   accounts Account[]
 
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
+
+  deactivatedAt DateTime? @map(name: "deactivated_at")
 
   @@map(name: "users")
 }
@@ -709,6 +732,7 @@ model MedicationSchedule {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([animalId])
   @@map("medication_schedules")
 }
 
@@ -735,6 +759,8 @@ model MedicationLog {
   taskId String? @unique
   task   Task?   @relation(fields: [taskId], references: [id], onDelete: SetNull)
 
+  @@index([animalId])
+  @@index([scheduleId])
   @@map("medication_logs")
 }
 
@@ -773,7 +799,7 @@ model Assessment {
   summary        String? // A text summary of the findings, e.g., "Ready for adoption"
 
   templateId String?
-  template AssessmentTemplate? @relation(fields: [templateId], references: [id])
+  template   AssessmentTemplate? @relation(fields: [templateId], references: [id])
 
   // Link to a list of specific answers/findings
   fields AssessmentField[]
@@ -782,6 +808,7 @@ model Assessment {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? @map(name: "deleted_at")
 
+  @@index([animalId])
   @@map("assessments")
 }
 
@@ -809,29 +836,29 @@ model AssessmentField {
 
 // To define a type of assessment, like "Intake Behavioral"
 model AssessmentTemplate {
-  id                String          @id @default(cuid())
-  name              String          @unique // e.g., "Intake Behavioral", "Daily Monitoring"
-  description       String?
-  type              AssessmentType
+  id          String         @id @default(cuid())
+  name        String         @unique // e.g., "Intake Behavioral", "Daily Monitoring"
+  description String?
+  type        AssessmentType
 
   allowCustomFields Boolean         @default(true) // Controls if staff can add ad-hoc fields during assessment
   templateFields    TemplateField[]
-  Assessment Assessment[]
+  Assessment        Assessment[]
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("assessment_templates")
 }
 
 enum FieldType {
-  TEXT      // Single-line text input
-  TEXTAREA  // Multi-line text area
-  NUMBER    // Numerical input
-  SELECT    // Dropdown list from options
-  CHECKBOX  // A single checkbox (for boolean true/false)
-  RADIO     // Radio buttons for single selection
-  DATE      // A date picker
+  TEXT // Single-line text input
+  TEXTAREA // Multi-line text area
+  NUMBER // Numerical input
+  SELECT // Dropdown list from options
+  CHECKBOX // A single checkbox (for boolean true/false)
+  RADIO // Radio buttons for single selection
+  DATE // A date picker
 }
 
 model TemplateField {
@@ -843,7 +870,7 @@ model TemplateField {
   fieldType   FieldType // e.g., "SELECT", "TEXT", "NUMBER"
   placeholder String?
   options     String[] // For SELECT, stores ["Quiet", "Anxious", "Barking"]
-  isRequired  Boolean  @default(true)
+  isRequired  Boolean   @default(true)
   order       Int // To control the display order in the form
 
   @@map("assessment_template_fields")

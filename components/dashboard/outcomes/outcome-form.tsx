@@ -19,6 +19,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -45,7 +46,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
 import { outcomeTypeOptions } from "@/app/lib/utils/enum-formatter";
-import { createOutcome, updateOutcome } from "@/app/lib/actions/outcome.actions";
+import {
+  createOutcome,
+  updateOutcome,
+} from "@/app/lib/actions/outcome.actions";
 import { cn } from "@/lib/utils";
 import { OutcomeFormSchema } from "@/app/lib/zod-schemas/outcome.schema";
 
@@ -104,14 +108,19 @@ export function OutcomeForm({
 
   useEffect(() => {
     if (state.message) {
-      if (state.errors) {
-        toast.error(state.message);
-      } else {
-        // A success message means the action was successful
-        toast.success(state.message);
+      toast.error(state.message);
+    }
+
+    // If there are specific field errors, update the form fields.
+    if (state.errors) {
+      for (const [key, value] of Object.entries(state.errors)) {
+        form.setError(key as keyof OutcomeFormData, {
+          type: "server",
+          message: value?.join(", "),
+        });
       }
     }
-  }, [state]);
+  }, [state, form]);
 
   const handleFormSubmit = (data: OutcomeFormData) => {
     const formData = new FormData();
@@ -131,153 +140,158 @@ export function OutcomeForm({
   };
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle>Process Animal Outcome</CardTitle>
-          <CardDescription>
-            Finalize the journey for {animal.name}. This action will archive the
-            animal's record.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+        <Card className="w-full max-w-4xl mx-auto">
+          <CardHeader>
+            <CardTitle>
+              {isEditMode ? "Edit Outcome" : "Process Animal Outcome"}
+            </CardTitle>
+            <CardDescription>
+              {isEditMode
+                ? `Update the outcome details for ${animal.name}.`
+                : `Finalize the journey for ${animal.name}. This action will archive the animal's record.`}
+            </CardDescription>
+          </CardHeader>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleFormSubmit)}
-          className="space-y-8"
-        >
-          <Card>
-            <CardHeader>
-              <CardTitle>Outcome Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="outcomeType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Outcome Type *</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={isAdoptionOutcome || isEditMode}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a reason" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {filteredOutcomeTypeOptions.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="outcomeDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date of Outcome *</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date > new Date()}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* Conditionally render Partner selection for Transfers */}
-              {outcomeTypeValue === "TRANSFER_OUT" && (
-                <FormField
-                  control={form.control}
-                  name="destinationPartnerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Destination Partner *</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a partner shelter or rescue" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {partners.map((partner) => (
-                            <SelectItem key={partner.id} value={partner.id}>
-                              {partner.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
-                name="notes"
+                name="outcomeType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Add any relevant notes about this outcome..."
-                        className="resize-y"
-                        {...field}
-                      />
-                    </FormControl>
+                    <FormLabel>Outcome Type *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isAdoptionOutcome || isEditMode}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a reason" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {filteredOutcomeTypeOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </CardContent>
-          </Card>
+              <FormField
+                control={form.control}
+                name="outcomeDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date of Outcome *</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date) => {
+                            if (date) {
+                              field.onChange(date);
+                            }
+                          }}
+                          disabled={(date) => {
+                            const today = new Date();
+                            today.setHours(23, 59, 59, 999);
+                            return date > today;
+                          }}
+                          autoFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-          <div className="flex justify-end space-x-4">
-            <Button asChild variant="outline" type="button" disabled={isPending}>
+            {outcomeTypeValue === "TRANSFER_OUT" && (
+              <FormField
+                control={form.control}
+                name="destinationPartnerId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Destination Partner *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a partner shelter or rescue" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {partners.map((partner) => (
+                          <SelectItem key={partner.id} value={partner.id}>
+                            {partner.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Add any relevant notes about this outcome..."
+                      className="resize-y"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+
+          <CardFooter className="flex justify-end space-x-4">
+            <Button
+              asChild
+              variant="outline"
+              type="button"
+              disabled={isPending}
+            >
               <Link href={`/dashboard/animals/${animal.id}`}>Cancel</Link>
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
                 ? isEditMode
@@ -287,9 +301,9 @@ export function OutcomeForm({
                 ? "Update Outcome"
                 : "Process Outcome"}
             </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   );
 }

@@ -4,7 +4,7 @@ export const INITIAL_FORM_STATE = { message: null, errors: {} };
 export type AnimalFormState = {
   message?: string | null;
   errors?: {
-    petName?: string[];
+    animalName?: string[];
     species?: string[];
     breed?: string[];
     primaryColor?: string[];
@@ -13,15 +13,16 @@ export type AnimalFormState = {
     estimatedBirthDate?: string[];
     healthStatus?: string[];
     microchipNumber?: string[];
+
     intakeType?: string[];
     intakeDate?: string[];
-    staffMemberId?: string[];
     sourcePartnerId?: string[];
     foundAddress?: string[];
     foundCity?: string[];
     foundState?: string[];
     surrenderingPersonName?: string[];
     surrenderingPersonPhone?: string[];
+    
     notes?: string[];
   };
 };
@@ -37,6 +38,7 @@ export type OutcomeFormState = {
 };
 
 export interface AnimalTaskFormState {
+  success?: boolean;
   message?: string | null;
   errors?: {
     title?: string[];

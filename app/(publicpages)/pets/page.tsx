@@ -3,7 +3,7 @@ import Search from "../../../components/search";
 import { PublicPetsCardSkeleton } from "../../../components/skeletons";
 import {
   fetchSpecies,
-} from "@/app/lib/data/animals/public.data";
+} from "@/app/lib/data/public.data";
 import PetGrid from "@/components/public-pages/pets/pet-grid";
 import CategoryList from "@/components/public-pages/pets/category-list";
 import { SearchParamsType } from "@/app/lib/types";

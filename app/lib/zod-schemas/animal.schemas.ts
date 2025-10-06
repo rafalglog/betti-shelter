@@ -7,6 +7,7 @@ import {
   TaskCategory,
   TaskPriority,
   NoteCategory,
+  AnimalListingStatus,
 } from "@prisma/client";
 import { US_STATES } from "@/app/lib/constants/us-states";
 import {
@@ -15,13 +16,12 @@ import {
   searchQuerySchema,
 } from "./common.schemas";
 
-// Reusable schema for speciesName
 const speciesNameSchema = z
   .string()
   .max(50, { message: "Species name must be at most 50 characters long." })
   .optional();
 
-export const PublishedPetsFilterSchema = z.object({
+export const PublishedPetsSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   speciesName: speciesNameSchema,
@@ -39,7 +39,7 @@ export const MyApplicationsSchema = z.object({
   status: z.string().optional(),
 });
 
-export const DashboardAnimalsFilterSchema = z.object({
+export const DashboardAnimalsSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   listingStatus: z.string().optional(),
@@ -80,6 +80,9 @@ export const AnimalFormSchema = z
     }),
     healthStatus: z.nativeEnum(AnimalHealthStatus, {
       required_error: "Health status is required.",
+    }),
+    listingStatus: z.nativeEnum(AnimalListingStatus, {
+      required_error: "Listing status is required.",
     }),
     weightKg: z.coerce
       .number({ invalid_type_error: "Weight must be a number." })
@@ -164,7 +167,7 @@ export const TaskFormSchema = z
       required_error: "Category is required.",
     }),
     priority: z.nativeEnum(TaskPriority).optional(),
-    dueDate: z.coerce.date().optional(), // Coerce to a date, keep it optional
+    dueDate: z.coerce.date().optional(),
     assigneeId: z
       .string()
       .cuid({ message: "Valid assignee ID is required." })
@@ -183,7 +186,7 @@ export const TaskFormSchema = z
     },
     {
       message: "Due date cannot be in the past.",
-      path: ["dueDate"], // Specify which field the error message applies to
+      path: ["dueDate"],
     }
   );
 

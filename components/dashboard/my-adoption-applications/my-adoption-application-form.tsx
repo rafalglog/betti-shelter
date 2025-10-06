@@ -96,8 +96,12 @@ export function MyApplicationForm({
   const hasChildrenValue = form.watch("hasChildren");
 
   useEffect(() => {
-    if (state.message && state.errors) {
+    if (state.message) {
       toast.error(state.message);
+    }
+
+    // If there are specific field errors, update the form fields.
+    if (state.errors) {
       for (const [key, value] of Object.entries(state.errors)) {
         if (value) {
           form.setError(key as keyof MyApplicationFormData, {
@@ -107,7 +111,7 @@ export function MyApplicationForm({
         }
       }
     }
-  }, [state, form.setError]);
+  }, [state, form]);
 
   const handleFormSubmit = (data: MyApplicationFormData) => {
     const formData = new FormData();

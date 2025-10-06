@@ -2,8 +2,6 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-/* @plugin "@tailwindcss/forms"; */
-
 
 @theme {
   --background-image-gradient-radial: radial-gradient(var(--tw-gradient-stops));
