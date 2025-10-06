@@ -6,10 +6,14 @@ import { AnimalListingStatus } from "@prisma/client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangleIcon } from "lucide-react";
-import { fetchAnimalById, fetchPartners } from "@/app/lib/data/animals/animal.data";
+import {
+  fetchAnimalById,
+  fetchPartners,
+} from "@/app/lib/data/animals/animal.data";
 import ReIntakeForm from "@/components/dashboard/animals/re-intake-form";
 import { notFound } from "next/navigation";
 import ActionBlockedMessage from "@/components/action-blocked-message";
+import { formatSingleEnumOption } from "@/app/lib/utils/enum-formatter";
 
 interface Props {
   params: IDParamType;
@@ -46,19 +50,22 @@ const PageContent = async ({ animalId }: { animalId: string }) => {
             Back to Animal Profile
           </Link>
         </Button>
-        
+
         <ActionBlockedMessage
           icon={AlertTriangleIcon}
           title="Cannot Process Re-Intake"
         >
           <p>
-            This animal, <strong>{animal.name}</strong>, cannot be processed for re-intake because its current status is{' '}
-            <span className="font-semibold capitalize">
-              {animal.listingStatus.toLowerCase().replace(/_/g, " ")}
-            </span>.
+            This animal, <strong>{animal.name}</strong>, cannot be processed for
+            re-intake because its current status is{" "}
+            <span className="font-semibold">
+              {formatSingleEnumOption(animal.listingStatus)}
+            </span>
+            .
           </p>
           <p>
-            Re-intake is only available for animals that are no longer in the shelter (i.e., have an <strong>ARCHIVED</strong> status).
+            Re-intake is only available for animals that are no longer in the
+            shelter (i.e., have an <strong>ARCHIVED</strong> status).
           </p>
         </ActionBlockedMessage>
       </main>

@@ -95,6 +95,7 @@ const _fetchAnimalApplications = async (
           submittedAt: true,
           animal: {
             select: {
+              id: true,
               name: true,
               species: {
                 select: {

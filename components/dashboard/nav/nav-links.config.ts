@@ -144,9 +144,4 @@ export const documentItems: readonly NavDocument[] = [
     url: "#",
     icon: "IconReport",
   },
-  {
-    name: "Word Assistant",
-    url: "#",
-    icon: "IconFileWord",
-  },
 ] as const;

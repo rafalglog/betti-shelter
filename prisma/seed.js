@@ -804,31 +804,6 @@ async function seedAssessments() {
 }
 
 async function main() {
-  console.log("Starting database seeding process...");
-
-  console.log("Deleting existing data...");
-  // Clear data in reverse order of creation to avoid foreign key constraints
-  await prisma.account.deleteMany();
-  await prisma.note.deleteMany();
-  await prisma.task.deleteMany();
-  await prisma.medicalRecord.deleteMany();
-  await prisma.assessmentField.deleteMany();
-  await prisma.assessment.deleteMany();
-  await prisma.templateField.deleteMany();
-  await prisma.assessmentTemplate.deleteMany();
-  await prisma.intake.deleteMany();
-  await prisma.outcome.deleteMany();
-  await prisma.animalImage.deleteMany();
-  await prisma.user.deleteMany();
-  await prisma.partner.deleteMany();
-  await prisma.person.deleteMany();
-  await prisma.animal.deleteMany();
-  await prisma.breed.deleteMany();
-  await prisma.species.deleteMany();
-  await prisma.color.deleteMany();
-  await prisma.characteristic.deleteMany();
-  console.log("Existing data deleted.");
-
   console.log("Start seeding new data...");
   await seedPersonsAndUsers();
   await seedLookupTables();
