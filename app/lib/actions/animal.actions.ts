@@ -1,11 +1,8 @@
 "use server";
 
-import { unlink } from "fs/promises";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import path from "path";
 import { prisma } from "@/app/lib/prisma";
-import { validateAndUploadImages } from "@/app/lib/utils/validateAndUpload";
 import { cuidSchema } from "../zod-schemas/common.schemas";
 import { AnimalFormSchema } from "../zod-schemas/animal.schemas";
 import { AnimalFormState } from "../form-state-types";
@@ -25,6 +22,7 @@ import {
 import { getAnimalSize } from "../utils/animal-size";
 
 import { ConflictError, NotFoundError } from "../utils/errors";
+import { del } from "@vercel/blob";
 const _createAnimal = async (
   user: SessionUser,
   prevState: AnimalFormState,
@@ -432,6 +430,99 @@ const _togglePetLike = async (
     };
   }
 };
+
+const _addAnimalImage = async (
+  user: SessionUser,
+  animalId: string,
+  imageUrl: string
+): Promise<{ success: boolean; message: string }> => {
+  const staffMemberId = user.personId;
+  const parsedId = cuidSchema.safeParse(animalId);
+
+  if (!parsedId.success) {
+    return { success: false, message: "Invalid Animal ID." };
+  }
+  const validatedAnimalId = parsedId.data;
+
+  if (!imageUrl) {
+    return { success: false, message: "Image URL is missing." };
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 1. Create the AnimalImage record
+      await tx.animalImage.create({
+        data: {
+          url: imageUrl,
+          animalId: validatedAnimalId,
+        },
+      });
+
+      // 2. Log the activity
+      if (staffMemberId) {
+        await tx.animalActivityLog.create({
+          data: {
+            animalId: validatedAnimalId,
+            activityType: AnimalActivityType.PHOTO_UPLOADED,
+            changedById: staffMemberId,
+            changeSummary: `A new photo was uploaded. URL: ${imageUrl}`,
+          },
+        });
+      }
+    });
+
+    // 3. Revalidate paths to show the new image immediately
+    revalidatePath(`/dashboard/animals/${validatedAnimalId}`);
+    revalidatePath(`/dashboard/animals/${validatedAnimalId}/documents`);
+
+    return { success: true, message: "Image saved successfully!" };
+  } catch (error) {
+    console.error("Database Error: Failed to add animal image.", error);
+    return {
+      success: false,
+      message: "Database Error: Failed to save the image.",
+    };
+  }
+};
+
+const _deleteAnimalImage = async (
+  user: SessionUser,
+  imageId: string,
+  imageUrl: string,
+  animalId: string
+): Promise<{ success: boolean; message: string }> => {
+  // Validate the image ID
+  const parsedImageId = cuidSchema.safeParse(imageId);
+  if (!parsedImageId.success) {
+    return { success: false, message: 'Invalid Image ID.' };
+  }
+
+  try {
+    // Delete the image file from Vercel Blob storage
+    await del(imageUrl);
+
+    // Delete the image record from the database
+    await prisma.animalImage.delete({
+      where: { id: parsedImageId.data },
+    });
+
+    // Revalidate the page to show the change immediately
+    revalidatePath(`/dashboard/animals/${animalId}/documents`);
+
+    return { success: true, message: 'Image deleted successfully.' };
+  } catch (error) {
+    console.error('Error deleting animal image:', error);
+    return { success: false, message: 'Failed to delete image.' };
+  }
+};
+
+export const deleteAnimalImage = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_DELETE_IMAGE)(_deleteAnimalImage)
+);
+
+export const addAnimalImage = withAuthenticatedUser(
+  RequirePermission(Permissions.ANIMAL_UPDATE)(_addAnimalImage)
+);
 
 export const createAnimal = withAuthenticatedUser(
   RequirePermission(Permissions.ANIMAL_CREATE)(_createAnimal)

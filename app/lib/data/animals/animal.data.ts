@@ -278,6 +278,38 @@ export const fetchSpecies = async (): Promise<SpeciesPayload[]> => {
   }
 };
 
+const _fetchAnimalForPhotoPage = async (id: string) => {
+  const parsedId = cuidSchema.safeParse(id);
+
+  if (!parsedId.success) {
+    throw new Error("Invalid animal ID format.");
+  }
+  const validatedAnimalId = parsedId.data;
+
+  try {
+    const animal = await prisma.animal.findUnique({
+      where: { id: validatedAnimalId },
+      select: {
+        id: true,
+        name: true,
+        animalImages: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+    return animal;
+  } catch (error) {
+    console.error("Error fetching animal for photos page.", error);
+    throw new Error("Error fetching animal photo data.");
+  }
+};
+
+export const fetchAnimalForPhotosPage = RequirePermission(
+  Permissions.ANIMAL_UPDATE
+)(_fetchAnimalForPhotoPage);
+
 export const fetchPartners = RequirePermission(Permissions.PARTNER_READ)(
   _fetchPartners
 );
