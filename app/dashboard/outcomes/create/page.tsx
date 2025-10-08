@@ -1,6 +1,6 @@
 import {
   fetchPartners,
-  fetchAnimalById,
+  fetchAnimalForOutcomeForm,
 } from "@/app/lib/data/animals/animal.data";
 import { OutcomeForm } from "@/components/dashboard/outcomes/outcome-form";
 import { fetchApplicationById } from "@/app/lib/data/user-application.data";
@@ -20,7 +20,7 @@ interface Props {
 const CreateOutcomePage = async ({ searchParams }: Props) => {
   const { animalId, applicationId } = (await searchParams) || {};
 
-  let animal: Awaited<ReturnType<typeof fetchAnimalById>> = null;
+  let animal: Awaited<ReturnType<typeof fetchAnimalForOutcomeForm>> = null;
   let application = null;
 
   if (applicationId) {
@@ -28,9 +28,9 @@ const CreateOutcomePage = async ({ searchParams }: Props) => {
     if (!application || !application.animal) {
       return notFound();
     }
-    animal = await fetchAnimalById(application.animal.id);
+    animal = await fetchAnimalForOutcomeForm(application.animal.id);
   } else if (animalId) {
-    animal = await fetchAnimalById(animalId);
+    animal = await fetchAnimalForOutcomeForm(animalId);
   }
 
   if (!animal) {
@@ -51,7 +51,6 @@ const CreateOutcomePage = async ({ searchParams }: Props) => {
         </Link>
       </Button>
 
-      {/* Conditional Rendering Logic now uses the reusable component */}
       {animal.listingStatus === AnimalListingStatus.ARCHIVED ? (
         <ActionBlockedMessage
           icon={ArchiveIcon}

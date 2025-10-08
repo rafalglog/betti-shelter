@@ -25,7 +25,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { FetchAnimalTasksPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
 import { TaskForm } from "../task-form";
 import { updateAnimalTaskStatus } from "@/app/lib/actions/animal-task.actions";
@@ -33,7 +33,7 @@ import { TaskStatus } from "@prisma/client";
 import { TaskStatusOptions } from "@/app/lib/utils/enum-formatter";
 
 interface DataTableRowActionsProps {
-  row: Row<TaskPayload>;
+  row: Row<FetchAnimalTasksPayload>;
   assigneeList: TaskAssignee[];
   animalId: string;
 }

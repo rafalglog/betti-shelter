@@ -1,11 +1,11 @@
 "use client";
 
 import { Table } from "@tanstack/react-table";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
+import { TaskAnalyticsPayload } from "@/app/lib/data/analytics.data";
 
 interface TasksDataTableToolbarProps {
-  table: Table<TaskPayload>;
+  table: Table<TaskAnalyticsPayload>;
 }
 
 const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {

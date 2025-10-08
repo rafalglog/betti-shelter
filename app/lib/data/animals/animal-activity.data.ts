@@ -1,8 +1,12 @@
 import { prisma } from "@/app/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { cuidSchema } from "../../zod-schemas/common.schemas";
+import {
+  cuidSchema,
+  currentPageSchema,
+} from "../../zod-schemas/common.schemas";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { RequirePermission } from "../../auth/protected-actions";
+import z from "zod";
 
 export type AnimalActivityLogPayload = Prisma.AnimalActivityLogGetPayload<{
   include: {
@@ -14,37 +18,59 @@ export type AnimalActivityLogPayload = Prisma.AnimalActivityLogGetPayload<{
   };
 }>;
 
-// Fetch all activity (The log)
+const AnimalActivityLogSchema = z.object({
+  currentPage: currentPageSchema,
+  animalId: cuidSchema,
+});
+
+const ACTIVITIES_PER_PAGE = 10;
+
 const _fetchAnimalActivityLogs = async (
-  animalId: string
-): Promise<AnimalActivityLogPayload[]> => {
-  const validatedId = cuidSchema.safeParse(animalId);
-  if (!validatedId.success) {
-    throw new Error("Invalid animal ID format provided.");
+  currentPageInput: number,
+  inputAnimalId: string
+): Promise<{
+  activityLogs: AnimalActivityLogPayload[];
+  totalPages: number;
+}> => {
+  const validatedArgs = AnimalActivityLogSchema.safeParse({
+    currentPage: currentPageInput,
+    animalId: inputAnimalId,
+  });
+
+  if (!validatedArgs.success) {
+    throw new Error("Invalid arguments for fetching activity logs.");
   }
 
+  const { currentPage, animalId } = validatedArgs.data;
+
+  const whereClause: Prisma.AnimalActivityLogWhereInput = {
+    animalId: animalId,
+  };
+
   try {
-    const activityLogs = await prisma.animalActivityLog.findMany({
-      where: {
-        animalId: validatedId.data,
-      },
-      // Include the person who made the change
-      include: {
-        changedBy: {
-          include: {
-            user: true,
+    const offset = (currentPage - 1) * ACTIVITIES_PER_PAGE;
+
+    const [totalCount, activityLogs] = await prisma.$transaction([
+      prisma.animalActivityLog.count({ where: whereClause }),
+      prisma.animalActivityLog.findMany({
+        where: whereClause,
+        include: {
+          changedBy: {
+            include: {
+              user: true,
+            },
           },
         },
-      },
-      // Order by the most recent entries first
-      orderBy: {
-        changedAt: "desc",
-      },
-      // Limit the result to the last 10 entries
-      take: 10,
-    });
-    
-    return activityLogs;
+        orderBy: {
+          changedAt: "desc",
+        },
+        take: ACTIVITIES_PER_PAGE,
+        skip: offset,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / ACTIVITIES_PER_PAGE);
+    return { activityLogs, totalPages };
   } catch (error) {
     console.error("Error fetching animal activity logs:", error);
     throw new Error("Could not fetch animal activity logs.");

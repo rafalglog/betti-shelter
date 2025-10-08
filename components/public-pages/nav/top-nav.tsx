@@ -16,20 +16,18 @@ import {
 import NavItemsRenderer from "./nav-items-renderer";
 import UserMenu from "./top-nav-user-avatar";
 
-const links = [
-  { name: "Home", href: "/" },
-  { name: "Pets", href: "/pets" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-  { name: "Dashboard", href: "/dashboard" },
-];
+interface NavLink {
+  name: string;
+  href: string;
+}
 
 interface TopNavProps {
   userImage: string | null | undefined;
   showUserProfile: boolean;
+  links: NavLink[]; 
 }
 
-const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
+const TopNav = ({ userImage, showUserProfile, links }: TopNavProps) => {
   const pathname = usePathname();
   // State to control the Sheet component for mobile navigation
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -87,7 +85,7 @@ const TopNav = ({ userImage, showUserProfile }: TopNavProps) => {
           <div className="flex flex-1 items-center justify-center md:items-stretch md:justify-start">
             {/* Logo for desktop */}
             <div className="flex shrink-0 items-center">
-              <IconPaw className="h-6 w-6" />
+              <IconPaw className="h-6 w-6 text-white" />
               <span className="text-white font-bold text-xl ml-2">
                 Pet Adopt
               </span>

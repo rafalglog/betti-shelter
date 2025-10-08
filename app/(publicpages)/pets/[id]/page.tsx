@@ -41,6 +41,12 @@ const Page = async ({ params }: Props) => {
 
   const isLikedByCurrentUser = animal.likes && animal.likes.length > 0;
 
+  // Prepare array data for display
+  const breedString =
+    animal.breeds?.map((b) => b.name).join(", ") || "Mixed Breed";
+  const colorString = animal.colors?.map((c) => c.name).join(", ") || "";
+
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6 lg:gap-y-0">
       <PetGallery
@@ -63,12 +69,17 @@ const Page = async ({ params }: Props) => {
 
         <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-200">
           <PetCardDetail label="Species" value={animal.species.name} />
+          <PetCardDetail label="Breed" value={breedString} />
+          <PetCardDetail label="Color" value={colorString} />
+          <PetCardDetail label="Sex" value={animal.sex} />
+          <PetCardDetail label="Size" value={animal.size} />
+          <PetCardDetail label="Spayed/Neutered" value={animal.isSpayedNeutered ? "Yes" : "No"} />
           <PetCardDetail label="Age" value={ageString} />
           <PetCardDetail label="Date of Birth" value={formattedBirthDate} />
           <PetCardDetail label="Weight" value={animal.weightKg} unit="kg" />
           <PetCardDetail label="Height" value={animal.heightCm} unit="cm" />
         </div>
-
+        
         {animal.description && (
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-medium text-gray-700 text-lg mb-2">
@@ -77,6 +88,24 @@ const Page = async ({ params }: Props) => {
             <p className="text-gray-600 whitespace-pre-wrap leading-relaxed">
               {animal.description}
             </p>
+          </div>
+        )}
+        
+        {animal.characteristics && animal.characteristics.length > 0 && (
+          <div className="pt-4 border-t border-gray-200">
+            <h3 className="font-medium text-gray-700 text-lg mb-3">
+              Personality & Needs
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              {animal.characteristics.map((char) => (
+                <span
+                  key={char.name}
+                  className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full"
+                >
+                  {char.name}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 

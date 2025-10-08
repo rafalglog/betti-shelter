@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AnimalAssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
+import { AnimalAssessmentListPayload } from "@/app/lib/data/animals/animal-assessment.data";
 import {
   deleteAnimalAssessment,
   restoreAnimalAssessment,
@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 interface AssessmentActionsProps {
-  assessment: AnimalAssessmentPayload;
+  assessment: AnimalAssessmentListPayload;
   animalId: string;
 }
 

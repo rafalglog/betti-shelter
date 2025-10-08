@@ -60,11 +60,13 @@ const personData = [
     name: "Jane Doe",
     type: PersonType.INDIVIDUAL,
     email: "surrenderer1@example.com",
+    role: Role.USER,
   },
   {
     name: "John Smith",
     type: PersonType.INDIVIDUAL,
     email: "finder1@example.com",
+    role: Role.USER,
   },
 ];
 
@@ -499,30 +501,31 @@ const assessmentSeedData = [
 
 async function seedPersonsAndUsers() {
   console.log("Seeding persons and users...");
-  try {
-    for (const pData of personData) {
-      const person = await prisma.person.create({
+
+  if (!process.env.ADMIN_PASSWORD) {
+    throw new Error("ADMIN_PASSWORD is not set in your .env.local file.");
+  }
+
+  for (const pData of personData) {
+    const person = await prisma.person.create({
+      data: {
+        name: pData.name,
+        type: pData.type,
+        email: pData.email,
+      },
+    });
+    
+    if (pData.role) {
+      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+      await prisma.user.create({
         data: {
-          name: pData.name,
-          type: pData.type,
           email: pData.email,
+          password: hashedPassword,
+          role: pData.role,
+          person: { connect: { id: person.id } },
         },
       });
-      if (pData.role) {
-        const hashedPassword = await bcrypt.hash("password123", 10);
-        await prisma.user.create({
-          data: {
-            email: pData.email,
-            password: hashedPassword,
-            role: pData.role,
-            person: { connect: { id: person.id } },
-          },
-        });
-      }
     }
-  } catch (error) {
-    console.error("Error seeding persons and users:", error);
-    throw error;
   }
   console.log("Seeded persons and users.");
 }
@@ -614,14 +617,21 @@ async function seedAnimalsAndRelations() {
   const dbSpecies = await prisma.species.findMany();
 
   if (staffMembers.length === 0) {
-    throw new Error("No staff members found.");
+    throw new Error(
+      "No staff members found. Please ensure staff are seeded before animals."
+    );
   }
 
   for (const animalData of animalSeedData) {
     try {
       // Find the DB records based on the names from our seed data objects
       const species = dbSpecies.find((s) => s.name === animalData.species.name);
-      if (!species) continue;
+      if (!species) {
+        console.warn(
+          `Skipping animal "${animalData.name}" because its species "${animalData.species.name}" was not found.`
+        );
+        continue;
+      }
 
       const breedNames = animalData.breeds.map((b) => b.name);
       const connectedBreeds = dbBreeds
@@ -640,6 +650,7 @@ async function seedAnimalsAndRelations() {
 
       const processingStaff = getRandomItem(staffMembers);
 
+      // --- Create Animal and Intake within a transaction ---
       const animal = await prisma.animal.create({
         data: {
           name: animalData.name,
@@ -659,25 +670,22 @@ async function seedAnimalsAndRelations() {
           characteristics: { connect: connectedChars },
           animalImages: {
             create: [
-              {
-                url: `/uploads/dog3.jpg`,
-              },
-              {
-                url: "/uploads/dog3-1.jpg",
-              },
-              {
-                url: "/uploads/dog3-2.webp",
-              },
+              { url: `/uploads/dog3.jpg` },
+              { url: "/uploads/dog3-1.jpg" },
+              { url: "/uploads/dog3-2.webp" },
             ],
           },
         },
       });
 
+      // --- Always create an intake record for the new animal ---
       const intakeData = {
         animalId: animal.id,
         type: animalData.intakeType,
         staffMemberId: processingStaff.id,
       };
+
+      // Add additional fields based on the intake type
       if (animalData.intakeType === IntakeType.OWNER_SURRENDER) {
         intakeData.surrenderingPersonId = getRandomItem(publicPersons)?.id;
       } else if (animalData.intakeType === IntakeType.STRAY) {
@@ -688,10 +696,11 @@ async function seedAnimalsAndRelations() {
 
       await prisma.intake.create({ data: intakeData });
 
+      // --- Log activity and create initial note ---
       await prisma.animalActivityLog.create({
         data: {
           animalId: animal.id,
-          activityType: "INTAKE_PROCESSED", // Corresponds to AnimalActivityType.INTAKE_PROCESSED
+          activityType: "INTAKE_PROCESSED",
           changedById: processingStaff.id,
           changeSummary: `Animal was admitted as ${animalData.intakeType
             .replace(/_/g, " ")

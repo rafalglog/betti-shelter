@@ -40,12 +40,9 @@ const AnimalSectionCards = async ({ params }: Props) => {
     ? formatTimeAgo(animal.intake[0].intakeDate)
     : null;
 
-  // Get counts from relationships
-  const likesCount = animal.likes?.length || 0;
-  const pendingTasksCount =
-    animal.tasks?.filter(
-      (t) => t.status === "TODO" || t.status === "IN_PROGRESS"
-    ).length || 0;
+  const likesCount = animal._count.likes;
+  const pendingTasksCount = animal._count.tasks;
+
   const applicationCount = animal.adoptionApplications?.length || 0;
   const approvedApplications =
     animal.adoptionApplications?.filter((a) => a.status === "APPROVED")

@@ -45,7 +45,7 @@ import {
   createAnimalTask,
   updateAnimalTask,
 } from "@/app/lib/actions/animal-task.actions";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { FetchAnimalTasksPayload } from "@/app/lib/data/animals/animal-task.data";
 import { toast } from "sonner";
 
 type TaskFormValues = z.infer<typeof TaskFormSchema>;
@@ -56,7 +56,7 @@ interface TaskFormProps {
   animalId: string;
   onFormSubmit: () => void; // To close the dialog on success
   assigneeList: TaskAssignee[];
-  task?: TaskPayload;
+  task?: FetchAnimalTasksPayload;
 }
 
 export const TaskForm = ({

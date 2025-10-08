@@ -38,11 +38,27 @@ const _fetchAssessmentTemplates = async (): Promise<
   }
 };
 
-export type AnimalAssessmentPayload = Prisma.AssessmentGetPayload<{
-  include: {
-    fields: true;
-    assessor: true;
-    template: true;
+export type AnimalAssessmentListPayload = Prisma.AssessmentGetPayload<{
+  select: {
+    id: true;
+    date: true;
+    overallOutcome: true;
+    summary: true;
+    deletedAt: true; // Needed for the "Show Deleted" filter logic
+    assessor: {
+      select: { name: true }; // Only need the name
+    };
+    template: {
+      select: { type: true }; // Only need the type
+    };
+    fields: {
+      select: {
+        id: true;
+        fieldName: true;
+        fieldValue: true;
+        notes: true;
+      };
+    };
   };
 }>;
 
@@ -62,7 +78,7 @@ const _fetchAnimalAssessments = async (
   outcomeInput: string | undefined,
   sortInput: string | undefined,
   showDeletedInput: boolean = false
-): Promise<{ assessments: AnimalAssessmentPayload[]; totalPages: number }> => {
+): Promise<{ assessments: AnimalAssessmentListPayload[]; totalPages: number }> => {
   // Validate and parse inputs
   const validatedArgs = AnimalAssessmentsSchema.safeParse({
     currentPage: currentPageInput,
@@ -102,10 +118,22 @@ const _fetchAnimalAssessments = async (
       prisma.assessment.count({ where: whereClause }),
       prisma.assessment.findMany({
         where: whereClause,
-        include: {
-          fields: true,
-          assessor: true,
-          template: true,
+        select: {
+          id: true,
+          date: true,
+          overallOutcome: true,
+          summary: true,
+          deletedAt: true,
+          assessor: { select: { name: true } },
+          template: { select: { type: true } },
+          fields: {
+            select: {
+              id: true,
+              fieldName: true,
+              fieldValue: true,
+              notes: true,
+            },
+          },
         },
         orderBy: orderBy,
         take: ASSESSMENTS_PER_PAGE,
@@ -120,16 +148,44 @@ const _fetchAnimalAssessments = async (
   }
 };
 
+export type AnimalAssessmentFormPayload = Prisma.AssessmentGetPayload<{
+  select: {
+    id: true;
+    overallOutcome: true;
+    summary: true;
+    template: {
+      select: { id: true };
+    };
+    fields: {
+      select: {
+        fieldName: true;
+        fieldValue: true;
+        notes: true;
+      };
+    };
+  };
+}>;
+
 const _fetchAnimalAssessmentById = async (
   id: string
-): Promise<AnimalAssessmentPayload | null> => {
+): Promise<AnimalAssessmentFormPayload | null> => {
   try {
     const assessment = await prisma.assessment.findUnique({
       where: { id },
-      include: {
-        fields: true,
-        assessor: true,
-        template: true,
+      select: {
+        id: true,
+        overallOutcome: true,
+        summary: true,
+        template: {
+          select: { id: true },
+        },
+        fields: {
+          select: {
+            fieldName: true,
+            fieldValue: true,
+            notes: true,
+          },
+        },
       },
     });
     return assessment;

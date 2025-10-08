@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { categories, priorities, statuses } from "./task-options";
 import { DataTableRowActions } from "./task-table-row-actions";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
+import { FetchAnimalTasksPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
 import { formatDateOrNA, formatDueDate } from "@/app/lib/utils/date-utils";
 import { DataTableColumnHeader } from "@/components/table-common/data-table-column-header";
@@ -27,7 +27,7 @@ interface GetColumnsProps {
 export const getColumns = ({
   animalId,
   assigneeList,
-}: GetColumnsProps): ColumnDef<TaskPayload>[] => [
+}: GetColumnsProps): ColumnDef<FetchAnimalTasksPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (

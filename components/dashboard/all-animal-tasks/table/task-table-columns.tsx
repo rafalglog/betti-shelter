@@ -4,7 +4,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableRowActions } from "./task-table-row-actions";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
 import { formatDateOrNA, formatDueDate } from "@/app/lib/utils/date-utils";
 import { DataTableColumnHeader } from "@/components/table-common/data-table-column-header";
@@ -23,6 +22,7 @@ import {
   statuses,
 } from "../../animals/tasks/table/task-options";
 import Link from "next/link";
+import { AllAnimalsTasksPayload } from "@/app/lib/data/all-animal-tasks.data";
 
 interface GetColumnsProps {
   assigneeList: TaskAssignee[];
@@ -30,7 +30,7 @@ interface GetColumnsProps {
 
 export const getColumns = ({
   assigneeList,
-}: GetColumnsProps): ColumnDef<TaskPayload>[] => [
+}: GetColumnsProps): ColumnDef<AllAnimalsTasksPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (

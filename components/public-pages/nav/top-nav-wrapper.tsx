@@ -1,13 +1,31 @@
 import { auth } from "@/auth";
 import TopNav from "./top-nav";
+import { Role } from "@prisma/client";
 
 const TopNavWrapper = async () => {
   const session = await auth();
-
   const showUserProfile = session ? true : false;
 
+  let dashboardHref = "/dashboard";
+  if (session?.user?.role === Role.USER) {
+    dashboardHref = "/dashboard/my-applications"; // Specific link for regular users
+  }
+
+  // Define the navigation links dynamically
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Pets", href: "/pets" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    { name: "Dashboard", href: dashboardHref }, // Use the dynamic href
+  ];
+
   return (
-    <TopNav userImage={session?.user.image} showUserProfile={showUserProfile} />
+    <TopNav
+      userImage={session?.user.image}
+      showUserProfile={showUserProfile}
+      links={navLinks}
+    />
   );
 };
 

@@ -1,5 +1,5 @@
 import { IDParamType } from "@/app/lib/types";
-import UppyUploader from "@/components/dashboard/uppy-uploader";
+import UppyUploader from "@/components/dashboard/animals/photos/uppy-uploader";
 import { notFound } from "next/navigation";
 import {
   Card,
@@ -12,7 +12,7 @@ import { fetchAnimalForPhotosPage } from "@/app/lib/data/animals/animal.data";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
-import AnimalImageGallery from "@/components/dashboard/animal-image-gallery";
+import AnimalImageGallery from "@/components/dashboard/animals/photos/animal-image-gallery";
 
 interface Props {
   params: IDParamType;
@@ -41,7 +41,7 @@ const PageContent = async ({ params }: Props) => {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="font-semibold text-xl">
+          <CardTitle className="font-semibold">
             Current Images for {animal.name}
           </CardTitle>
           <CardDescription>
@@ -55,7 +55,7 @@ const PageContent = async ({ params }: Props) => {
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-semibold text-xl">
+          <CardTitle className="font-semibold">
             Upload New Images
           </CardTitle>
           <CardDescription>

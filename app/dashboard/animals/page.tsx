@@ -8,14 +8,11 @@ import {
 } from "@/components/ui/card";
 import DataTable from "@/components/dashboard/animals/table/animal-table";
 import { columns } from "@/components/dashboard/animals/table/animal-table-columns";
-import {
-  fetchAnimals,
-} from "@/app/lib/data/animals/animal.data";
+import { fetchAnimals } from "@/app/lib/data/animals/animal.data";
 import { SearchParamsType } from "@/app/lib/types";
 import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-table-toolbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: SearchParamsType;
@@ -51,14 +48,15 @@ const Page = async ({ searchParams }: Props) => {
           <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
             Animals
           </CardTitle>
-          <CardDescription>Manage all animals currently in your care or begin the intake process for a new arrival.</CardDescription>
+          <CardDescription>
+            Manage all animals currently in your care or begin the intake
+            process for a new arrival.
+          </CardDescription>
           <CardAction>
-          <Button asChild>
-            <Link href="/dashboard/animals/create">
-              Add Animal
-            </Link>
-          </Button>
-        </CardAction>
+            <Button asChild>
+              <Link href="/dashboard/animals/create">Add Animal</Link>
+            </Button>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className="flex flex-1 flex-col">

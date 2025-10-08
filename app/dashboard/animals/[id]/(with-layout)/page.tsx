@@ -1,53 +1,38 @@
-import { IDParamType } from "@/app/lib/types";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import ActivityFeedItem from "../../../../../components/dashboard/animals/activityFeed/activity-feed";
+import { IDParamType, SearchParamsType } from "@/app/lib/types";
 import { fetchAnimalActivityLogs } from "@/app/lib/data/animals/animal-activity.data";
+import { Authorize } from "@/components/auth/authorize";
+import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
+import { Permissions } from "@/app/lib/auth/permissions";
+import ActivityFeed from "@/components/dashboard/animals/activity-feed/activity-feed";
 
 interface Props {
   params: IDParamType;
+  searchParams: SearchParamsType;
 }
 
-const Page = async ({ params }: Props) => {
-  const { id: animalId } = await params;
-
-  const animalActivityFeed = await fetchAnimalActivityLogs(animalId);
-
+const Page = async ({ params, searchParams }: Props) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Activity</CardTitle>
-        <CardDescription>
-          This page displays the ten most recent activity logs for this animal,
-          including who made the change and a summary of the action.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flow-root">
-          <ul className="-mb-8">
-            {animalActivityFeed.map((activity, index) => (
-              <li key={activity.id}>
-                <div className="relative pb-8">
-                  {index !== animalActivityFeed.length - 1 && (
-                    <span
-                      className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <ActivityFeedItem activity={activity} />
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
+    <Authorize
+      permission={Permissions.ANIMAL_ACTIVITY_READ}
+      fallback={<PageNotFoundOrAccessDenied type="accessDenied" />}
+    >
+      <PageContent params={params} searchParams={searchParams} />
+    </Authorize>
   );
+};
+
+const PageContent = async ({ params, searchParams }: Props) => {
+  const { id: animalId } = await params;
+  
+  const { page = "1" } = await searchParams;
+  const currentPage = Number(page);
+
+  const { activityLogs, totalPages } = await fetchAnimalActivityLogs(
+    currentPage,
+    animalId
+  );
+
+  return <ActivityFeed activityLogs={activityLogs} totalPages={totalPages} />;
 };
 
 export default Page;

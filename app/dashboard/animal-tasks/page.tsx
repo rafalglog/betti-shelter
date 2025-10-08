@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { fetchAllTasks } from "@/app/lib/data/tasks.data";
+import { fetchAllAnimalsTasks } from "@/app/lib/data/all-animal-tasks.data";
 import { fetchTaskAssigneeList } from "@/app/lib/data/animals/animal-task.data";
 
 interface Props {
@@ -30,7 +30,7 @@ const Page = async ({ searchParams }: Props) => {
   const currentPageSize = Number(pageSize);
 
   // Pass all parameters, including the potentially undefined ones, to the function.
-  const { tasks, totalPages } = await fetchAllTasks(
+  const { tasks, totalPages } = await fetchAllAnimalsTasks(
     query,
     currentPage,
     category,

@@ -44,36 +44,78 @@ export type OutcomePayload = Prisma.OutcomeGetPayload<{
   };
 }>;
 
-export type AnimalForCardPayload = Pick<
-  Animal,
-  | "id"
-  | "name"
-  | "birthDate"
-  | "sex"
-  | "size"
-  | "microchipNumber"
-  | "listingStatus"
-  | "isSpayedNeutered"
-  | "city"
-  | "state"
-  | "healthStatus"
-  | "legalStatus"
-> & {
-  species: Pick<Species, "name">;
-  breeds: Pick<Breed, "name">[];
-  colors: Pick<Color, "name">[];
-  adoptionApplications: Pick<AdoptionApplication, "id" | "status">[];
-  intake: Pick<Intake, "intakeDate">[];
-  likes: Pick<Like, "id">[];
-  tasks: Pick<Task, "id" | "status">[];
-};
+export type AnimalForCardPayload = Prisma.AnimalGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    birthDate: true;
+    sex: true;
+    size: true;
+    microchipNumber: true;
+    listingStatus: true;
+    isSpayedNeutered: true;
+    city: true;
+    state: true;
+    healthStatus: true;
+    legalStatus: true;
+    species: {
+      select: { name: true };
+    };
+    breeds: {
+      select: { name: true };
+    };
+    colors: {
+      select: { name: true };
+      take: 1;
+    };
+    adoptionApplications: {
+      select: { status: true };
+    };
+    intake: {
+      select: { intakeDate: true };
+      orderBy: { intakeDate: "desc" };
+      take: 1;
+    };
+    _count: {
+      select: {
+        likes: true;
+        tasks: {
+          where: {
+            status: { in: ["TODO", "IN_PROGRESS"] };
+          };
+        };
+      };
+    };
+  };
+}>;
 
-export type AnimalWithDetailsPayload = Animal & {
-  species: Species;
-  breeds: Breed[];
-  colors: Color[];
-  adoptionApplications?: Pick<AdoptionApplication, 'id' | 'status'>[];
-};
+export type AnimalIntakeFormPayload = Prisma.AnimalGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    birthDate: true;
+    sex: true;
+    weightKg: true;
+    heightCm: true;
+    city: true;
+    state: true;
+    description: true;
+    listingStatus: true;
+    microchipNumber: true;
+    healthStatus: true;
+    speciesId: true;
+    breeds: {
+      select: {
+        id: true;
+      };
+    };
+    colors: {
+      select: {
+        id: true;
+      };
+    };
+  };
+}>;
 
 export type ActionResult = {
   success: boolean;
@@ -146,8 +188,6 @@ export type AnimalsPayload = Prisma.AnimalGetPayload<{
     listingStatus: true;
     sex: true;
     size: true;
-    breeds: { select: { name: true } };
-    animalImages: { select: { url: true }; take: 1 };
   };
 }>;
 
@@ -232,6 +272,14 @@ export type SpeciesPayload = Prisma.SpeciesGetPayload<{
         name: true;
       };
     };
+  };
+}>;
+
+export type AnimalReIntakeFormPayload = Prisma.AnimalGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    listingStatus: true;
   };
 }>;
 

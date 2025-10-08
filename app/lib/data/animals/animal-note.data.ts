@@ -22,7 +22,6 @@ export type NotePayload = Prisma.NoteGetPayload<{
     content: true;
     category: true;
     createdAt: true;
-    updatedAt: true;
     deletedAt: true;
     author: {
       select: {
@@ -33,7 +32,7 @@ export type NotePayload = Prisma.NoteGetPayload<{
   };
 }>;
 
-export const AnimalNotesSchema = z.object({
+const AnimalNotesSchema = z.object({
   currentPage: currentPageSchema,
   animalId: cuidSchema,
   category: z.string().optional(),
@@ -97,7 +96,6 @@ const _fetchAnimalNotes = async (
           content: true,
           category: true,
           createdAt: true,
-          updatedAt: true,
           deletedAt: true,
           author: {
             select: {

@@ -25,15 +25,15 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { TaskAssignee } from "@/app/lib/types";
 import { updateAnimalTaskStatus } from "@/app/lib/actions/animal-task.actions";
 import { TaskStatus } from "@prisma/client";
 import { TaskStatusOptions } from "@/app/lib/utils/enum-formatter";
 import { TaskForm } from "../../../animals/tasks/task-form";
+import { TaskAnalyticsPayload } from "@/app/lib/data/analytics.data";
 
 interface DataTableRowActionsProps {
-  row: Row<TaskPayload>;
+  row: Row<TaskAnalyticsPayload>;
   assigneeList: TaskAssignee[];
 }
 

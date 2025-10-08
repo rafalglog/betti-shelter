@@ -20,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AnimalAssessmentPayload } from "@/app/lib/data/animals/animal-assessment.data";
+import { AnimalAssessmentListPayload } from "@/app/lib/data/animals/animal-assessment.data";
 import { AssessmentOutcome } from "@prisma/client";
 import { formatDateToLongString } from "@/app/lib/utils/date-utils";
 import {
@@ -50,7 +50,7 @@ const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
 };
 
 interface Props {
-  animalAssessments: AnimalAssessmentPayload[];
+  animalAssessments: AnimalAssessmentListPayload[];
   animalId: string;
   totalPages: number;
 }

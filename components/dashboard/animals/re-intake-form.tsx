@@ -37,7 +37,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { animalHealthStatusOptions } from "@/app/lib/utils/enum-formatter";
-import { PartnerPayload, AnimalWithDetailsPayload } from "@/app/lib/types";
+import { AnimalReIntakeFormPayload, PartnerPayload } from "@/app/lib/types";
 import Link from "next/link";
 import { IntakeFormFields } from "./intake-form-fields";
 import { ReIntakeFormSchema } from "@/app/lib/zod-schemas/intake.schema";
@@ -45,7 +45,7 @@ import { ReIntakeFormSchema } from "@/app/lib/zod-schemas/intake.schema";
 type ReIntakeFormValues = z.infer<typeof ReIntakeFormSchema>;
 
 interface ReIntakeFormProps {
-  animal: AnimalWithDetailsPayload;
+  animal: AnimalReIntakeFormPayload;
   partners: PartnerPayload[];
 }
 

@@ -5,7 +5,7 @@ import { RequirePermission } from "../../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { TaskAssignee } from "../../types";
 
-export type TaskPayload = Prisma.TaskGetPayload<{
+export type FetchAnimalTasksPayload = Prisma.TaskGetPayload<{
   select: {
     id: true;
     title: true;
@@ -14,14 +14,8 @@ export type TaskPayload = Prisma.TaskGetPayload<{
     priority: true;
     category: true;
     dueDate: true;
-    animal: { select: { id: true; name: true } };
     assignee: { select: { id: true; name: true } };
-    medicationLog: {
-      select: { id: true; schedule: { select: { medicationName: true } } };
-    };
-    createdBy: { select: { id: true; name: true } };
     createdAt: true;
-    updatedAt: true;
   };
 }>;
 
@@ -33,7 +27,7 @@ const _fetchAnimalTasks = async (
   pageSizeInput: number,
   sortInput: string | undefined,
   inputAnimalId: string
-): Promise<{ tasks: TaskPayload[]; totalPages: number }> => {
+): Promise<{ tasks: FetchAnimalTasksPayload[]; totalPages: number }> => {
   const validatedArgs = AnimalTasksSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
@@ -84,17 +78,8 @@ const _fetchAnimalTasks = async (
           priority: true,
           category: true,
           dueDate: true,
-          animal: { select: { id: true, name: true } },
           assignee: { select: { id: true, name: true } },
-          medicationLog: {
-            select: {
-              id: true,
-              schedule: { select: { medicationName: true } },
-            },
-          },
-          createdBy: { select: { id: true, name: true } },
           createdAt: true,
-          updatedAt: true,
         },
         orderBy: orderBy,
         take: pageSize,

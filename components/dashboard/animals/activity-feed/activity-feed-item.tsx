@@ -97,7 +97,6 @@ interface ActivityFeedItemProps {
 export default function ActivityFeedItem({ activity }: ActivityFeedItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Get the display configuration for the current activity type
   const config = activityConfig[activity.activityType] || {
     icon: Pencil,
     text: "performed an unknown action",

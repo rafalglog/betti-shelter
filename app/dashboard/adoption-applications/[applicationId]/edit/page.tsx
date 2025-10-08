@@ -1,12 +1,5 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { fetchApplicationById } from "@/app/lib/data/user-application.data";
 import { StaffApplicationUpdateForm } from "@/components/dashboard/adoption-applications/adoption-staff-edit-application-form";
 import { Button } from "@/components/ui/button";

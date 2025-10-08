@@ -8,7 +8,7 @@ import {
 } from "@prisma/client";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { RequirePermission } from "../auth/protected-actions";
-import { TaskPayload } from "./animals/animal-task.data";
+import { FetchAnimalTasksPayload } from "./animals/animal-task.data";
 import { Prettify } from "../utils/type-utils";
 
 export type PetCardDataType = {
@@ -244,7 +244,32 @@ const _fetchChartData = async (): Promise<ChartData> => {
   }
 };
 
-const _fetchTaskTableData = async (): Promise<TaskPayload[]> => {
+
+
+export type TaskAnalyticsPayload = Prisma.TaskGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    details: true;
+    status: true;
+    priority: true;
+    category: true;
+    dueDate: true;
+    animal: { select: { id: true; name: true } };
+    assignee: { select: { id: true; name: true } };
+    medicationLog: {
+      select: {
+        id: true;
+        schedule: { select: { medicationName: true } };
+      };
+    };
+    createdBy: { select: { id: true; name: true } };
+    createdAt: true;
+    updatedAt: true;
+  };
+}>;
+
+const _fetchAnalyticsTaskTableData = async (): Promise<TaskAnalyticsPayload[]> => {
   try {
     const tasks = await prisma.task.findMany({
       // Filter for tasks that are not yet completed
@@ -367,9 +392,9 @@ const _fetchAnimalsRequiringAttention = async (): Promise<
   }
 };
 
-export const fetchTaskTableData = RequirePermission(
+export const fetchAnalyticsTaskTableData = RequirePermission(
   Permissions.ANIMAL_READ_ANALYTICS
-)(_fetchTaskTableData);
+)(_fetchAnalyticsTaskTableData);
 
 export const fetchPetCardData = RequirePermission(
   Permissions.ANIMAL_READ_ANALYTICS

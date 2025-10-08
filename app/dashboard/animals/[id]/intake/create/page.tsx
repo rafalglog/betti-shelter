@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, AlertTriangleIcon } from "lucide-react";
 import {
-  fetchAnimalById,
+  fetchAnimalForReIntake,
   fetchPartners,
 } from "@/app/lib/data/animals/animal.data";
 import ReIntakeForm from "@/components/dashboard/animals/re-intake-form";
@@ -33,7 +33,7 @@ const Page = async ({ params }: Props) => {
 };
 
 const PageContent = async ({ animalId }: { animalId: string }) => {
-  const animal = await fetchAnimalById(animalId);
+  const animal = await fetchAnimalForReIntake(animalId);
   const partners = await fetchPartners();
 
   if (!animal) {

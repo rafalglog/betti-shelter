@@ -10,12 +10,12 @@ import {
   TaskCategoryOptions,
   TaskStatusOptions,
 } from "@/app/lib/utils/enum-formatter";
-import { TaskPayload } from "@/app/lib/data/animals/animal-task.data";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
+import { AllAnimalsTasksPayload } from "@/app/lib/data/all-animal-tasks.data";
 
 interface TasksDataTableToolbarProps {
-  table: Table<TaskPayload>;
+  table: Table<AllAnimalsTasksPayload>;
 }
 
 const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {

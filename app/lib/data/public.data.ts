@@ -151,13 +151,31 @@ export const fetchPublicPagePetById = async (id: string) => {
         birthDate: true,
         weightKg: true,
         heightCm: true,
+        description: true,
+        animalImages: true,
+        sex: true,
+        size: true,
+        isSpayedNeutered: true,
         species: {
           select: {
             name: true,
           },
         },
-        description: true,
-        animalImages: true,
+        breeds: {
+          select: {
+            name: true,
+          },
+        },
+        colors: {
+          select: {
+            name: true,
+          },
+        },
+        characteristics: {
+          select: {
+            name: true,
+          },
+        },
         // Conditionally include likes if userId is available
         ...(personId && {
           likes: {

@@ -3,9 +3,8 @@ import { Prisma, TaskCategory, TaskStatus } from "@prisma/client";
 import { z } from "zod";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { RequirePermission } from "../auth/protected-actions";
-import { TaskPayload } from "./animals/animal-task.data";
 
-export const AllTasksSchema = z.object({
+const AllAnimalsTasksSchema = z.object({
   query: z.string(),
   currentPage: z.number().int().positive(),
   category: z.string().optional(),
@@ -14,15 +13,30 @@ export const AllTasksSchema = z.object({
   sort: z.string().optional(),
 });
 
-const _fetchAllTasks = async (
+export type AllAnimalsTasksPayload = Prisma.TaskGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    details: true;
+    status: true;
+    priority: true;
+    category: true;
+    dueDate: true;
+    animal: { select: { id: true; name: true } };
+    assignee: { select: { id: true; name: true } };
+    createdAt: true;
+  };
+}>;
+
+const _fetchAllAnimalsTasks = async (
   queryInput: string,
   currentPageInput: number,
   categoryInput: string | undefined,
   statusInput: string | undefined,
   pageSizeInput: number,
   sortInput: string | undefined
-): Promise<{ tasks: TaskPayload[]; totalPages: number }> => {
-  const validatedArgs = AllTasksSchema.safeParse({
+): Promise<{ tasks: AllAnimalsTasksPayload[]; totalPages: number }> => {
+  const validatedArgs = AllAnimalsTasksSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     category: categoryInput,
@@ -72,15 +86,7 @@ const _fetchAllTasks = async (
           dueDate: true,
           animal: { select: { id: true, name: true } },
           assignee: { select: { id: true, name: true } },
-          medicationLog: {
-            select: {
-              id: true,
-              schedule: { select: { medicationName: true } },
-            },
-          },
-          createdBy: { select: { id: true, name: true } },
           createdAt: true,
-          updatedAt: true,
         },
         orderBy: orderBy,
         take: pageSize,
@@ -97,6 +103,6 @@ const _fetchAllTasks = async (
   }
 };
 
-export const fetchAllTasks = RequirePermission(
+export const fetchAllAnimalsTasks = RequirePermission(
   Permissions.ANIMAL_TASK_READ_LISTING
-)(_fetchAllTasks);
+)(_fetchAllAnimalsTasks);

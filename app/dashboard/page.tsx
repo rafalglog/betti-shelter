@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import ChartWrapper from "@/components/dashboard/analytics/chart-wrapper";
 import {
   fetchAnimalsRequiringAttention,
-  fetchTaskTableData,
+  fetchAnalyticsTaskTableData,
 } from "../lib/data/analytics.data";
 
 import TaskTable from "@/components/dashboard/analytics/tables/tasks/task-table";
@@ -33,7 +33,7 @@ const SectionCardsSkeleton = () => (
 
 const Page = async () => {
   const [tasks, animalHealth, assigneeList] = await Promise.all([
-    fetchTaskTableData(),
+    fetchAnalyticsTaskTableData(),
     fetchAnimalsRequiringAttention(),
     fetchTaskAssigneeList()
   ]);
@@ -43,6 +43,7 @@ const Page = async () => {
       <Suspense fallback={<SectionCardsSkeleton />}>
         <SectionCards />
       </Suspense>
+
       <ChartWrapper />
 
       <Tabs defaultValue="animal-tasks">

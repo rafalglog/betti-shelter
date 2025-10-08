@@ -24,7 +24,7 @@ const animalTabDefinitions = [
   { suffix: "/notes", label: "Notes" },
   { suffix: "/assessments", label: "Assessments" },
   { suffix: "/adoption-applications", label: "Applications" },
-  { suffix: "/documents", label: "Documents" },
+  { suffix: "/photos", label: "Photos" },
 ];
 
 export function AnimalNavTabs() {

@@ -3,15 +3,15 @@ import {
   AnimalListingStatus,
   Sex,
   Prisma,
-  ApplicationStatus,
 } from "@prisma/client";
 import {
   AnimalsPayload,
   SpeciesPayload,
   ColorPayload,
   PartnerPayload,
-  AnimalWithDetailsPayload,
+  AnimalIntakeFormPayload,
   AnimalForCardPayload,
+  AnimalReIntakeFormPayload,
 } from "../../types";
 import { cuidSchema } from "../../zod-schemas/common.schemas";
 import { DashboardAnimalsSchema } from "../../zod-schemas/animal.schemas";
@@ -75,17 +75,6 @@ const _fetchAnimals = async (
           listingStatus: true,
           sex: true,
           size: true,
-          breeds: {
-            select: {
-              name: true,
-            },
-          },
-          animalImages: {
-            select: {
-              url: true,
-            },
-            take: 1,
-          },
         },
         orderBy: orderBy,
         take: pageSize,
@@ -143,10 +132,10 @@ const _fetchAnimalData = async (
           select: {
             name: true,
           },
+          take: 1,
         },
         adoptionApplications: {
           select: {
-            id: true,
             status: true,
           },
         },
@@ -155,24 +144,20 @@ const _fetchAnimalData = async (
             intakeDate: true,
           },
           orderBy: {
-            intakeDate: 'desc',
+            intakeDate: "desc",
           },
           take: 1,
         },
-        likes: {
+        _count: {
           select: {
-            id: true,
-          },
-        },
-        tasks: {
-          where: {
-            status: {
-              in: ['TODO', 'IN_PROGRESS'],
+            likes: true,
+            tasks: {
+              where: {
+                status: {
+                  in: ["TODO", "IN_PROGRESS"],
+                },
+              },
             },
-          },
-          select: {
-            id: true,
-            status: true,
           },
         },
       },
@@ -187,7 +172,7 @@ const _fetchAnimalData = async (
 
 const _fetchAnimalById = async (
   id: string
-): Promise<AnimalWithDetailsPayload | null> => {
+): Promise<AnimalIntakeFormPayload | null> => {
   const parsedId = cuidSchema.safeParse(id);
 
   if (!parsedId.success) {
@@ -199,14 +184,28 @@ const _fetchAnimalById = async (
   try {
     const animal = await prisma.animal.findUnique({
       where: { id: validatedAnimalId },
-      include: {
-        species: true,
-        breeds: true,
-        colors: true,
-        adoptionApplications: {
+      select: {
+        id: true,
+        name: true,
+        birthDate: true,
+        sex: true,
+        weightKg: true,
+        heightCm: true,
+        city: true,
+        state: true,
+        description: true,
+        listingStatus: true,
+        microchipNumber: true,
+        healthStatus: true,
+        speciesId: true,
+        breeds: {
           select: {
             id: true,
-            status: true,
+          },
+        },
+        colors: {
+          select: {
+            id: true,
           },
         },
       },
@@ -305,6 +304,62 @@ const _fetchAnimalForPhotoPage = async (id: string) => {
     throw new Error("Error fetching animal photo data.");
   }
 };
+
+const _fetchAnimalForOutcomeForm = async (id: string) => {
+  const parsedId = cuidSchema.safeParse(id);
+
+  if (!parsedId.success) {
+    throw new Error("Invalid animal ID format.");
+  }
+  const validatedAnimalId = parsedId.data;
+
+  try {
+    const animal = await prisma.animal.findUnique({
+      where: { id: validatedAnimalId },
+      select: {
+        id: true,
+        name: true,
+        listingStatus: true,
+      },
+    });
+    return animal;
+  } catch (error) {
+    console.error("Error fetching animal for outcome form.", error);
+    throw new Error("Error fetching animal data for outcome.");
+  }
+};
+
+const _fetchAnimalForReIntake = async (id: string): Promise<AnimalReIntakeFormPayload | null> => {
+  const parsedId = cuidSchema.safeParse(id);
+
+  if (!parsedId.success) {
+    throw new Error("Invalid animal ID format.");
+  }
+  const validatedAnimalId = parsedId.data;
+
+  try {
+    const animal = await prisma.animal.findUnique({
+      where: { id: validatedAnimalId },
+      select: {
+        id: true,
+        name: true,
+        listingStatus: true,
+      },
+    });
+    return animal;
+  } catch (error) {
+    console.error("Error fetching animal for re-intake form.", error);
+    throw new Error("Error fetching animal data for re-intake.");
+  }
+};
+
+export const fetchAnimalForReIntake = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalForReIntake);
+
+export const fetchAnimalForOutcomeForm = RequirePermission(
+  Permissions.ANIMAL_READ_DETAIL
+)(_fetchAnimalForOutcomeForm);
 
 export const fetchAnimalForPhotosPage = RequirePermission(
   Permissions.ANIMAL_UPDATE

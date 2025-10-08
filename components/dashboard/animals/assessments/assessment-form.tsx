@@ -14,7 +14,7 @@ import {
   updateAnimalAssessment,
 } from "@/app/lib/actions/animal-assessment.actions";
 import {
-  AnimalAssessmentPayload,
+  AnimalAssessmentFormPayload,
   AssessmentTemplateWithFields,
 } from "@/app/lib/data/animals/animal-assessment.data";
 import { createDynamicSchema } from "@/app/lib/zod-schemas/dynamic-form-schema";
@@ -44,7 +44,7 @@ import { Separator } from "@/components/ui/separator";
 interface AssessmentFormProps {
   animalId: string;
   templates: AssessmentTemplateWithFields[];
-  assessment?: AnimalAssessmentPayload; // Optional: If provided, form is in "edit" mode
+  assessment?: AnimalAssessmentFormPayload; // Optional: If provided, form is in "edit" mode
 }
 
 export function AssessmentForm({
@@ -81,7 +81,7 @@ export function AssessmentForm({
 
   const generateDefaultValues = useCallback((
     fields: TemplateField[],
-    currentAssessment?: AnimalAssessmentPayload
+    currentAssessment?: AnimalAssessmentFormPayload
 ) => {
     const defaultVals: { [key: string]: any } = {};
 
