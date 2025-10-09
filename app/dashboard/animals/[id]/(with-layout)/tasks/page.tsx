@@ -50,7 +50,7 @@ const Page = async ({ params, searchParams }: Props) => {
         <CardTitle>Tasks</CardTitle>
         <CardDescription>
           This page displays all tasks that are associated with this animal,
-          which can be filtered, sorted, and paginated.
+          which can be filtered and sorted.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">

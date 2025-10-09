@@ -58,6 +58,7 @@ const UppyUploader = ({ animalId }: UppyUploaderProps) => {
         hideProgressAfterFinish={true}
         note="Images will be saved to the animal's record upon successful upload."
         proudlyDisplayPoweredByUppy={false}
+        width={'100%'}
       />
     </div>
   );

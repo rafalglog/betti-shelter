@@ -51,7 +51,7 @@ const NavItemsRenderer = ({
       {!showUserProfile && (
         <button
           className={clsx(
-            "rounded-md px-3 py-2 font-medium text-gray-300 hover:bg-gray-700 hover:text-white w-full",
+            "rounded-md px-3 py-2 font-medium text-gray-300 hover:bg-gray-700 hover:text-white w-full cursor-pointer",
             signInButtonClassName,
             !!onLinkClick && "hover:cursor-pointer"
           )}

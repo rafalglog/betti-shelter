@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AnimalForCardPayload, IDParamType } from "@/app/lib/types";
-import { fetchAnimalData } from "@/app/lib/data/animals/animal.data";
+import { AnimalSectionCardPayload, IDParamType } from "@/app/lib/types";
+import { fetchSectionCardsAnimalData } from "@/app/lib/data/animals/animal.data";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimalListingStatus, Sex } from "@prisma/client";
@@ -31,7 +31,8 @@ interface Props {
 const AnimalSectionCards = async ({ params }: Props) => {
   const { id } = await params;
 
-  const animal: AnimalForCardPayload | null = await fetchAnimalData(id);
+  const animal: AnimalSectionCardPayload | null =
+    await fetchSectionCardsAnimalData(id);
   if (!animal) {
     notFound();
   }
@@ -40,6 +41,7 @@ const AnimalSectionCards = async ({ params }: Props) => {
     ? formatTimeAgo(animal.intake[0].intakeDate)
     : null;
 
+  const firstImage = animal.animalImages?.[0]?.url;
   const likesCount = animal._count.likes;
   const pendingTasksCount = animal._count.tasks;
 
@@ -113,8 +115,16 @@ const AnimalSectionCards = async ({ params }: Props) => {
         <CardContent className="space-y-4">
           {/* Image and Quick Stats Grid */}
           <div className="flex gap-4">
-            <div className="flex h-28 w-28 flex-shrink-0 items-center justify-center rounded-lg border-1">
-              <span className="text-4xl">🐾</span>
+            <div className="flex h-28 w-28 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary">
+              {firstImage ? (
+                <img
+                  src={firstImage}
+                  alt={`Photo of ${animal.name}`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl">🐾</span>
+              )}
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-2 text-sm">

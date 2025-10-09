@@ -44,7 +44,7 @@ export type OutcomePayload = Prisma.OutcomeGetPayload<{
   };
 }>;
 
-export type AnimalForCardPayload = Prisma.AnimalGetPayload<{
+export type AnimalSectionCardPayload = Prisma.AnimalGetPayload<{
   select: {
     id: true;
     name: true;
@@ -58,6 +58,15 @@ export type AnimalForCardPayload = Prisma.AnimalGetPayload<{
     state: true;
     healthStatus: true;
     legalStatus: true;
+    animalImages: {
+      select: {
+        url: true;
+      };
+      orderBy: {
+        createdAt: "asc";
+      };
+      take: 1;
+    };
     species: {
       select: { name: true };
     };

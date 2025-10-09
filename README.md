@@ -55,47 +55,83 @@ The system is built with security and data consistency as top priorities.
 
 ## Tech Stack
 
-- **Framework**: Next.js (React)
-- **Backend**: Node.js
-- **ORM**: Prisma
-- **Database**: PostgreSQL
-- **Authentication**: Auth.js
-- **Containerization**: Docker
+### Core Stack
+- **Framework**: [Next.js](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Backend**: [Node.js](https://nodejs.org/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Authentication**: [Auth.js](https://authjs.dev/) (NextAuth)
+
+### UI & Styling
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Component Library**: [shadcn/ui](https://ui.shadcn.com/) (built on [Radix UI](https://www.radix-ui.com/))
+- **Forms**: [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) for validation
+- **Data Visualization**: [Recharts](https://recharts.org/)
+- **File Uploads**: [Uppy](https://uppy.io/) with [Vercel Blob](https://vercel.com/storage/blob)
+- **Containerization**: [Docker](https://www.docker.com/)
 
 ## Screenshots
 
-Here are some screenshots of the app:
+Here are a few glimpses of the platform's public-facing and internal views:
 
-<a href="public/screenshots/homepage.jpg" target="_blank">
-  <img src="public/screenshots/homepage.jpg" alt="Homepage" width="600"/>
-</a>
-<p><em>Caption: Homepage</em></p>
+### Public Portal
+Screenshots showing the interface for potential adopters.
 
-<a href="public/screenshots/publicPetList.jpg" target="_blank">
-  <img src="public/screenshots/publicPetList.jpg" alt="PublicPets" width="600"/>
-</a>
-<p><em>Caption: Showing available pets for adoption.</em></p>
+<img src="public/screenshots/homepage.webp" alt="Platform homepage and main landing page" width="200"/>
 
-<a href="public/screenshots/publicPetDetails.jpg" target="_blank">
-  <img src="public/screenshots/publicPetDetails.jpg" alt="PublicPetDetails" width="600"/>
-</a>
+*The main landing page.*
 
-<p><em>Caption: Showing pet information.</em></p>
+<img src="public/screenshots/petListPage.webp" alt="List of available pets for adoption" width="200"/>
 
-<a href="public/screenshots/dashboardHome.jpg" target="_blank">
-  <img src="public/screenshots/dashboardHome.jpg" alt="DashboardHome" width="600"/>
-</a>
-<p><em>Caption: Admin dashboard homepage.</em></p>
+*Available pets for adoption.*
 
-<a href="public/screenshots/dashboardPets.jpg" target="_blank">
-  <img src="public/screenshots/dashboardPets.jpg" alt="DashboardPets" width="600"/>
-</a>
-<p><em>Caption: Admin dashboard for managing pets.</em></p>
+<img src="public/screenshots/petdetails.webp" alt="Detailed pet information page with photo and biography" width="200"/>
 
-<a href="public/screenshots/dashboardEditPet.jpg" target="_blank">
-  <img src="public/screenshots/dashboardEditPet.jpg" alt="DashboardEditPet" width="600"/>
-</a>
-<p><em>Caption: Admin dashboard: form for editing pet information.</em></p>
+*Detailed pet information page.*
+
+<img src="public/screenshots/userLogin.webp" alt="User login page for public portal" width="200"/>
+
+*Login page.*
+
+<img src="public/screenshots/adoptionApplication.webp" alt="Adoption application form for a potential adopter" width="200"/>
+
+*Adoption application form*
+
+<img src="public/screenshots/dashboardMyAdoptionApplications.webp" alt="User's dashboard showing list of submitted adoption applications" width="200"/>
+
+*My submitted adoption applications*
+
+### Staff Dashboard
+Screenshots of the internal operational management interface.
+
+<img src="public/screenshots/dashboardAnalytics.webp" alt="Staff dashboard with key performance analytics and charts" width="200"/>
+
+*Dashboard Analytics.*
+
+<img src="public/screenshots/dashboardCreateNewAnimalForm.webp" alt="Form to create and add a new animal to the system" width="200"/>
+
+*Create a new animal form.*
+
+<img src="public/screenshots/dashboardAnimalProfile.webp" alt="Staff view of an animal's internal profile page" width="200"/>
+
+*Animal profile page.*
+
+<img src="public/screenshots/dashboardAllAnimalTasks.webp" alt="List of all outstanding animal-related tasks" width="200"/>
+
+*All animal tasks.*
+
+<img src="public/screenshots/dashboardAllAnimals.webp" alt="Table view of all animals currently in the system" width="200"/>
+
+*Animal list table.*
+
+<img src="public/screenshots/dashboardAdoptionApplications.webp" alt="Staff view of all submitted adoption applications for review" width="200"/>
+
+*Subbmited adoption applications from users.*
+
+<img src="public/screenshots/adminRoleManagement.webp" alt="Admin page for managing user roles and permissions" width="200"/>
+
+*Role management page.*
 
 ## Environment Variables
 
@@ -106,93 +142,101 @@ To run this project, you will need to add the following environment variables to
   - **Windows**: Install OpenSSL from the [OpenSSL website](https://www.openssl.org/) or using [Chocolatey](https://chocolatey.org/) with the command `choco install openssl`.
 - `AUTH_GITHUB_ID` (optional): Your GitHub OAuth client ID. Obtain this from your GitHub Developer settings.
 - `AUTH_GITHUB_SECRET` (optional): Your GitHub OAuth client secret. Obtain this from your GitHub Developer settings.
-- `AUTH_TRUST_HOST`: Set to `true` or `false` to indicate whether to trust the host for authentication.
+- `ADMIN_PASSWORD`: The password for the default admin user. This is used when seeding the database.
+- `BLOB_READ_WRITE_TOKEN`: The read/write token for Vercel Blob Storage, used for storing animal images.
 - `POSTGRES_USER`: The PostgreSQL database username.
 - `POSTGRES_PASSWORD`: The PostgreSQL database password.
 - `POSTGRES_HOST`: The PostgreSQL database host. Use `localhost` for local development or the Docker Compose service name `postgres`.
 - `POSTGRES_DB`: The PostgreSQL database name.
 - `POSTGRES_PORT`: The PostgreSQL database port.
 - `POSTGRES_URL`: The PostgreSQL connection URL, which is constructed using the above variables.
+- `DATABASE_URL`: The connection URL for your serverless PostgreSQL database (e.g., from Vercel Storage via Neon). This is typically used for production deployments.
+
+> **Note on `AUTH_TRUST_HOST`**: While not explicitly in the `.env.example`, `Auth.js` can use `AUTH_TRUST_HOST=true` to trust the host header in development environments. This is often handled automatically in production environments like Vercel.
+
+For a full list of possible environment variables, especially for serverless deployments, please refer to the `.env.example` file.
 
 ## Admin Dashboard Access
 
 To test the admin dashboard, use the following credentials:
 
 - **Username:** admin@example.com
-- **Password:** admin123
+- **Password:** The password you set for `ADMIN_PASSWORD` in your `.env` file.
 
-## Running the App
+## Getting Started
 
-### Run Locally
+To run this project, you will need to have the following installed:
 
-To run the app in a Docker container, follow these steps:
+  * [Node.js](https://nodejs.org/) (v18 or later)
+  * [Docker](https://www.docker.com/) and Docker Compose
+  * A free [Vercel](https://vercel.com/) account to use Vercel Blob for image storage.
 
-1. Clone the repository
-   ```sh
-   git clone https://github.com/albdangarcia/animal-shelter.git
-   ```
-1. Navigate to the project directory
-   ```shell
-   cd animal-shelter
-   ```
-1. Copy the `.env.example` file to `.env`:
-   ```sh
-   cp .env.example .env
-   ```
-1. Download the official PostgreSQL image from Docker Hub:
-   ```sh
-   docker pull postgres
-   ```
-1. Start the PostgreSQL container (This step starts a new PostgreSQL container with the specified password and user): 
-   ```sh
-   docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-   ```
-1. Install the dependencies:
-   ```sh
-   npm install
-   ```
-1. Push the Prisma schema to the database:
-   ```sh
-   npx prisma db push
-   ```
-1. Push the Prisma schema to the database:
-   ```sh
-   npx prisma generate
-   ```
-1. Seed the database:
-   ```sh
-   npx prisma db seed
-   ```
-1. Run the app:
-   ```sh
-   npm run dev
-   ```
+### 1\. Initial Configuration
 
-### Using Docker
+First, clone the repository and set up your environment variables.
 
-To run the app in a Docker container, follow these steps:
-
-1. Clone the repository
-   ```sh
-   git clone https://github.com/albdangarcia/animal-shelter.git
-   ```
-1. Navigate to the project directory
-   ```shell
-   cd animal-shelter
-   ```
-1. Copy the `.env.example` file to `.env`:
+1.  Clone the repository:
+    ```sh
+    git clone https://github.com/albdangarcia/animal-shelter.git
+    cd animal-shelter
+    ```
+2.  Create your local environment file:
     ```sh
     cp .env.example .env
     ```
-1. Build the Docker image:
+3.  **Fill out the `.env` file**:
+      * Update the `POSTGRES_*` variables. The default values in `.env.example` are configured to work with the Docker setup below.
+      * Generate an `AUTH_SECRET` by running `openssl rand -base64 32`.
+      * Log into your Vercel account, create a new Blob store, and get your `BLOB_READ_WRITE_TOKEN`. **This is required for all image upload/delete functionality.**
+
+-----
+
+## Running the App
+
+You have two main options for running the application, depending on your goal.
+
+### Option 1: Recommended Local Development (Docker)
+
+This is the fastest way for contributors to get the application running on their local machine. This setup uses **Docker** to run the Next.js app and the PostgreSQL database, but still connects to **Vercel Blob** for image storage.
+
+1.  Build and run the Docker containers:
     ```sh
     docker compose build
-    ```
-1. Run the Docker container:
-    ```sh 
     docker compose up
     ```
-1. Open your browser and navigate to `http://localhost:3000`
+2.  Open your browser and navigate to `http://localhost:3000`.
+
+> #### ⚠️ **A Note on Local Image Seeding**
+>
+> The database seeding script (`prisma db seed`) will populate the database with sample animals whose images are served from the local `/public` folder. This is done to provide a quick visual setup without requiring you to upload dozens of images manually.
+>
+>   * **Functionality:** You can view these seeded animals perfectly.
+>   * **Limitation:** You **cannot delete** a seeded animal's image through the dashboard, as it only exists locally and not in your Vercel Blob store. Any **new animals and images you create** through the application UI will be uploaded to Vercel Blob correctly and will be fully manageable.
+
+### Option 2: Deploying on Vercel (Fully Serverless)
+
+This method mirrors the live production environment. It's ideal for testing the full serverless architecture or deploying your own version of the platform.
+
+1.  **Fork the Repository** on GitHub.
+2.  **Create a New Vercel Project** and connect it to your forked repository.
+3.  **Set up Vercel Integrations**:
+      * Add the **Vercel Postgres** integration to create a serverless database.
+      * Add the **Vercel Blob** integration for image storage.
+4.  **Connect Environment Variables**: Vercel will automatically provide `POSTGRES_URL` and `BLOB_READ_WRITE_TOKEN` from the integrations. Copy these and all other variables from your `.env` file into the **Environment Variables** section of your Vercel project settings.
+5.  **Deploy**: Trigger a new deployment on Vercel. Your application will be live.
+
+
+## To-Do
+
+* **User Account Management**: Create a settings page allowing users to soft-delete their own accounts.
+* **Automated Medication Tasks**: Implement a scheduler (e.g., cron job) that automatically creates tasks for staff based on active `MedicationSchedule` records to ensure doses are not missed.
+* **Assessment Template Management**: Build a dashboard page for `ADMIN` users to create, view, and manage `AssessmentTemplate` records, allowing for customizable assessment forms.
+* **AI-Powered Task Recommendations**: Integrate an AI service that analyzes new `Assessment` summaries and suggests relevant tasks for staff to create (e.g., suggesting a "Vet Check" task if an assessment mentions a health concern).
+* **Volunteer Management & Scheduling**: Develop modules to define volunteer jobs, create schedules with shifts, and allow volunteers to sign up for specific time slots.
+* **Donation & Financial Tracking**: Implement a system to log monetary and in-kind donations, track adoption fees, and maintain a complete history of financial transactions for reporting.
+* **Centralized Communications Log**: Create a feature to log all communications (emails, phone calls, notes) related to animals, adoptions, or individuals, providing a complete interaction history for staff.
+* **Characteristics Management Dashboard**: Implement a dedicated admin interface for creating, viewing, and managing the list of **animal characteristics** (e.g., "Good with Kids," "Deaf").
+* **Enhanced Pet Listing Filters**: Add new filtering options to the public pet list page, allowing users to search and filter by **Color, Breed, and Animal Size.**
 
 ## Contributing
 
@@ -215,10 +259,10 @@ Please follow these steps to contribute:
 
 ## Credits
 
-I would like to give credit to the authors of the royalty-free images used in this project:
+Credit for the royalty-free images used in this project is given below:
 
-- Image of a dog displayed on the homepage by [Brett Sayles](https://www.pexels.com/@brett-sayles/)
-- The rest of the pet images by [Pixabay](https://pixabay.com/)
+- **Homepage dog image:** by [Brett Sayles](https://www.pexels.com/@brett-sayles/) (via Pexels)
+- **All other pet images:** by [Pixabay](https://pixabay.com/)
 
 ## License
 

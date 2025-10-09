@@ -10,7 +10,7 @@ import {
   ColorPayload,
   PartnerPayload,
   AnimalIntakeFormPayload,
-  AnimalForCardPayload,
+  AnimalSectionCardPayload,
   AnimalReIntakeFormPayload,
 } from "../../types";
 import { cuidSchema } from "../../zod-schemas/common.schemas";
@@ -91,9 +91,9 @@ const _fetchAnimals = async (
   }
 };
 
-const _fetchAnimalData = async (
+const _fetchSectionCardsAnimalData = async (
   id: string
-): Promise<AnimalForCardPayload | null> => {
+): Promise<AnimalSectionCardPayload | null> => {
   const parsedId = cuidSchema.safeParse(id);
 
   if (!parsedId.success) {
@@ -118,6 +118,15 @@ const _fetchAnimalData = async (
         state: true,
         healthStatus: true,
         legalStatus: true,
+        animalImages: {
+          select: {
+            url: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+          take: 1,
+        },
         species: {
           select: {
             name: true,
@@ -377,6 +386,6 @@ export const fetchAnimalById = RequirePermission(
   Permissions.ANIMAL_READ_DETAIL
 )(_fetchAnimalById);
 
-export const fetchAnimalData = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
-  _fetchAnimalData
+export const fetchSectionCardsAnimalData = RequirePermission(Permissions.ANIMAL_READ_DETAIL)(
+  _fetchSectionCardsAnimalData
 );

@@ -1,6 +1,8 @@
 import { IDParamType } from "@/app/lib/types";
 import { AnimalNavTabs } from "@/components/dashboard/animals/tabs-nav/animal-nav-tabs";
 import AnimalSectionCards from "@/components/animal-section-cards";
+import { Suspense } from "react";
+import AnimalSectionCardsSkeleton from "@/components/skeletons/animalSectionCardsSkeleton";
 
 interface Props {
   children: React.ReactNode;
@@ -10,7 +12,9 @@ interface Props {
 const Layout = ({ children, params }: Props) => {
   return (
     <>
-      <AnimalSectionCards params={params} />
+      <Suspense fallback={<AnimalSectionCardsSkeleton />}>
+        <AnimalSectionCards params={params} />
+      </Suspense>
 
       <AnimalNavTabs />
       

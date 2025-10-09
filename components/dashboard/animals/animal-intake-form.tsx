@@ -183,7 +183,6 @@ const AnimalForm = ({
   }, [state, form]);
 
   const onSubmit = (data: AnimalFormValues) => {
-    console.log("Client-side form data being submitted:", data);
     const formData = new FormData();
     for (const [key, value] of Object.entries(data)) {
       if (value instanceof Date) {

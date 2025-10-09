@@ -222,6 +222,10 @@ const animalSeedData = [
     intakeType: IntakeType.OWNER_SURRENDER,
     healthStatus: AnimalHealthStatus.HEALTHY,
     legalStatus: AnimalLegalStatus.NONE,
+    images: [
+      "/uploads/dog1.jpg",
+      "/uploads/dog1-1.webp",
+    ],
   },
   {
     name: "Flash",
@@ -237,6 +241,7 @@ const animalSeedData = [
     intakeType: IntakeType.STRAY,
     healthStatus: AnimalHealthStatus.AWAITING_VET_EXAM,
     legalStatus: AnimalLegalStatus.STRAY_HOLD,
+    images: ["/uploads/dog2.jpg", "/uploads/dog2-1.webp"],
   },
   {
     name: "Fido",
@@ -249,6 +254,10 @@ const animalSeedData = [
     intakeType: IntakeType.TRANSFER_IN,
     healthStatus: AnimalHealthStatus.UNDER_VET_CARE,
     legalStatus: AnimalLegalStatus.NONE,
+    images: [
+      "/uploads/dog3.jpg",
+      "/uploads/dog3-1.jpg",
+    ],
   },
   {
     name: "Whiskers",
@@ -261,6 +270,11 @@ const animalSeedData = [
     intakeType: IntakeType.OWNER_SURRENDER,
     healthStatus: AnimalHealthStatus.HEALTHY,
     legalStatus: AnimalLegalStatus.NONE,
+    images: [
+      "/uploads/cat1.webp",
+      "/uploads/cat1-1.jpg",
+      "/uploads/cat1-2.jpg",
+    ],
   },
   {
     name: "Misty",
@@ -273,6 +287,11 @@ const animalSeedData = [
     intakeType: IntakeType.BORN_IN_CARE,
     healthStatus: AnimalHealthStatus.AWAITING_SPAY_NEUTER,
     legalStatus: AnimalLegalStatus.NONE,
+    images: [
+      "/uploads/cat2.webp",
+      "/uploads/cat2-1.jpg",
+      "/uploads/cat2-2.jpg",
+    ],
   },
   {
     name: "Godzilla",
@@ -285,6 +304,11 @@ const animalSeedData = [
     intakeType: IntakeType.SEIZE,
     healthStatus: AnimalHealthStatus.AWAITING_TRIAGE,
     legalStatus: AnimalLegalStatus.POLICE_HOLD,
+    images: [
+      "/uploads/reptile2.webp",
+      "/uploads/reptile2-1.jpg",
+      "/uploads/reptile2-2.jpg",
+    ],
   },
   {
     name: "Buddy",
@@ -300,6 +324,7 @@ const animalSeedData = [
     intakeType: IntakeType.STRAY,
     healthStatus: AnimalHealthStatus.HEALTHY,
     legalStatus: AnimalLegalStatus.STRAY_HOLD,
+    images: ["/uploads/dog3-2.webp"]
   },
   {
     name: "Leo",
@@ -315,6 +340,7 @@ const animalSeedData = [
     intakeType: IntakeType.BORN_IN_CARE,
     healthStatus: AnimalHealthStatus.HEALTHY,
     legalStatus: AnimalLegalStatus.NONE,
+    images: ["/uploads/dog1-3.webp"],
   },
   {
     name: "Daisy",
@@ -327,6 +353,7 @@ const animalSeedData = [
     intakeType: IntakeType.TRANSFER_IN,
     healthStatus: AnimalHealthStatus.UNDER_VET_CARE,
     legalStatus: AnimalLegalStatus.NONE,
+    images: ["/uploads/dog1-2.jpg"],
   },
 ];
 
@@ -516,14 +543,21 @@ async function seedPersonsAndUsers() {
     });
     
     if (pData.role) {
-      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+      let passwordToHash = "password123"; // Default password for non-admin users
+
+      if (pData.role === Role.ADMIN) {
+        passwordToHash = process.env.ADMIN_PASSWORD;
+      }
+
+      const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+
       await prisma.user.create({
         data: {
           email: pData.email,
           password: hashedPassword,
           role: pData.role,
           person: { connect: { id: person.id } },
-        },
+        }
       });
     }
   }
@@ -669,11 +703,7 @@ async function seedAnimalsAndRelations() {
           colors: { connect: connectedColors },
           characteristics: { connect: connectedChars },
           animalImages: {
-            create: [
-              { url: `/uploads/dog3.jpg` },
-              { url: "/uploads/dog3-1.jpg" },
-              { url: "/uploads/dog3-2.webp" },
-            ],
+            create: animalData.images.map((imageUrl) => ({ url: imageUrl })),
           },
         },
       });
