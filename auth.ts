@@ -63,6 +63,45 @@ const getUser = async (email: string): Promise<User | null> => {
   }
 };
 
+const CustomPrismaAdapter = (p: typeof prisma) => {
+  return {
+    ...PrismaAdapter(p),
+    createUser: async (data: any) => {
+      // Use a transaction to ensure both Person and User are created successfully
+      const user = await p.$transaction(async (tx) => {
+        // Create the Person record first
+        const person = await tx.person.create({
+          data: {
+            name: data.name,
+            email: data.email,
+          },
+        });
+
+        // Create the User and connect it to the new Person
+        const user = await tx.user.create({
+          data: {
+            email: data.email,
+            image: data.image,
+            emailVerified: data.emailVerified,
+            person: {
+              connect: {
+                id: person.id,
+              },
+            },
+          },
+        });
+
+        return user;
+      });
+
+      return {
+        ...user,
+        emailVerified: user.emailVerified ? new Date(user.emailVerified) : null,
+      };
+    },
+  };
+};
+
 // credentials setup for admin email/password login
 const credentialsConfig = Credentials({
   // The credentials object is used to define the fields used to log in
@@ -103,7 +142,7 @@ const credentialsConfig = Credentials({
 
 // auth config
 export const authConfig = {
-  adapter: PrismaAdapter(prisma),
+  adapter: CustomPrismaAdapter(prisma),
   callbacks: {
     async jwt({ token, user }) {
       // If the token already has the data, just return it.
