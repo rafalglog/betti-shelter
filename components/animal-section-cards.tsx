@@ -23,6 +23,7 @@ import {
   Heart,
   CheckCircle2,
 } from "lucide-react";
+import Image from "next/image";
 
 interface Props {
   params: IDParamType;
@@ -115,12 +116,14 @@ const AnimalSectionCards = async ({ params }: Props) => {
         <CardContent className="space-y-4">
           {/* Image and Quick Stats Grid */}
           <div className="flex gap-4">
-            <div className="flex h-28 w-28 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary">
+            <div className="relative flex h-28 w-28 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-secondary">
               {firstImage ? (
-                <img
+                <Image
                   src={firstImage}
                   alt={`Photo of ${animal.name}`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="112px"
+                  className="object-cover"
                 />
               ) : (
                 <span className="text-4xl">🐾</span>
