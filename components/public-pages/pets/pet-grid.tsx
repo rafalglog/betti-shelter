@@ -24,6 +24,14 @@ const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
     speciesName
   );
 
+  if (pets.length === 0) {
+    return (
+      <div className="text-center text-gray-500 mt-10">
+        <p>No pets found matching your criteria.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="my-6 mb-12 grid gap-4 gap-y-14 grid-cols-[repeat(auto-fit,minmax(theme('spacing.40'),1fr))]">
