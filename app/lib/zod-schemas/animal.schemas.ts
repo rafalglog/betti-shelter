@@ -18,7 +18,9 @@ import {
 
 const speciesNameSchema = z
   .string()
-  .max(50, { message: "Species name must be at most 50 characters long." })
+  .max(50, {
+    error: "Species name must be at most 50 characters long.",
+  })
   .optional();
 
 export const PublishedPetsSchema = z.object({
@@ -29,7 +31,9 @@ export const PublishedPetsSchema = z.object({
 
 export const sortSchema = z
   .string()
-  .regex(/^\w+\.(asc|desc)$/, "Sort must be in 'field.direction' format")
+  .regex(/^\w+\.(asc|desc)$/, {
+    error: "Sort must be in 'field.direction' format",
+  })
   .optional();
 
 export const MyApplicationsSchema = z.object({
@@ -66,32 +70,54 @@ const stateCodes = US_STATES.map((state) => state.code) as [
 export const AnimalFormSchema = z
   .object({
     // Core Animal Details
-    animalName: z.string().min(1, { message: "Animal name is required." }),
-    species: z.string().cuid({ message: "A valid species ID is required." }),
-    breed: z
-      .string()
-      .cuid({ message: "A valid primary breed ID is required." }),
-    primaryColor: z
-      .string()
-      .cuid({ message: "A valid primary color ID is required." }),
-    sex: z.nativeEnum(Sex, { required_error: "Sex is required." }),
+    animalName: z.string().min(1, {
+      error: "Animal name is required.",
+    }),
+    species: z.cuid({
+      error: "A valid species ID is required.",
+    }),
+    breed: z.cuid({
+      error: "A valid primary breed ID is required.",
+    }),
+    primaryColor: z.cuid({
+      error: "A valid primary color ID is required.",
+    }),
+    sex: z.enum(Sex, {
+      error: (issue) =>
+        issue.input === undefined ? "Sex is required." : undefined,
+    }),
     estimatedBirthDate: z.coerce.date({
-      required_error: "Estimated birth date is required.",
+      error: (issue) =>
+        issue.input === undefined
+          ? "Estimated birth date is required."
+          : undefined,
     }),
-    healthStatus: z.nativeEnum(AnimalHealthStatus, {
-      required_error: "Health status is required.",
+    healthStatus: z.enum(AnimalHealthStatus, {
+      error: (issue) =>
+        issue.input === undefined ? "Health status is required." : undefined,
     }),
-    listingStatus: z.nativeEnum(AnimalListingStatus, {
-      required_error: "Listing status is required.",
+    listingStatus: z.enum(AnimalListingStatus, {
+      error: (issue) =>
+        issue.input === undefined ? "Listing status is required." : undefined,
     }),
     weightKg: z.coerce
-      .number({ invalid_type_error: "Weight must be a number." })
-      .positive({ message: "Weight must be a positive number." })
+      .number({
+        error: (issue) =>
+          issue.input === undefined ? undefined : "Weight must be a number.",
+      })
+      .positive({
+        error: "Weight must be a positive number.",
+      })
       .optional()
       .or(z.literal("")),
     heightCm: z.coerce
-      .number({ invalid_type_error: "Height must be a number." })
-      .positive({ message: "Height must be a positive number." })
+      .number({
+        error: (issue) =>
+          issue.input === undefined ? undefined : "Height must be a number.",
+      })
+      .positive({
+        error: "Height must be a positive number.",
+      })
       .optional()
       .or(z.literal("")),
     microchipNumber: z.string().optional(),
@@ -100,10 +126,10 @@ export const AnimalFormSchema = z
     state: z.string().optional(),
 
     // Intake-Only Details
-    intakeType: z.nativeEnum(IntakeType).optional(),
+    intakeType: z.enum(IntakeType).optional(),
     intakeDate: z.coerce.date().optional(),
     notes: z.string().optional(),
-    sourcePartnerId: z.string().cuid().optional().or(z.literal("")),
+    sourcePartnerId: z.cuid().optional().or(z.literal("")),
     foundAddress: z.string().optional(),
     foundCity: z.string().optional(),
     foundState: z.string().optional(),
@@ -113,7 +139,7 @@ export const AnimalFormSchema = z
   .superRefine((data, ctx) => {
     if (data.intakeType === "TRANSFER_IN" && !data.sourcePartnerId) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Source partner is required for transfers.",
         path: ["sourcePartnerId"],
       });
@@ -121,7 +147,7 @@ export const AnimalFormSchema = z
 
     if (data.intakeType === "OWNER_SURRENDER" && !data.surrenderingPersonName) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Surrenderer's name is required for owner surrenders.",
         path: ["surrenderingPersonName"],
       });
@@ -160,17 +186,21 @@ export const AnimalFormSchema = z
 
 export const TaskFormSchema = z
   .object({
-    title: z.string().min(1, { message: "Title is required." }),
-    details: z.string().optional(),
-    status: z.nativeEnum(TaskStatus).optional(),
-    category: z.nativeEnum(TaskCategory, {
-      required_error: "Category is required.",
+    title: z.string().min(1, {
+      error: "Title is required.",
     }),
-    priority: z.nativeEnum(TaskPriority).optional(),
+    details: z.string().optional(),
+    status: z.enum(TaskStatus).optional(),
+    category: z.enum(TaskCategory, {
+      error: (issue) =>
+        issue.input === undefined ? "Category is required." : undefined,
+    }),
+    priority: z.enum(TaskPriority).optional(),
     dueDate: z.coerce.date().optional(),
     assigneeId: z
-      .string()
-      .cuid({ message: "Valid assignee ID is required." })
+      .cuid({
+        error: "Valid assignee ID is required.",
+      })
       .optional(),
   })
   .refine(
@@ -185,18 +215,20 @@ export const TaskFormSchema = z
       return true;
     },
     {
-      message: "Due date cannot be in the past.",
       path: ["dueDate"],
+      error: "Due date cannot be in the past.",
     }
   );
 
 export const NoteFormSchema = z.object({
-  category: z.nativeEnum(NoteCategory),
-  content: z.string().min(1, { message: "Content cannot be empty." }),
+  category: z.enum(NoteCategory),
+  content: z.string().min(1, {
+    error: "Content cannot be empty.",
+  }),
 });
 
 export const assessmentFieldSchema = z.object({
-  fieldName: z.string().min(1, "Field name cannot be empty."),
-  fieldValue: z.string().min(1, "Field value cannot be empty."),
+  fieldName: z.string().min(1, { error: "Field name cannot be empty." }),
+  fieldValue: z.string().min(1, { error: "Field value cannot be empty." }),
   notes: z.string().optional(),
 });

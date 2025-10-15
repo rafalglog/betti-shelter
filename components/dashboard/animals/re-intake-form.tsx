@@ -57,7 +57,7 @@ const ReIntakeForm = ({ animal, partners }: ReIntakeFormProps) => {
     INITIAL_FORM_STATE
   );
 
-  const form = useForm<ReIntakeFormValues>({
+  const form = useForm({
     resolver: zodResolver(ReIntakeFormSchema),
     defaultValues: {
       intakeDate: new Date(),

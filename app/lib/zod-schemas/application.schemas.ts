@@ -15,7 +15,7 @@ export const StaffUpdateAdoptionAppFormSchema = z
   .object({
     status: z
       .enum(updatableApplicationStatuses, {
-        errorMap: () => ({ message: "Invalid application status." }),
+        error: "Invalid application status.",
       })
       .optional(),
     internalNotes: z.string().optional(),

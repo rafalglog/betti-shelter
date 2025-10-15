@@ -119,7 +119,7 @@ const credentialsConfig = Credentials({
   authorize: async (credentials) => {
     // Validate the credentials for the user
     const parsedCredentials = z
-      .object({ email: z.string().email(), password: z.string().min(6) })
+      .object({ email: z.email(), password: z.string().min(6) })
       .safeParse(credentials);
 
     // If the credentials are valid, return the user object

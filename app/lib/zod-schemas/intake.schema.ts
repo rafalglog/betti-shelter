@@ -1,11 +1,12 @@
 import { AnimalHealthStatus, IntakeType } from "@prisma/client";
-import z from "zod";
+// import z from "zod";
+import * as z from "zod"; 
 
 export const ReIntakeFormSchema = z
   .object({
     intakeDate: z.coerce.date(),
-    intakeType: z.nativeEnum(IntakeType),
-    healthStatus: z.nativeEnum(AnimalHealthStatus),
+    intakeType: z.enum(IntakeType),
+    healthStatus: z.enum(AnimalHealthStatus),
     notes: z.string().optional(),
 
     // Transfer-specific fields
@@ -24,7 +25,7 @@ export const ReIntakeFormSchema = z
     // Validate Transfer In
     if (data.intakeType === IntakeType.TRANSFER_IN && !data.sourcePartnerId) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "Source partner is required for transfer intake",
         path: ["sourcePartnerId"],
       });
@@ -34,14 +35,14 @@ export const ReIntakeFormSchema = z
     if (data.intakeType === IntakeType.STRAY) {
       if (!data.foundCity) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "City is required for stray intake",
           path: ["foundCity"],
         });
       }
       if (!data.foundState) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "State is required for stray intake",
           path: ["foundState"],
         });
@@ -52,14 +53,14 @@ export const ReIntakeFormSchema = z
     if (data.intakeType === IntakeType.OWNER_SURRENDER) {
       if (!data.surrenderingPersonName) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Surrendering person's name is required",
           path: ["surrenderingPersonName"],
         });
       }
       if (!data.surrenderingPersonPhone) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: "Surrendering person's phone is required",
           path: ["surrenderingPersonPhone"],
         });

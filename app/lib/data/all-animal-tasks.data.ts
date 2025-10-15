@@ -6,10 +6,10 @@ import { RequirePermission } from "../auth/protected-actions";
 
 const AllAnimalsTasksSchema = z.object({
   query: z.string(),
-  currentPage: z.number().int().positive(),
+  currentPage: z.int().positive(),
   category: z.string().optional(),
   status: z.string().optional(),
-  pageSize: z.number().int().positive(),
+  pageSize: z.int().positive(),
   sort: z.string().optional(),
 });
 

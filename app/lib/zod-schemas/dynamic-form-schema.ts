@@ -11,23 +11,32 @@ export function createDynamicSchema(fields: TemplateField[]) {
     switch (field.fieldType) {
       case FieldType.TEXT:
       case FieldType.TEXTAREA:
-        fieldSchema = z.string().min(1, `${field.label} is required`);
+        fieldSchema = z
+          .string()
+          .min(1, { error: `${field.label} is required` });
         break;
       case FieldType.NUMBER:
         fieldSchema = z.coerce
           .number()
-          .min(0, `${field.label} must be a positive number`);
+          .min(0, { error: `${field.label} must be a positive number` });
         break;
       case FieldType.SELECT:
       case FieldType.RADIO:
         if (field.options && field.options.length > 0) {
-          fieldSchema = z.enum(field.options as [string, ...string[]], {
-            errorMap: () => ({
-              message: `Please select a valid ${field.label}`,
-            }),
+          const optionValues = field.options.map((option) => {
+            if (typeof option === "string") {
+              return option; // If it's a string, use it directly
+            }
+            return option.value; // If it's an object, get its value
+          });
+
+          fieldSchema = z.enum(optionValues as [string, ...string[]], {
+            error: () => `Please select a valid ${field.label}`,
           });
         } else {
-          fieldSchema = z.string().min(1, `${field.label} is required`);
+          fieldSchema = z
+            .string()
+            .min(1, { error: `${field.label} is required` });
         }
         break;
       case FieldType.CHECKBOX:
@@ -35,11 +44,13 @@ export function createDynamicSchema(fields: TemplateField[]) {
         break;
       case FieldType.DATE:
         fieldSchema = z.coerce.date({
-          errorMap: () => ({ message: `${field.label} must be a valid date` }),
+          error: () => `${field.label} must be a valid date`,
         });
         break;
       default:
-        fieldSchema = z.string().min(1, `${field.label} is required`);
+        fieldSchema = z
+          .string()
+          .min(1, { error: `${field.label} is required` });
     }
 
     // Apply optional if not required
@@ -54,9 +65,7 @@ export function createDynamicSchema(fields: TemplateField[]) {
   });
 
   // Add overall outcome and summary fields
-  schemaFields.overallOutcome = z
-    .enum(Object.values(AssessmentOutcome) as [string, ...string[]]) // 👈 Use the enum values
-    .optional();
+  schemaFields.overallOutcome = z.enum(AssessmentOutcome).optional();
   schemaFields.summary = z.string().optional();
 
   return z.object(schemaFields);

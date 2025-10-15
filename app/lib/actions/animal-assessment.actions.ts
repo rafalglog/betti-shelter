@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { z } from "zod"; // Import z for treeifyError
 import { prisma } from "@/app/lib/prisma";
 import { createDynamicSchema } from "../zod-schemas/dynamic-form-schema";
 import { TemplateField } from "../types";
@@ -12,7 +13,7 @@ import {
 } from "../auth/protected-actions";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { cuidSchema } from "../zod-schemas/common.schemas";
-import { AnimalActivityType } from "@prisma/client";
+import { AnimalActivityType, AssessmentOutcome } from "@prisma/client";
 import { formatSingleEnumOption } from "../utils/enum-formatter";
 
 // Define a state for the form action
@@ -20,6 +21,11 @@ export interface AssessmentFormState {
   message?: string | null;
   errors?: Record<string, string[] | undefined>;
 }
+
+const AssessmentOutputSchema = z.looseObject({
+  overallOutcome: z.enum(AssessmentOutcome).optional(),
+  summary: z.string().optional(),
+});
 
 // Internal action wrapped for authentication
 const _createAssessment = async (
@@ -55,13 +61,19 @@ const _createAssessment = async (
     const validatedFields = schema.safeParse(data);
     if (!validatedFields.success) {
       return {
-        errors: validatedFields.error.flatten().fieldErrors,
+        errors: z.flattenError(validatedFields.error).fieldErrors,
         message: "Missing or invalid fields. Failed to create assessment.",
       };
     }
 
-    // On successful validation, create the assessment in the database
-    const { overallOutcome, summary } = validatedFields.data;
+    const parsedOutput = AssessmentOutputSchema.safeParse(validatedFields.data);
+
+    if (!parsedOutput.success) {
+      return { message: "Validated data has an unexpected structure." };
+    }
+
+    const { overallOutcome, summary } = parsedOutput.data;
+
     await prisma.assessment.create({
       data: {
         animalId,
@@ -71,17 +83,21 @@ const _createAssessment = async (
         summary,
         fields: {
           create: Object.entries(validatedFields.data)
-            .filter(([key]) => !key.endsWith("_notes")) // Exclude notes fields from this mapping
+            .filter(([key]) => !key.endsWith("_notes"))
             .filter(
               ([_, value]) =>
                 value !== undefined && value !== null && value !== ""
-            ) // filter out only truly empty values
+            )
             .map(([fieldId, value]) => {
               const fieldDefinition = allFields.find((f) => f.id === fieldId);
+
+              const noteValue = validatedFields.data[`${fieldId}_notes`];
+              const notes = typeof noteValue === "string" ? noteValue : null;
+
               return {
                 fieldName: fieldDefinition?.label || fieldId,
-                fieldValue: String(value), // Convert all values to string for the DB
-                notes: validatedFields.data[`${fieldId}_notes`] || null,
+                fieldValue: String(value),
+                notes: notes,
               };
             }),
         },
@@ -148,12 +164,18 @@ const _updateAnimalAssessment = async (
 
   if (!validatedFields.success) {
     return {
-      errors: validatedFields.error.flatten().fieldErrors,
+      errors: z.flattenError(validatedFields.error).fieldErrors,
       message: "Missing or invalid fields. Failed to update assessment.",
     };
   }
 
-  const { overallOutcome, summary } = validatedFields.data;
+  const parsedOutput = AssessmentOutputSchema.safeParse(validatedFields.data);
+
+  if (!parsedOutput.success) {
+    return { message: "Validated data has an unexpected structure." };
+  }
+
+  const { overallOutcome, summary } = parsedOutput.data;
 
   try {
     await prisma.assessment.update({
@@ -171,10 +193,14 @@ const _updateAnimalAssessment = async (
             )
             .map(([fieldId, value]) => {
               const fieldDefinition = allFields.find((f) => f.id === fieldId);
+
+              const noteValue = validatedFields.data[`${fieldId}_notes`];
+              const notes = typeof noteValue === "string" ? noteValue : null;
+
               return {
                 fieldName: fieldDefinition?.label || fieldId,
                 fieldValue: String(value),
-                notes: validatedFields.data[`${fieldId}_notes`] || null,
+                notes: notes,
               };
             }),
         },

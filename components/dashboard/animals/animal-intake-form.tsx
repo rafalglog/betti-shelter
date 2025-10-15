@@ -13,6 +13,7 @@ import {
   AnimalFormState,
 } from "@/app/lib/form-state-types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
@@ -121,8 +122,8 @@ const AnimalForm = ({
     animal?.speciesId || ""
   );
 
-  const form = useForm<AnimalFormValues>({
-    resolver: zodResolver(AnimalFormSchema),
+  const form = useForm({
+    resolver: standardSchemaResolver(AnimalFormSchema),
     defaultValues: isEditMode
       ? {
           animalName: animal.name,
@@ -197,7 +198,7 @@ const AnimalForm = ({
   };
 
   const selectedSpecies = speciesList.find((s) => s.id === currentSpeciesId);
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -352,77 +353,109 @@ const AnimalForm = ({
                 <FormField
                   control={form.control}
                   name="estimatedBirthDate"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Estimated Birth Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            autoFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const dateValue = field.value as Date | undefined;
+
+                    return (
+                      <FormItem className="col-span-2">
+                        <FormLabel>Estimated Birth Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full pl-3 text-left font-normal",
+                                  !dateValue && "text-muted-foreground"
+                                )}
+                              >
+                                {dateValue ? (
+                                  format(dateValue, "PPP")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={dateValue}
+                              onSelect={field.onChange}
+                              disabled={(date) =>
+                                date > new Date() ||
+                                date < new Date("1900-01-01")
+                              }
+                              autoFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 <FormField
                   control={form.control}
                   name="weightKg"
-                  render={({ field }) => (
-                    <FormItem className="col-span-1">
-                      <FormLabel>Weight (kg)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="e.g., 15.5"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    // Convert number to string for the input, handle undefined and empty string
+                    const value =
+                      field.value === undefined || field.value === ""
+                        ? ""
+                        : String(field.value);
+
+                    return (
+                      <FormItem className="col-span-1">
+                        <FormLabel>Weight (kg)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g., 15.5"
+                            {...field}
+                            value={value}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              // Pass empty string as-is, otherwise parse as number
+                              field.onChange(val === "" ? "" : parseFloat(val));
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
+
                 <FormField
                   control={form.control}
                   name="heightCm"
-                  render={({ field }) => (
-                    <FormItem className="col-span-1">
-                      <FormLabel>Height (cm)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="e.g., 55"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const value =
+                      field.value === undefined || field.value === ""
+                        ? ""
+                        : String(field.value);
+
+                    return (
+                      <FormItem className="col-span-1">
+                        <FormLabel>Height (cm)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="e.g., 55"
+                            {...field}
+                            value={value}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              field.onChange(val === "" ? "" : parseFloat(val));
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
                 <FormField
                   control={form.control}
@@ -567,7 +600,7 @@ const AnimalForm = ({
               />
             )}
           </CardContent>
-          
+
           <CardFooter className="flex justify-end space-x-4">
             <Button
               asChild

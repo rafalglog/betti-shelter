@@ -3,9 +3,13 @@ import { OutcomeType } from "@prisma/client";
 
 export const OutcomeFormSchema = z
   .object({
-    outcomeDate: z.date({ required_error: "An outcome date is required." }),
-    outcomeType: z.nativeEnum(OutcomeType, {
-      required_error: "An outcome type is required.",
+    outcomeDate: z.date({
+      error: (issue) =>
+        issue.input === undefined ? "An outcome date is required." : undefined,
+    }),
+    outcomeType: z.enum(OutcomeType, {
+      error: (issue) =>
+        issue.input === undefined ? "An outcome type is required." : undefined,
     }),
     destinationPartnerId: z.string().optional(),
     notes: z.string().optional(),
@@ -19,7 +23,7 @@ export const OutcomeFormSchema = z
       return true;
     },
     {
-      message: "A destination partner is required for transfers.",
       path: ["destinationPartnerId"], // Field that will display the error
+      error: "A destination partner is required for transfers.",
     }
   );

@@ -8,10 +8,10 @@ import { LivingSituation } from "@prisma/client";
 const RequiredBooleanRadioSelectionSchema = (errorMessage: string) =>
   z
     .enum(["true", "false"], {
-      // This error message is used if the value is not one of "true", "false", "",
+      // This error message is used if the value is not one of "true", "false",
       // or if the value is `null` or `undefined` (because it's not in the enum).
       // For "true" or "false" enum, this makes the selection required.
-      errorMap: (issue, ctx) => ({ message: errorMessage }),
+      error: (issue) => errorMessage,
     })
     .transform((val) => val === "true"); // Transforms "true" to true, "false" to false
 
@@ -30,7 +30,7 @@ const CommaSeparatedAgesSchema = z
       const num = Number(part);
       if (isNaN(num) || !Number.isInteger(num) || num < 0) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: "custom",
           message: `Each age must be a valid positive number.`,
         });
         return z.NEVER; // Stop processing on invalid input
@@ -43,52 +43,70 @@ const CommaSeparatedAgesSchema = z
 // Define the Zod schema for the adoption application form
 export const MyAdoptionAppFormSchema = z
   .object({
-    applicantName: z.string().min(1, "Applicant name is required"),
-    applicantEmail: z.string().email("Invalid email address"),
-    applicantPhone: z.string().min(1, "Applicant phone is required"),
-    applicantAddressLine1: z.string().min(1, "Address Line 1 is required"),
+    applicantName: z.string().min(1, { error: "Applicant name is required" }),
+    applicantEmail: z.email({ error: "Invalid email address" }),
+    applicantPhone: z.string().min(1, { error: "Applicant phone is required" }),
+    applicantAddressLine1: z
+      .string()
+      .min(1, { error: "Address Line 1 is required" }),
     applicantAddressLine2: z.string().optional(),
-    applicantCity: z.string().min(1, "City is required"),
-    applicantState: z.string().min(1, "State is required"),
-    applicantZipCode: z.string().regex(/^\d{5}$/, "Invalid ZIP code"),
-    livingSituation: z.nativeEnum(LivingSituation, {
-      required_error: "Living situation is required",
+    applicantCity: z.string().min(1, { error: "City is required" }),
+    applicantState: z.string().min(1, { error: "State is required" }),
+    applicantZipCode: z.string().regex(/^\d{5}$/, { error: "Invalid ZIP code" }),
+    livingSituation: z.enum(LivingSituation, {
+      error: (issue) =>
+        issue.input === undefined ? "Living situation is required" : undefined,
     }),
-    
+
     // Validates a "true" or "false" string, but does NOT transform it to a boolean
     hasYard: z.enum(["true", "false"], {
-      required_error: "Yard information is required.",
+      error: (issue) =>
+        issue.input === undefined ? "Yard information is required." : undefined,
     }),
     landlordPermission: z.enum(["true", "false"], {
-      required_error: "Landlord permission information is required.",
+      error: (issue) =>
+        issue.input === undefined
+          ? "Landlord permission information is required."
+          : undefined,
     }),
-    
+
     // Validates a string that contains a number, but does NOT transform it
-    householdSize: z.string().min(1, "Household size is required.")
-      .regex(/^\d+$/, "Household size must be a positive number."),
+    householdSize: z
+      .string()
+      .min(1, { error: "Household size is required." })
+      .regex(/^\d+$/, { error: "Household size must be a positive number." }),
 
     hasChildren: z.enum(["true", "false"], {
-      required_error: "Children information is required.",
+      error: (issue) =>
+        issue.input === undefined
+          ? "Children information is required."
+          : undefined,
     }),
 
     // Validates the string of ages, but does NOT transform it to a number array
-    childrenAges: z.string().regex(/^[\d\s,]*$/, "Ages must be a comma-separated list of numbers."),
+    childrenAges: z.string().regex(/^[\d\s,]*$/, {
+      error: "Ages must be a comma-separated list of numbers.",
+    }),
 
     otherAnimalsDescription: z.string().optional(),
-    animalExperience: z.string().min(1, "Animal experience is required"),
-    reasonForAdoption: z.string().min(1, "Reason for adoption is required"),
+    animalExperience: z
+      .string()
+      .min(1, { error: "Animal experience is required" }),
+    reasonForAdoption: z
+      .string()
+      .min(1, { error: "Reason for adoption is required" }),
   })
   .superRefine((data, ctx) => {
-    if (data.hasChildren === 'false' && data.childrenAges.trim().length > 0) {
+    if (data.hasChildren === "false" && data.childrenAges.trim().length > 0) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["childrenAges"],
         message: "If 'No children' is selected, ages should not be provided.",
       });
     }
-    if (data.hasChildren === 'true' && data.childrenAges.trim().length === 0) {
+    if (data.hasChildren === "true" && data.childrenAges.trim().length === 0) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         path: ["childrenAges"],
         message: "Please provide the ages of the children if 'Yes' is selected.",
       });

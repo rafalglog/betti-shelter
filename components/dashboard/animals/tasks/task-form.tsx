@@ -74,7 +74,7 @@ export const TaskForm = ({
     FormData
   >(action, INITIAL_FORM_STATE);
 
-  const form = useForm<TaskFormValues>({
+  const form = useForm({
     resolver: zodResolver(TaskFormSchema),
     defaultValues: task
       ? {
@@ -258,41 +258,45 @@ export const TaskForm = ({
           <FormField
             control={form.control}
             name="dueDate"
-            render={({ field }) => (
-              <FormItem className="md:col-span-2 md:col-start-4">
-                <FormLabel>Due Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date("1900-01-01")}
-                      autoFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const dateValue = field.value as Date | undefined;
+
+              return (
+                <FormItem className="md:col-span-2 md:col-start-4">
+                  <FormLabel>Due Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !dateValue && "text-muted-foreground"
+                          )}
+                        >
+                          {dateValue ? (
+                            format(dateValue, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateValue}
+                        onSelect={field.onChange}
+                        disabled={(date) => date < new Date("1900-01-01")}
+                        autoFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <FormField

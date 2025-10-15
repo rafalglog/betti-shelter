@@ -29,7 +29,7 @@ const _updateAnimalCharacteristics = async (data: {
     return {
       success: false,
       message: "Invalid input. Please check the provided data.",
-      errors: validation.error.flatten().fieldErrors,
+      errors: z.treeifyError(validation.error),
     };
   }
 
