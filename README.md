@@ -61,6 +61,7 @@ The system is built with security and data consistency as top priorities.
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
 - **Backend**: [Node.js](https://nodejs.org/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **File Storage**: [Vercel Blob](https://vercel.com/docs/vercel-blob/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **Authentication**: [Auth.js](https://authjs.dev/) (NextAuth)
 
