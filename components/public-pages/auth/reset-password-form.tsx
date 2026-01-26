@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,7 +47,14 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
   }, [state.success, form, token, router]);
 
   return (
-    <form onSubmit={form.handleSubmit((data) => formAction(data))} className="space-y-4">
+    <form
+      onSubmit={form.handleSubmit((data) => {
+        startTransition(() => {
+          formAction(data);
+        });
+      })}
+      className="space-y-4"
+    >
       <input type="hidden" value={token} {...form.register("token")} />
 
       <div>

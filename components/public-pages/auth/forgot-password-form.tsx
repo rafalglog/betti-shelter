@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -40,7 +40,14 @@ const ForgotPasswordForm = () => {
   }, [state.success, form]);
 
   return (
-    <form onSubmit={form.handleSubmit((data) => formAction(data))} className="space-y-4">
+    <form
+      onSubmit={form.handleSubmit((data) => {
+        startTransition(() => {
+          formAction(data);
+        });
+      })}
+      className="space-y-4"
+    >
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
           Email address
