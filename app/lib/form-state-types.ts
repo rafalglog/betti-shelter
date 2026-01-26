@@ -52,6 +52,29 @@ export interface AnimalTaskFormState {
   };
 }
 
+export type UserFormState = {
+  message?: string | null;
+  errors?: {
+    name?: string[];
+    email?: string[];
+    role?: string[];
+    password?: string[];
+  };
+};
+
+export type PasswordFormState = {
+  success?: boolean;
+  message?: string | null;
+  errors?: {
+    currentPassword?: string[];
+    newPassword?: string[];
+    confirmPassword?: string[];
+    email?: string[];
+    token?: string[];
+    password?: string[];
+  };
+};
+
 // Error messages for application form
 export interface MyAdoptionAppFormState {
   message?: string | null;

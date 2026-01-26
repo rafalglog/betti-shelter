@@ -18,6 +18,7 @@ declare module "next-auth" {
   interface User {
     role: Role;
     personId: string;
+    mustChangePassword: boolean;
   }
 
   interface Session {
@@ -25,6 +26,7 @@ declare module "next-auth" {
       id: string;
       role: Role;
       personId: string;
+      mustChangePassword: boolean;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
        * In this case, the default session user properties will be overwritten,
@@ -38,6 +40,7 @@ declare module "@auth/core/adapters" {
   interface AdapterUser {
     role: Role;
     personId: string;
+    mustChangePassword: boolean;
   }
 }
 declare module "next-auth/jwt" {
@@ -45,6 +48,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: Role;
     personId: string;
+    mustChangePassword: boolean;
   }
 }
 
@@ -144,31 +148,24 @@ const credentialsConfig = Credentials({
 export const authConfig = {
   adapter: CustomPrismaAdapter(prisma),
   callbacks: {
-    async jwt({ token, user }) {
-      // If the token already has the data, just return it.
-      if (token.personId) {
-        return token;
-      }
-
-      // This runs only on initial sign-in.
+    async jwt({ token }) {
       if (token.sub) {
-        // Fetch the user from the database to get their personId.
         const existingUser = await prisma.user.findUnique({
           where: { id: token.sub },
+          select: {
+            role: true,
+            personId: true,
+            mustChangePassword: true,
+            person: { select: { name: true } },
+          },
         });
 
         if (existingUser) {
-          // Now that you have the personId, fetch the person.
-          const person = await prisma.person.findUnique({
-            where: { id: existingUser.personId }, // Use the ID from the user
-            select: { name: true },
-          });
-
-          // Populate the token with all the necessary data.
           token.personId = existingUser.personId;
           token.role = existingUser.role;
-          if (person) {
-            token.name = person.name;
+          token.mustChangePassword = existingUser.mustChangePassword;
+          if (existingUser.person?.name) {
+            token.name = existingUser.person.name;
           }
         }
       }
@@ -181,6 +178,7 @@ export const authConfig = {
         session.user.role = token.role as Role;
         session.user.personId = token.personId as string;
         session.user.name = token.name as string;
+        session.user.mustChangePassword = token.mustChangePassword as boolean;
       }
       return session;
     },

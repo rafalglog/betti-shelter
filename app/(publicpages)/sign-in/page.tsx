@@ -17,7 +17,7 @@ const SignInPage = async ({ searchParams }: Props) => {
     return redirect("/")
   }
 
-  const { callbackUrl } = await searchParams;
+  const { callbackUrl, reset } = await searchParams;
 
   return (
     <div className="flex flex-col items-center justify-center pt-8 pb-17 px-4 sm:px-6 lg:px-8">
@@ -30,6 +30,12 @@ const SignInPage = async ({ searchParams }: Props) => {
             Sign in to your account
           </h2>
         </div>
+
+        {reset === "1" && (
+          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            Your password has been reset. Please sign in with your new password.
+          </div>
+        )}
 
         <div className="bg-gray-50/50 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           {/* Email & Password Form */}
@@ -96,7 +102,7 @@ const SignInPage = async ({ searchParams }: Props) => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
                   Forgot password?
                 </a>
               </div>

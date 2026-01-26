@@ -2,7 +2,7 @@
 
 import { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,6 +16,16 @@ import { toast } from "sonner";
 import { UsersPayload } from "@/app/lib/types";
 import { Role } from "@prisma/client";
 import { updateUserRole } from "@/app/lib/actions/user.actions";
+import { adminResetUserPassword } from "@/app/lib/actions/password.actions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 interface DataTableRowActionsProps {
   row: Row<UsersPayload>;
@@ -26,6 +36,11 @@ const assignableRoles: Role[] = [Role.STAFF, Role.USER, Role.VOLUNTEER];
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const user = row.original;
   const [isPending, startTransition] = useTransition();
+  const [isResetOpen, setIsResetOpen] = useState(false);
+  const [tempPassword, setTempPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [isResetPending, startResetTransition] = useTransition();
 
   const handleRoleChange = (newRole: Role) => {
     startTransition(async () => {
@@ -39,8 +54,38 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     });
   };
 
+  const handleResetPassword = () => {
+    if (!tempPassword || tempPassword.length < 6) {
+      setResetError("Password must be at least 6 characters.");
+      return;
+    }
+    if (tempPassword !== confirmPassword) {
+      setResetError("Passwords do not match.");
+      return;
+    }
+
+    setResetError(null);
+    startResetTransition(async () => {
+      const result = await adminResetUserPassword(
+        user.id,
+        tempPassword,
+        confirmPassword
+      );
+
+      if (result.success) {
+        toast.success(result.message);
+        setIsResetOpen(false);
+        setTempPassword("");
+        setConfirmPassword("");
+      } else {
+        setResetError(result.message);
+      }
+    });
+  };
+
   return (
-    <DropdownMenu>
+    <>
+      <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -64,7 +109,64 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             Set as {role.toLowerCase()}
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault();
+            setIsResetOpen(true);
+            setResetError(null);
+          }}
+        >
+          Reset password
+        </DropdownMenuItem>
       </DropdownMenuContent>
-    </DropdownMenu>
+      </DropdownMenu>
+      <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Reset user password</DialogTitle>
+          <DialogDescription>
+            Set a temporary password. The user will be required to change it on
+            next login.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Temporary password
+            </label>
+            <Input
+              type="password"
+              value={tempPassword}
+              onChange={(event) => setTempPassword(event.target.value)}
+              placeholder="At least 6 characters"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Confirm password
+            </label>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              placeholder="Repeat password"
+            />
+          </div>
+          {resetError && <p className="text-sm text-red-600">{resetError}</p>}
+        </div>
+
+        <DialogFooter className="mt-4">
+          <Button variant="outline" onClick={() => setIsResetOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleResetPassword} disabled={isResetPending}>
+            {isResetPending ? "Resetting..." : "Set temporary password"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+      </Dialog>
+    </>
   );
 }

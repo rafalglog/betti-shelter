@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account preferences.",
+    "languageTitle": "Language",
+    "languageDescription": "Choose the language for the dashboard.",
+    "languageLabel": "Select language",
+    "languageSave": "Save language"
+  }
+}

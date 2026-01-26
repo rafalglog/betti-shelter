@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 interface UserAvatarProps {
   userImage?: string | null;
@@ -38,6 +39,9 @@ const UserMenu = ({ userImage }: UserAvatarProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-48" align="end" forceMount>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/settings">Settings</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer">
             Sign out
           </DropdownMenuItem>

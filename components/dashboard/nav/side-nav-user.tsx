@@ -3,12 +3,13 @@
 import type { Session } from "next-auth"
 import { signOut } from "next-auth/react"
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
   IconNotification,
+  IconSettings,
   IconUserCircle,
 } from "@tabler/icons-react"
+import Link from "next/link"
 
 import {
   Avatar,
@@ -93,6 +94,12 @@ export function NavUser({ user }: { user: Session["user"] }) {
               <DropdownMenuItem>
                 <IconUserCircle />
                 Account
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/settings">
+                  <IconSettings />
+                  Settings
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconNotification />

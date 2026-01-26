@@ -14,6 +14,8 @@ import DataTable from "@/components/dashboard/users/table/users-table";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Props {
   searchParams: SearchParamsType;
@@ -50,7 +52,11 @@ const PageContent = async ({ searchParams }: Props) => {
         <CardDescription>
           Manage user roles and permissions efficiently.
         </CardDescription>
-        <CardAction></CardAction>
+        <CardAction>
+          <Button asChild>
+            <Link href="/dashboard/users/create">Add User</Link>
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="flex flex-1 flex-col">

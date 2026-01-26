@@ -9,6 +9,27 @@ The platform features a public-facing portal for potential adopters and a powerf
 
 ---
 
+## Recent Updates
+
+These additions expand account security, user management, and localization:
+
+* **Password Management & Recovery**
+  * Public **Forgot Password** (`/forgot-password`) and **Reset Password** (`/reset-password`) pages.
+  * Token-based reset flow with **hashed tokens** and **1-hour expiry** stored in the database.
+  * SMTP email delivery for reset links via new `EMAIL_*` env vars (see below).
+  * Settings page **Change Password** flow for signed-in users.
+  * Admins can **reset a user’s password** and require a **forced change on next login**.
+  * Middleware enforces **must-change-password** for users with temporary passwords.
+* **User Management**
+  * New **Add User** flow (`/dashboard/users/create`) with temporary passwords.
+  * Role management protections to prevent assigning `ADMIN` in the UI.
+* **Settings & Localization**
+  * New **Settings** page (`/dashboard/settings`) with password and language controls.
+  * **Language switcher** with cookie-based locale persistence (`NEXT_LOCALE`).
+  * Added **next-intl** integration and message catalogs for **EN/PL/DE**.
+* **Auth UX**
+  * Dedicated **sign-in error** page (`/error`) with friendly error messaging.
+
 ## Core Features
 
 The application is built around distinct, interconnected modules that handle the complex needs of a modern animal shelter.
@@ -51,6 +72,7 @@ The platform includes a complete system for managing adoption applications for b
 The system is built with security and data consistency as top priorities.
 
 * **Role-Based Access Control (RBAC)**: Actions are protected by a permission system (`RequirePermission`). This ensures that only authorized users (e.g., `STAFF`, `ADMIN`) can perform sensitive operations like updating animal records or managing applications.
+* **Account Security Controls**: Temporary passwords can be issued by admins, and users are forced to change them before accessing other dashboard pages.
 * **Transactional Integrity**: Critical multi-step database operations are wrapped in **Prisma transactions**. This guarantees that all steps in a process (like an adoption or intake) either complete successfully or fail together, preventing the database from ever being left in an inconsistent state.
 * **Soft Deletes**: Important records like notes and assessments are soft-deleted rather than being permanently erased, preserving historical data for auditing and potential restoration.
 
@@ -64,6 +86,8 @@ The system is built with security and data consistency as top priorities.
 - **File Storage**: [Vercel Blob](https://vercel.com/docs/vercel-blob/)
 - **ORM**: [Prisma](https://www.prisma.io/)
 - **Authentication**: [Auth.js](https://authjs.dev/) (NextAuth)
+- **Internationalization**: [next-intl](https://next-intl.dev/)
+- **Email**: [Nodemailer](https://nodemailer.com/) (SMTP)
 
 ### UI & Styling
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
@@ -146,6 +170,13 @@ To run this project, you will need to add the following environment variables to
 - `AUTH_GITHUB_SECRET` (optional): Your GitHub OAuth client secret. Obtain this from your GitHub Developer settings.
 - `ADMIN_PASSWORD`: The password for the default admin user. This is used when seeding the database.
 - `BLOB_READ_WRITE_TOKEN`: The read/write token for Vercel Blob Storage, used for storing animal images.
+- `APP_URL`: Base URL for generating password reset links (e.g., `http://localhost:3000`).
+- `EMAIL_FROM`: The from-address used for password reset emails.
+- `EMAIL_HOST`: SMTP host for sending password reset emails.
+- `EMAIL_PORT`: SMTP port for sending password reset emails.
+- `EMAIL_SECURE`: Set to `true` for SMTPS/SSL (usually port 465), otherwise `false`.
+- `EMAIL_USER`: SMTP username.
+- `EMAIL_PASS`: SMTP password.
 - `POSTGRES_USER`: The PostgreSQL database username.
 - `POSTGRES_PASSWORD`: The PostgreSQL database password.
 - `POSTGRES_HOST`: The PostgreSQL database host. Use `localhost` for local development or the Docker Compose service name `postgres`.
@@ -155,6 +186,8 @@ To run this project, you will need to add the following environment variables to
 - `DATABASE_URL`: The connection URL for your serverless PostgreSQL database (e.g., from Vercel Storage via Neon). This is typically used for production deployments.
 
 > **Note on `AUTH_TRUST_HOST`**: While not explicitly in the `.env.example`, `Auth.js` can use `AUTH_TRUST_HOST=true` to trust the host header in development environments. This is often handled automatically in production environments like Vercel.
+>
+> **Note on password reset emails**: If any `EMAIL_*` variables are missing, password reset requests will return a friendly “email not configured” message instead of sending mail.
 
 For a full list of possible environment variables, especially for serverless deployments, please refer to the `.env.example` file.
 
@@ -164,6 +197,8 @@ To test the admin dashboard, use the following credentials:
 
 - **Username:** admin@example.com
 - **Password:** The password you set for `ADMIN_PASSWORD` in your `.env` file.
+
+> **Note:** Users created from the dashboard are issued temporary passwords and must change them on first login.
 
 ## Getting Started
 
@@ -207,6 +242,8 @@ This is the fastest way for contributors to get the application running on their
     docker compose up
     ```
 2.  Open your browser and navigate to `http://localhost:3000`.
+
+> **Note:** The Docker startup flow waits for Postgres to be available, runs `prisma db push`, seeds the database, and then starts the Next.js dev server.
 
 > #### ⚠️ **A Note on Local Image Seeding**
 >

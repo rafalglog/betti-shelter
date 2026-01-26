@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Verwalte deine Kontoeinstellungen.",
+    "languageTitle": "Sprache",
+    "languageDescription": "Wähle die Sprache für das Dashboard.",
+    "languageLabel": "Sprache auswählen",
+    "languageSave": "Sprache speichern"
+  }
+}

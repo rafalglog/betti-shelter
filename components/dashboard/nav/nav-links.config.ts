@@ -122,7 +122,7 @@ export const navCollapsibleItems: readonly NavItem[] = [
 export const navSecondaryItems: readonly NavItem[] = [
   {
     title: "Settings",
-    url: "#",
+    url: "/dashboard/settings",
     icon: "IconSettings",
   },
   {

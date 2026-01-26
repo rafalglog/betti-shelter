@@ -7,6 +7,10 @@ import { prisma } from "@/app/lib/prisma";
 import { cuidSchema } from "../zod-schemas/common.schemas";
 import { RequirePermission } from "../auth/protected-actions";
 import { Permissions } from "../auth/permissions";
+import { UserCreateSchema } from "../zod-schemas/user.schemas";
+import { UserFormState } from "../form-state-types";
+import { redirect } from "next/navigation";
+import bcrypt from "bcrypt";
 
 // Define a Zod schema for input validation
 const UpdateUserRoleSchema = z.object({
@@ -60,4 +64,80 @@ const _updateUserRole = async (userId: string, newRole: Role) => {
 
 export const updateUserRole = RequirePermission(Permissions.MANAGE_ROLES)(
   _updateUserRole
+);
+
+const _createUser = async (
+  prevState: UserFormState,
+  formData: FormData
+): Promise<UserFormState> => {
+  const validatedFields = UserCreateSchema.safeParse(
+    Object.fromEntries(formData.entries())
+  );
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to create user.",
+    };
+  }
+
+  const { name, email, role, password } = validatedFields.data;
+
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (existingUser) {
+      return {
+        message: "A user with this email already exists.",
+      };
+    }
+
+    const existingPerson = await prisma.person.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (existingPerson) {
+      return {
+        message:
+          "A person with this email already exists. Use a different email.",
+      };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.$transaction(async (tx) => {
+      const person = await tx.person.create({
+        data: {
+          name,
+          email,
+        },
+      });
+
+      await tx.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role,
+          mustChangePassword: true,
+          person: { connect: { id: person.id } },
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Failed to create user:", error);
+    return {
+      message: "Database error: Could not create the user.",
+    };
+  }
+
+  revalidatePath("/dashboard/users");
+  redirect("/dashboard/users");
+};
+
+export const createUser = RequirePermission(Permissions.MANAGE_ROLES)(
+  _createUser
 );
