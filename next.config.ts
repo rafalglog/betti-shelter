@@ -26,4 +26,26 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+const config = withNextIntl(nextConfig) as NextConfig & {
+  experimental?: { turbo?: { resolveAlias?: Record<string, string> } };
+  turbopack?: { resolveAlias?: Record<string, string> };
+};
+
+// next-intl sets experimental.turbo for Turbopack; move to config.turbopack to avoid deprecation warnings.
+if (config.experimental?.turbo?.resolveAlias) {
+  config.turbopack = {
+    ...(config.turbopack ?? {}),
+    resolveAlias: {
+      ...(config.turbopack?.resolveAlias ?? {}),
+      ...config.experimental.turbo.resolveAlias,
+    },
+  };
+
+  config.experimental = { ...config.experimental };
+  delete config.experimental.turbo;
+  if (Object.keys(config.experimental).length === 0) {
+    delete config.experimental;
+  }
+}
+
+export default config;
