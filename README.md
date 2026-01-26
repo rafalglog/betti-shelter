@@ -1,4 +1,5 @@
 # Animal Shelter and Operations platform
+> **Important:** This repository is a learning-focused copy of `https://github.com/albdangarcia/animal-shelter.git`. It is intended purely for development and educational use; running it in production is not recommended.
 **[🌐 Live Demo](https://animal-shelter-zeta.vercel.app/)** | **[📖 Documentation](#getting-started)** | **[🤝 Contributing](#contributing)**
 
 ## Project Description
@@ -265,8 +266,14 @@ This method mirrors the live production environment. It's ideal for testing the 
 5.  **Deploy**: Trigger a new deployment on Vercel. Your application will be live.
 
 
-## To-Do
+## Roadmap Status
 
+### Completed (since this fork)
+* **Password Management & Recovery**: Forgot/reset password flow, SMTP email support, and reset tokens with expiry.
+* **Settings & Localization**: Settings page with password change and language switcher (EN/PL/DE).
+* **User Management Enhancements**: Add-user flow with temporary passwords and enforced password change on login.
+
+### Remaining (To-Do)
 * **User Account Management**: Create a settings page allowing users to soft-delete their own accounts.
 * **Automated Medication Tasks**: Implement a scheduler (e.g., cron job) that automatically creates tasks for staff based on active `MedicationSchedule` records to ensure doses are not missed.
 * **Assessment Template Management**: Build a dashboard page for `ADMIN` users to create, view, and manage `AssessmentTemplate` records, allowing for customizable assessment forms.
