@@ -5,7 +5,7 @@ import ChangePasswordForm from "@/components/dashboard/settings/change-password-
 import LanguageSwitcher from "@/components/dashboard/settings/language-switcher";
 
 interface Props {
-  searchParams?: { force?: string };
+  searchParams?: Promise<{ force?: string }>;
 }
 
 const SettingsPage = async ({ searchParams }: Props) => {
@@ -15,6 +15,7 @@ const SettingsPage = async ({ searchParams }: Props) => {
   }
 
   const t = await getTranslations("settings");
+  const params = (await searchParams) ?? {};
 
   return (
     <main className="container mx-auto px-4 py-6">
@@ -23,7 +24,7 @@ const SettingsPage = async ({ searchParams }: Props) => {
           <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
-        <ChangePasswordForm force={searchParams?.force === "1"} />
+        <ChangePasswordForm force={params.force === "1"} />
         <LanguageSwitcher
           title={t("languageTitle")}
           description={t("languageDescription")}
