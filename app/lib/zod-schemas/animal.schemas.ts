@@ -8,6 +8,7 @@ import {
   TaskPriority,
   NoteCategory,
   AnimalListingStatus,
+  AnimalSize,
 } from "@prisma/client";
 import { US_STATES } from "@/app/lib/constants/us-states";
 import {
@@ -27,6 +28,9 @@ export const PublishedPetsSchema = z.object({
   query: searchQuerySchema,
   currentPage: currentPageSchema,
   speciesName: speciesNameSchema,
+  colorName: z.string().max(50).optional(),
+  breedName: z.string().max(50).optional(),
+  size: z.nativeEnum(AnimalSize).optional(),
 });
 
 export const sortSchema = z

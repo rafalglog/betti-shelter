@@ -7,21 +7,35 @@ import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import LikeButton from "../like-button";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
 import { SimplePagination } from "@/components/simple-pagination";
+import { AnimalSize } from "@prisma/client";
 
 interface Props {
   query: string;
   currentPage: number;
   speciesName: string;
+  colorName?: string;
+  breedName?: string;
+  size?: AnimalSize;
 }
 
-const PetGrid = async ({ query, currentPage, speciesName }: Props) => {
+const PetGrid = async ({
+  query,
+  currentPage,
+  speciesName,
+  colorName,
+  breedName,
+  size,
+}: Props) => {
   const session = await auth();
   const currentUserPersonId = session?.user?.personId;
 
   const { pets, totalPages } = await fetchPublishedPets(
     query,
     currentPage,
-    speciesName
+    speciesName,
+    colorName,
+    breedName,
+    size
   );
 
   if (pets.length === 0) {

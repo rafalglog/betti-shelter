@@ -1,7 +1,7 @@
 import { prisma } from "@/app/lib/prisma";
 import { ITEMS_PER_PAGE } from "@/app/lib/constants/constants";
 import { auth } from "@/auth";
-import { AnimalListingStatus, Prisma } from "@prisma/client";
+import { AnimalListingStatus, AnimalSize, Prisma } from "@prisma/client";
 import { cuidSchema } from "../zod-schemas/common.schemas";
 import { PublishedPetsSchema } from "../zod-schemas/animal.schemas";
 
@@ -31,18 +31,25 @@ export type PetsPayload = Prisma.AnimalGetPayload<{
 export const fetchPublishedPets = async (
   queryInput: string,
   currentPageInput: number,
-  speciesNameInput?: string
+  speciesNameInput?: string,
+  colorNameInput?: string,
+  breedNameInput?: string,
+  sizeInput?: AnimalSize
 ): Promise<{ pets: PetsPayload[]; totalPages: number }> => {
   const validatedArgs = PublishedPetsSchema.safeParse({
     query: queryInput,
     currentPage: currentPageInput,
     speciesName: speciesNameInput,
+    colorName: colorNameInput,
+    breedName: breedNameInput,
+    size: sizeInput,
   });
 
   if (!validatedArgs.success) {
     throw new Error("Invalid arguments for fetching pets.");
   }
-  const { query, currentPage, speciesName } = validatedArgs.data;
+  const { query, currentPage, speciesName, colorName, breedName, size } =
+    validatedArgs.data;
 
   const session = await auth();
   const personId = session?.user?.personId;
@@ -59,6 +66,23 @@ export const fetchPublishedPets = async (
       species: {
         name: speciesName,
       },
+    }),
+    ...(colorName && {
+      colors: {
+        some: {
+          name: colorName,
+        },
+      },
+    }),
+    ...(breedName && {
+      breeds: {
+        some: {
+          name: breedName,
+        },
+      },
+    }),
+    ...(size && {
+      size,
     }),
   };
 
@@ -116,6 +140,33 @@ export const fetchSpecies = async () => {
   } catch (error) {
     console.error("Error fetching species.", error);
     throw new Error("Error fetching species.");
+  }
+};
+
+export const fetchBreeds = async () => {
+  try {
+    const breeds = await prisma.breed.findMany({
+      select: { name: true },
+      distinct: ["name"],
+      orderBy: { name: "asc" },
+    });
+    return breeds.map((breed) => breed.name);
+  } catch (error) {
+    console.error("Error fetching breeds.", error);
+    throw new Error("Error fetching breeds.");
+  }
+};
+
+export const fetchColors = async () => {
+  try {
+    const colors = await prisma.color.findMany({
+      select: { name: true },
+      orderBy: { name: "asc" },
+    });
+    return colors.map((color) => color.name);
+  } catch (error) {
+    console.error("Error fetching colors.", error);
+    throw new Error("Error fetching colors.");
   }
 };
 
