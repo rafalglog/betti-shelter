@@ -2,11 +2,12 @@ import Link from "next/link";
 import ResetPasswordForm from "@/components/public-pages/auth/reset-password-form";
 
 interface Props {
-  searchParams?: { token?: string };
+  searchParams?: Promise<{ token?: string }>;
 }
 
-const ResetPasswordPage = ({ searchParams }: Props) => {
-  const token = searchParams?.token;
+const ResetPasswordPage = async ({ searchParams }: Props) => {
+  const params = (await searchParams) ?? {};
+  const token = params.token;
 
   return (
     <div className="flex flex-col items-center justify-center pt-8 pb-17 px-4 sm:px-6 lg:px-8">
