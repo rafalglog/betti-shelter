@@ -534,8 +534,13 @@ async function seedPersonsAndUsers() {
   }
 
   for (const pData of personData) {
-    const person = await prisma.person.create({
-      data: {
+    const person = await prisma.person.upsert({
+      where: { email: pData.email },
+      update: {
+        name: pData.name,
+        type: pData.type,
+      },
+      create: {
         name: pData.name,
         type: pData.type,
         email: pData.email,
@@ -543,22 +548,37 @@ async function seedPersonsAndUsers() {
     });
     
     if (pData.role) {
-      let passwordToHash = "password123"; // Default password for non-admin users
-
-      if (pData.role === Role.ADMIN) {
-        passwordToHash = process.env.ADMIN_PASSWORD;
-      }
-
-      const hashedPassword = await bcrypt.hash(passwordToHash, 10);
-
-      await prisma.user.create({
-        data: {
-          email: pData.email,
-          password: hashedPassword,
-          role: pData.role,
-          person: { connect: { id: person.id } },
-        }
+      const existingUser = await prisma.user.findUnique({
+        where: { email: pData.email },
+        select: { id: true },
       });
+
+      if (!existingUser) {
+        let passwordToHash = "password123"; // Default password for non-admin users
+
+        if (pData.role === Role.ADMIN) {
+          passwordToHash = process.env.ADMIN_PASSWORD;
+        }
+
+        const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+
+        await prisma.user.create({
+          data: {
+            email: pData.email,
+            password: hashedPassword,
+            role: pData.role,
+            person: { connect: { id: person.id } },
+          }
+        });
+      } else {
+        await prisma.user.update({
+          where: { email: pData.email },
+          data: {
+            role: pData.role,
+            personId: person.id,
+          },
+        });
+      }
     }
   }
   console.log("Seeded persons and users.");
@@ -569,26 +589,50 @@ async function seedLookupTables() {
   try {
     // Seed Colors
     for (const color of Object.values(allColors)) {
-      await prisma.color.create({ data: color });
+      await prisma.color.upsert({
+        where: { name: color.name },
+        update: {},
+        create: color,
+      });
     }
 
     // Seed Characteristics
     for (const char of Object.values(allCharacteristics)) {
-      await prisma.characteristic.create({ data: char });
+      const existing = await prisma.characteristic.findFirst({
+        where: { name: char.name, category: char.category },
+        select: { id: true },
+      });
+      if (!existing) {
+        await prisma.characteristic.create({ data: char });
+      }
     }
 
     // Seed Species and Breeds
     for (const s of Object.values(allSpecies)) {
-      const species = await prisma.species.create({
-        data: { name: s.name },
+      let species = await prisma.species.findFirst({
+        where: { name: s.name },
       });
+      if (!species) {
+        species = await prisma.species.create({
+          data: { name: s.name },
+        });
+      }
       for (const breed of Object.values(s.breeds)) {
-        await prisma.breed.create({
-          data: {
+        const existing = await prisma.breed.findFirst({
+          where: {
             name: breed.name,
             speciesId: species.id,
           },
+          select: { id: true },
         });
+        if (!existing) {
+          await prisma.breed.create({
+            data: {
+              name: breed.name,
+              speciesId: species.id,
+            },
+          });
+        }
       }
     }
   } catch (error) {
@@ -602,7 +646,11 @@ async function seedPartners() {
   console.log("Seeding partners...");
   try {
     for (const pData of partnerData) {
-      await prisma.partner.create({ data: pData });
+      await prisma.partner.upsert({
+        where: { name: pData.name },
+        update: pData,
+        create: pData,
+      });
     }
   } catch (error) {
     console.error("Error seeding partners:", error);
@@ -615,6 +663,13 @@ async function seedAssessmentTemplates() {
   console.log("Seeding assessment templates...");
   try {
     for (const templateData of assessmentTemplateSeedData) {
+      const existingTemplate = await prisma.assessmentTemplate.findUnique({
+        where: { name: templateData.name },
+        select: { id: true },
+      });
+      if (existingTemplate) {
+        continue;
+      }
       await prisma.assessmentTemplate.create({
         data: {
           name: templateData.name,
@@ -637,6 +692,11 @@ async function seedAssessmentTemplates() {
 
 async function seedAnimalsAndRelations() {
   console.log("Seeding animals and their relations...");
+  const existingAnimalCount = await prisma.animal.count();
+  if (existingAnimalCount > 0) {
+    console.log("Animals already exist, skipping animal seeding.");
+    return;
+  }
   // Fetch all created lookup data to get their IDs for relations
   const staffMembers = await prisma.person.findMany({
     where: { user: { role: Role.STAFF } },
@@ -769,6 +829,11 @@ async function seedAnimalsAndRelations() {
 async function seedTasks() {
   console.log("Seeding tasks...");
   try {
+    const existingTaskCount = await prisma.task.count();
+    if (existingTaskCount > 0) {
+      console.log("Tasks already exist, skipping task seeding.");
+      return;
+    }
     const staffMembers = await prisma.person.findMany({
       where: { user: { role: Role.STAFF } },
     });
@@ -799,6 +864,11 @@ async function seedTasks() {
 async function seedAssessments() {
   console.log("Seeding assessments...");
   try {
+    const existingAssessmentCount = await prisma.assessment.count();
+    if (existingAssessmentCount > 0) {
+      console.log("Assessments already exist, skipping assessment seeding.");
+      return;
+    }
     const staffMembers = await prisma.person.findMany({
       where: { user: { role: Role.STAFF } },
     });

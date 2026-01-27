@@ -215,8 +215,8 @@ First, clone the repository and set up your environment variables.
 
 1.  Clone the repository:
     ```sh
-    git clone https://github.com/albdangarcia/animal-shelter.git
-    cd animal-shelter
+    git clone https://github.com/rafalglog/betti-shelter.git
+    cd betti-shelter
     ```
 2.  Create your local environment file:
     ```sh
