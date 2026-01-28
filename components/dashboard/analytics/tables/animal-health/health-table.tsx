@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  ColumnDef,
   SortingState,
   VisibilityState,
   ColumnFiltersState,
@@ -23,9 +22,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
+import { getColumns } from "@/components/dashboard/analytics/tables/animal-health/health-table-columns";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
   ToolbarComponent?: React.ComponentType<{
     table: Table<TData>;
@@ -33,16 +32,17 @@ interface DataTableProps<TData, TValue> {
 }
 
 const DataTable = <TData, TValue>({
-  columns,
   data,
   ToolbarComponent,
 }: DataTableProps<TData, TValue>) => {
-  const t = useTranslations("dashboard.table");
+  const t = useTranslations("dashboard");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const columns = React.useMemo(() => getColumns(t), [t]);
 
   const table = useReactTable({
     data,
@@ -112,7 +112,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("noResults")}
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

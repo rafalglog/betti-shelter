@@ -111,7 +111,7 @@ export function NavUser({ user }: { user: Session["user"] }) {
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
               <IconLogout />
-              {t("logout")}
+              {t("logOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

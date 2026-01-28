@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  ColumnDef,
   SortingState,
   VisibilityState,
   ColumnFiltersState,
@@ -24,9 +23,9 @@ import {
 } from "@/components/ui/table";
 import { TaskAssignee } from "@/app/lib/types";
 import { useTranslations } from "next-intl";
+import { getColumns } from "@/components/dashboard/analytics/tables/tasks/task-table-columns";
 
 interface DataTableProps<TData, TValue> {
-  getColumns: (props: any) => ColumnDef<TData, TValue>[];
   data: TData[];
   ToolbarComponent?: React.ComponentType<{
     table: Table<TData>;
@@ -35,12 +34,11 @@ interface DataTableProps<TData, TValue> {
 }
 
 const DataTable = <TData, TValue>({
-  getColumns,
   data,
   ToolbarComponent,
   assigneeList,
 }: DataTableProps<TData, TValue>) => {
-  const t = useTranslations("dashboard.table");
+  const t = useTranslations("dashboard");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -49,8 +47,8 @@ const DataTable = <TData, TValue>({
     React.useState<VisibilityState>({});
 
   const columns = React.useMemo(
-    () => getColumns({ assigneeList }),
-    [getColumns, assigneeList]
+    () => getColumns(t, { assigneeList }),
+    [t, assigneeList]
   );
 
   const table = useReactTable({
@@ -124,7 +122,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("noResults")}
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

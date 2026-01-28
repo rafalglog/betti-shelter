@@ -5,11 +5,9 @@ import {
 import { fetchTaskAssigneeList } from "@/app/lib/data/animals/animal-task.data";
 
 import TaskTable from "@/components/dashboard/analytics/tables/tasks/task-table";
-import { getColumns as getTaskColumns } from "@/components/dashboard/analytics/tables/tasks/task-table-columns";
 import TasksDataTableToolbar from "@/components/dashboard/analytics/tables/tasks/task-table-toolbar";
 
 import HealthTable from "@/components/dashboard/analytics/tables/animal-health/health-table";
-import { getColumns as getHealthColumns } from "@/components/dashboard/analytics/tables/animal-health/health-table-columns";
 import HealthDataTableToolbar from "@/components/dashboard/analytics/tables/animal-health/health-table-toolbar";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -50,7 +48,6 @@ const AnalyticsTables = async () => {
           <CardContent>
             <TaskTable
               data={tasks}
-              getColumns={(args) => getTaskColumns(t, args)}
               ToolbarComponent={TasksDataTableToolbar}
               assigneeList={assigneeList}
             />
@@ -68,7 +65,6 @@ const AnalyticsTables = async () => {
           <CardContent>
             <HealthTable
               data={animalHealth}
-              columns={getHealthColumns(t)}
               ToolbarComponent={HealthDataTableToolbar}
             />
           </CardContent>
