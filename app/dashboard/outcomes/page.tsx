@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { SearchParamsType } from "@/app/lib/types";
 import DataTable from "@/components/dashboard/outcomes/table/outcome-table";
-import { getColumns } from "@/components/dashboard/outcomes/table/outcome-table-columns";
 import OutcomeTableToolbar from "@/components/dashboard/outcomes/table/outcome-table-toolbar";
 import { fetchOutcomes } from "@/app/lib/data/animals/outcome.data";
 import { Authorize } from "@/components/auth/authorize";
@@ -42,8 +41,6 @@ const PageContent = async ({ searchParams }: Props) => {
     sort,
     type
   );
-  const columns = getColumns(t);
-
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -61,7 +58,6 @@ const PageContent = async ({ searchParams }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={outcomes}
-                columns={columns}
                 ToolbarComponent={OutcomeTableToolbar}
                 totalPages={totalPages}
               />

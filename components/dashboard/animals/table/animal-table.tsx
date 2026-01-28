@@ -3,7 +3,6 @@
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  ColumnDef,
   SortingState,
   VisibilityState,
   flexRender,
@@ -20,17 +19,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "../../../table-common/data-table-pagination";
+import { getColumns } from "@/components/dashboard/animals/table/animal-table-columns";
 import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
   ToolbarComponent?: React.ComponentType<{ table: Table<TData> }>;
   totalPages: number;
 }
 
 const DataTable = <TData, TValue>({
-  columns,
   data,
   ToolbarComponent,
   totalPages,
@@ -52,6 +50,8 @@ const DataTable = <TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const columns = React.useMemo(() => getColumns(t), [t]);
 
   const table = useReactTable({
     data,

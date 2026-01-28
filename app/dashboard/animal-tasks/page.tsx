@@ -1,4 +1,3 @@
-import { getColumns } from "@/components/dashboard/all-animal-tasks/table/task-table-columns";
 import DataTable from "@/components/dashboard/all-animal-tasks/table/task-table";
 import TasksDataTableToolbar from "@/components/dashboard/all-animal-tasks/table/task-table-toolbar";
 import { SearchParamsType } from "@/app/lib/types";
@@ -59,7 +58,6 @@ const Page = async ({ searchParams }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={tasks}
-                getColumns={getColumns}
                 ToolbarComponent={TasksDataTableToolbar}
                 totalPages={totalPages}
                 assigneeList={assigneeList}

@@ -3,7 +3,6 @@
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  ColumnDef,
   SortingState,
   VisibilityState,
   flexRender,
@@ -22,9 +21,9 @@ import {
 import { TaskAssignee } from "@/app/lib/types";
 import { DataTablePagination } from "@/components/table-common/data-table-pagination";
 import { useTranslations } from "next-intl";
+import { getColumns } from "@/components/dashboard/animals/tasks/table/task-table-columns";
 
 interface DataTableProps<TData, TValue> {
-  getColumns: (props: any) => ColumnDef<TData, TValue>[];
   data: TData[];
   ToolbarComponent?: React.ComponentType<{
     table: Table<TData>;
@@ -37,7 +36,6 @@ interface DataTableProps<TData, TValue> {
 }
 
 const DataTable = <TData, TValue>({
-  getColumns,
   data,
   ToolbarComponent,
   totalPages,
@@ -60,7 +58,7 @@ const DataTable = <TData, TValue>({
 
   const columns = React.useMemo(
     () => getColumns({ animalId, assigneeList, t }),
-    [getColumns, animalId, assigneeList, t]
+    [animalId, assigneeList, t]
   );
 
   // State for UI-only features remains managed by useState.

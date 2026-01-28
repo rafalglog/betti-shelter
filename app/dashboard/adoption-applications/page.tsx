@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { SearchParamsType } from "@/app/lib/types";
 import DataTable from "@/components/dashboard/adoption-applications/table/adoption-applications-table";
-import { getColumns } from "@/components/dashboard/adoption-applications/table/adoption-applications-table-columns";
 import UserAppTableToolbar from "@/components/dashboard/adoption-applications/table/adoption-applications-table-toolbar";
 import { fetchUserApplications } from "@/app/lib/data/user-application.data";
 import { Authorize } from "@/components/auth/authorize";
@@ -60,7 +59,6 @@ const PageContent = async ({ searchParams }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={userApplications}
-                columns={getColumns(t)}
                 ToolbarComponent={UserAppTableToolbar}
                 totalPages={totalPages}
               />

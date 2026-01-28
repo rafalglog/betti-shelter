@@ -3,7 +3,6 @@
 import * as React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  ColumnDef,
   SortingState,
   VisibilityState,
   flexRender,
@@ -20,10 +19,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "../../../table-common/data-table-pagination";
+import { getColumns } from "@/components/dashboard/my-adoption-applications/table/my-applications-table-columns";
 import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
   ToolbarComponent?: React.ComponentType<{
     table: Table<TData>;
@@ -32,12 +31,11 @@ interface DataTableProps<TData, TValue> {
 }
 
 const DataTable = <TData, TValue>({
-  columns,
   data,
   ToolbarComponent,
   totalPages,
 }: DataTableProps<TData, TValue>) => {
-  const t = useTranslations("dashboard.table");
+  const t = useTranslations("dashboard");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -55,6 +53,8 @@ const DataTable = <TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+
+  const columns = React.useMemo(() => getColumns(t), [t]);
 
   const table = useReactTable({
     data,
@@ -131,7 +131,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("noResults")}
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

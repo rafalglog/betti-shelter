@@ -9,7 +9,6 @@ import {
 import { SearchParamsType } from "@/app/lib/types";
 import { fetchUsers } from "@/app/lib/data/user.data";
 import UsersTableToolbar from "@/components/dashboard/users/table/users-table-toolbar";
-import { getColumns } from "@/components/dashboard/users/table/users-table-columns";
 import DataTable from "@/components/dashboard/users/table/users-table";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
@@ -68,7 +67,6 @@ const PageContent = async ({ searchParams }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={users}
-                columns={getColumns(t)}
                 ToolbarComponent={UsersTableToolbar}
                 totalPages={totalPages}
               />
