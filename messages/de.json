@@ -59,6 +59,62 @@
     "fosterCta": "Mehr erfahren",
     "loading": "Wird geladen..."
   },
+  "donate": {
+    "hero": {
+      "kicker": "Unterstütze das Tierheim",
+      "title": "Jede Spende hält die Türen offen und die Näpfe voll.",
+      "subtitle": "Ein Tierheim zu betreiben ist teuer. Futter, Impfungen, dringende OPs, Diagnostik, Transport und tägliche Pflege summieren sich schnell. Deine Spende hilft Tieren heute und gibt ihnen eine echte Chance für morgen.",
+      "primaryCta": "Jetzt spenden",
+      "secondaryCta": "Tiere kennenlernen"
+    },
+    "impact": {
+      "medical": {
+        "amount": "€30 decken",
+        "title": "Dringende medizinische Hilfe",
+        "body": "Grunduntersuchungen, Impfungen und Medikamente für neue Rettungen."
+      },
+      "shelter": {
+        "amount": "€75 decken",
+        "title": "Warmes Zuhause für eine Woche",
+        "body": "Sichere Schlafplätze, Reinigung, Heizung und tägliche Pflege."
+      },
+      "meals": {
+        "amount": "€120 decken",
+        "title": "Nahrhafte Mahlzeiten",
+        "body": "Qualitatives Futter für mehrere Tiere, inklusive Spezialdiäten."
+      }
+    },
+    "costs": {
+      "title": "Wofür wir Spenden nutzen",
+      "body": "Wir halten die Kosten schlank, aber vieles ist unvermeidbar. Spenden fließen in die Bereiche mit dem größten Nutzen für die Tiere.",
+      "items": {
+        "vet": "Tierarztbesuche, Operationen, Impfungen und Medikamente",
+        "food": "Futter, Supplemente und spezielle Ernährungsbedürfnisse",
+        "shelter": "Schlafplätze, Reinigungsmittel, Betriebskosten und Instandhaltung",
+        "rehab": "Verhaltens- und Reha-Unterstützung für besonders schutzbedürftige Tiere",
+        "transport": "Notfalltransporte, Transfers und Fahrten zu Adoptionen"
+      }
+    },
+    "monthly": {
+      "title": "Monatlich helfen",
+      "body": "Regelmäßige Spenden geben Planungssicherheit und ermöglichen schnelle Hilfe bei neuen Notfällen.",
+      "levels": {
+        "friend": "Freund des Tierheims",
+        "friendAmount": "€10 / Monat",
+        "guardian": "Beschützer",
+        "guardianAmount": "€25 / Monat",
+        "hero": "Held",
+        "heroAmount": "€50 / Monat"
+      },
+      "cta": "Monatliche Unterstützung starten"
+    },
+    "footer": {
+      "title": "Deine Spende trägt die Mission",
+      "body": "Jeder Euro fließt in Futter, Schutz und medizinische Versorgung von Tieren, die sonst niemanden haben. Danke, dass du unser Überleben und Wachstum möglich machst.",
+      "primaryCta": "Jetzt spenden",
+      "secondaryCta": "Kontakt aufnehmen"
+    }
+  },
   "categories": {
     "dog": "Hund",
     "cat": "Katze",

@@ -59,6 +59,62 @@
     "fosterCta": "Learn to Foster",
     "loading": "Loading..."
   },
+  "donate": {
+    "hero": {
+      "kicker": "Support the shelter",
+      "title": "Every donation keeps the doors open and the bowls full.",
+      "subtitle": "Running a rescue is expensive. Food, vaccinations, urgent surgeries, diagnostics, transport, and daily care add up fast. Your gift keeps animals safe today and gives them a real chance at tomorrow.",
+      "primaryCta": "Start a donation",
+      "secondaryCta": "Meet the animals"
+    },
+    "impact": {
+      "medical": {
+        "amount": "€30 covers",
+        "title": "Urgent medical care",
+        "body": "Basic exams, vaccines, and medications for newly rescued animals."
+      },
+      "shelter": {
+        "amount": "€75 covers",
+        "title": "Warm shelter for a week",
+        "body": "Safe bedding, cleaning supplies, heating, and daily care."
+      },
+      "meals": {
+        "amount": "€120 covers",
+        "title": "Nutritious meals",
+        "body": "Quality food for multiple animals, including special diets."
+      }
+    },
+    "costs": {
+      "title": "Where your support goes",
+      "body": "We keep operations lean, but the real costs are unavoidable. Donations are directed to high-impact needs that protect animal health and keep the organization running.",
+      "items": {
+        "vet": "Veterinary visits, surgeries, vaccinations, and medications",
+        "food": "Food, supplements, and special dietary needs",
+        "shelter": "Bedding, cleaning supplies, utilities, and maintenance",
+        "rehab": "Behavioral and recovery support for vulnerable animals",
+        "transport": "Emergency transport, transfers, and adoption travel"
+      }
+    },
+    "monthly": {
+      "title": "Make it monthly",
+      "body": "Reliable monthly giving helps us plan ahead and respond immediately when new animals arrive.",
+      "levels": {
+        "friend": "Friend of the Shelter",
+        "friendAmount": "€10 / month",
+        "guardian": "Guardian",
+        "guardianAmount": "€25 / month",
+        "hero": "Hero",
+        "heroAmount": "€50 / month"
+      },
+      "cta": "Set up monthly support"
+    },
+    "footer": {
+      "title": "Your gift keeps the mission alive",
+      "body": "Every euro goes toward food, shelter, and medical care for animals who have nowhere else to go. Thank you for helping us survive and grow.",
+      "primaryCta": "Donate now",
+      "secondaryCta": "Contact our team"
+    }
+  },
   "categories": {
     "dog": "Dog",
     "cat": "Cat",

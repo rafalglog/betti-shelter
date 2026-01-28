@@ -59,6 +59,62 @@
     "fosterCta": "Dowiedz się więcej",
     "loading": "Ładowanie..."
   },
+  "donate": {
+    "hero": {
+      "kicker": "Wesprzyj schronisko",
+      "title": "Każda darowizna utrzymuje drzwi otwarte i miski pełne.",
+      "subtitle": "Prowadzenie schroniska jest kosztowne. Karma, szczepienia, pilne zabiegi, diagnostyka, transport i codzienna opieka szybko się sumują. Twój dar pomaga zwierzętom dziś i daje im realną szansę na jutro.",
+      "primaryCta": "Przekaż darowiznę",
+      "secondaryCta": "Poznaj zwierzęta"
+    },
+    "impact": {
+      "medical": {
+        "amount": "€30 pokrywa",
+        "title": "Pilną opiekę medyczną",
+        "body": "Podstawowe badania, szczepienia i leki dla nowych podopiecznych."
+      },
+      "shelter": {
+        "amount": "€75 pokrywa",
+        "title": "Ciepłe schronienie na tydzień",
+        "body": "Bezpieczne legowiska, środki czystości, ogrzewanie i codzienną opiekę."
+      },
+      "meals": {
+        "amount": "€120 pokrywa",
+        "title": "Pożywne posiłki",
+        "body": "Dobrą karmę dla wielu zwierząt, w tym diety specjalne."
+      }
+    },
+    "costs": {
+      "title": "Na co przeznaczamy środki",
+      "body": "Działamy oszczędnie, ale kluczowych kosztów nie da się uniknąć. Darowizny trafiają tam, gdzie ich wpływ jest największy.",
+      "items": {
+        "vet": "Wizyty weterynaryjne, zabiegi, szczepienia i leki",
+        "food": "Karma, suplementy i specjalne potrzeby żywieniowe",
+        "shelter": "Legowiska, środki czystości, media i utrzymanie",
+        "rehab": "Wsparcie behawioralne i rehabilitacja zwierząt",
+        "transport": "Transport interwencyjny, transfery i przewozy adopcyjne"
+      }
+    },
+    "monthly": {
+      "title": "Wesprzyj nas co miesiąc",
+      "body": "Stałe wpłaty pozwalają planować i reagować natychmiast, gdy pojawiają się nowe zwierzęta.",
+      "levels": {
+        "friend": "Przyjaciel schroniska",
+        "friendAmount": "€10 / miesiąc",
+        "guardian": "Opiekun",
+        "guardianAmount": "€25 / miesiąc",
+        "hero": "Bohater",
+        "heroAmount": "€50 / miesiąc"
+      },
+      "cta": "Ustaw wsparcie miesięczne"
+    },
+    "footer": {
+      "title": "Twój dar podtrzymuje misję",
+      "body": "Każde euro trafia na karmę, schronienie i leczenie zwierząt, które nie mają dokąd pójść. Dziękujemy za pomoc w przetrwaniu i rozwoju.",
+      "primaryCta": "Wpłać teraz",
+      "secondaryCta": "Skontaktuj się z nami"
+    }
+  },
   "categories": {
     "dog": "Pies",
     "cat": "Kot",
