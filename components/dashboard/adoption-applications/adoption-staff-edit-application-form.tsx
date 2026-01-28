@@ -43,7 +43,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { US_STATES } from "@/app/lib/constants/us-states";
 import { useTranslations } from "next-intl";
 
 type StaffUpdateFormData = z.infer<typeof StaffUpdateAdoptionAppFormSchema>;
@@ -357,7 +356,7 @@ export function StaffApplicationUpdateForm({
                     />
                   </FormControl>
                 </FormItem>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <FormItem>
                     <FormLabel>{t("adoptionApplications.readOnly.city")}</FormLabel>
                     <FormControl>
@@ -370,18 +369,23 @@ export function StaffApplicationUpdateForm({
                   </FormItem>
                   <FormItem>
                     <FormLabel>{t("adoptionApplications.readOnly.state")}</FormLabel>
-                    <Select value={application.applicantState} disabled>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {US_STATES.map((state) => (
-                          <SelectItem key={state.code} value={state.code}>
-                            {state.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        value={application.applicantState ?? ""}
+                        disabled
+                        readOnly
+                      />
+                    </FormControl>
+                  </FormItem>
+                  <FormItem>
+                    <FormLabel>{t("adoptionApplications.readOnly.country")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={application.applicantCountry ?? ""}
+                        disabled
+                        readOnly
+                      />
+                    </FormControl>
                   </FormItem>
                   <FormItem>
                     <FormLabel>{t("adoptionApplications.readOnly.zip")}</FormLabel>

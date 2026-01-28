@@ -76,6 +76,7 @@ const _updateMyAdoptionApp = async (
     applicantAddressLine1: formData.get("applicantAddressLine1"),
     applicantAddressLine2: formData.get("applicantAddressLine2"),
     applicantCity: formData.get("applicantCity"),
+    applicantCountry: formData.get("applicantCountry"),
     applicantState: formData.get("applicantState"),
     applicantZipCode: formData.get("applicantZipCode"),
     livingSituation: formData.get("livingSituation"),
@@ -105,6 +106,7 @@ const _updateMyAdoptionApp = async (
     applicantAddressLine1,
     applicantAddressLine2,
     applicantCity,
+    applicantCountry,
     applicantState,
     applicantZipCode,
     livingSituation,
@@ -120,6 +122,7 @@ const _updateMyAdoptionApp = async (
 
   const dataToUpdate = {
     ...validatedFields.data,
+    applicantState: applicantState?.trim() || null,
     hasYard: hasYard === "true", // Convert string "true" to boolean true
     landlordPermission: landlordPermission === "true", // Convert string "true" to boolean true
     householdSize: parseInt(householdSize, 10), // Convert string to number
@@ -377,6 +380,7 @@ const _createMyAdoptionApp = async (
     applicantAddressLine1: formData.get("applicantAddressLine1"),
     applicantAddressLine2: formData.get("applicantAddressLine2"),
     applicantCity: formData.get("applicantCity"),
+    applicantCountry: formData.get("applicantCountry"),
     applicantState: formData.get("applicantState"),
     applicantZipCode: formData.get("applicantZipCode"),
     livingSituation: formData.get("livingSituation"),
@@ -404,6 +408,7 @@ const _createMyAdoptionApp = async (
     applicantAddressLine1,
     applicantAddressLine2,
     applicantCity,
+    applicantCountry,
     applicantState,
     applicantZipCode,
     livingSituation,
@@ -419,6 +424,7 @@ const _createMyAdoptionApp = async (
 
   const dataToCreate = {
     ...validatedFields.data,
+    applicantState: applicantState?.trim() || null,
     userId: user.personId,
     animalId: validatedAnimalId,
     hasYard: hasYard === "true",

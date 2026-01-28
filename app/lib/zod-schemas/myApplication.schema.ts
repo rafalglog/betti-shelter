@@ -51,8 +51,14 @@ export const MyAdoptionAppFormSchema = z
       .min(1, { error: "Address Line 1 is required" }),
     applicantAddressLine2: z.string().optional(),
     applicantCity: z.string().min(1, { error: "City is required" }),
-    applicantState: z.string().min(1, { error: "State is required" }),
-    applicantZipCode: z.string().regex(/^\d{5}$/, { error: "Invalid ZIP code" }),
+    applicantCountry: z.string().min(1, { error: "Country is required" }),
+    applicantState: z.preprocess(
+      (value) => (value === "" ? undefined : value),
+      z.string().optional()
+    ),
+    applicantZipCode: z
+      .string()
+      .min(1, { error: "Postal code is required" }),
     livingSituation: z.enum(LivingSituation, {
       error: (issue) =>
         issue.input === undefined ? "Living situation is required" : undefined,

@@ -515,7 +515,8 @@ model AdoptionApplication {
   applicantAddressLine1 String  @map(name: "applicant_address_line1")
   applicantAddressLine2 String? @map(name: "applicant_address_line2")
   applicantCity         String  @map(name: "applicant_city")
-  applicantState        String  @map(name: "applicant_state")
+  applicantState        String? @map(name: "applicant_state")
+  applicantCountry      String? @map(name: "applicant_country")
   applicantZipCode      String  @map(name: "applicant_zip_code")
 
   // Home and lifestyle details

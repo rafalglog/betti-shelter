@@ -824,8 +824,9 @@
         "address1": "Address line 1",
         "address2": "Address line 2",
         "city": "City",
-        "state": "State",
-        "zip": "ZIP code",
+        "state": "Region/State/Province",
+        "country": "Country",
+        "zip": "Postal code",
         "homeTitle": "Home & lifestyle (read-only)",
         "livingSituation": "Living situation",
         "householdSize": "Household size",
@@ -896,10 +897,12 @@
           "address2Placeholder": "Apartment, suite, etc.",
           "city": "City",
           "cityPlaceholder": "Enter city",
-          "state": "State",
-          "statePlaceholder": "Select state",
-          "zip": "ZIP code",
-          "zipPlaceholder": "Enter ZIP code"
+          "state": "Region/State/Province",
+          "statePlaceholder": "Enter region/state/province",
+          "country": "Country",
+          "countryPlaceholder": "Enter country",
+          "zip": "Postal code",
+          "zipPlaceholder": "Enter postal code"
         },
         "home": {
           "title": "Home & lifestyle",

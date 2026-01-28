@@ -824,8 +824,9 @@
         "address1": "Adresszeile 1",
         "address2": "Adresszeile 2",
         "city": "Stadt",
-        "state": "Bundesland",
-        "zip": "PLZ",
+        "state": "Region/Bundesland/Provinz",
+        "country": "Land",
+        "zip": "Postleitzahl",
         "homeTitle": "Wohnen & Lebensstil (nur lesen)",
         "livingSituation": "Wohnsituation",
         "householdSize": "Haushaltsgröße",
@@ -896,10 +897,12 @@
           "address2Placeholder": "Wohnung, Suite usw.",
           "city": "Stadt",
           "cityPlaceholder": "Stadt eingeben",
-          "state": "Bundesland",
-          "statePlaceholder": "Bundesland auswählen",
-          "zip": "PLZ",
-          "zipPlaceholder": "PLZ eingeben"
+          "state": "Region/Bundesland/Provinz",
+          "statePlaceholder": "Region/Bundesland/Provinz eingeben",
+          "country": "Land",
+          "countryPlaceholder": "Land eingeben",
+          "zip": "Postleitzahl",
+          "zipPlaceholder": "Postleitzahl eingeben"
         },
         "home": {
           "title": "Wohnen & Lebensstil",

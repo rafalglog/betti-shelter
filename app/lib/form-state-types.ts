@@ -85,6 +85,7 @@ export interface MyAdoptionAppFormState {
     applicantAddressLine1?: string[];
     applicantAddressLine2?: string[];
     applicantCity?: string[];
+    applicantCountry?: string[];
     applicantState?: string[];
     applicantZipCode?: string[];
     livingSituation?: string[];

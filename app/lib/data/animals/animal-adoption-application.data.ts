@@ -91,6 +91,7 @@ const _fetchAnimalApplications = async (
           applicantPhone: true,
           applicantCity: true,
           applicantState: true,
+          applicantCountry: true,
           status: true,
           submittedAt: true,
           animal: {

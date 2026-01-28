@@ -18,6 +18,7 @@ export type ApplicationWithAnimal = Prisma.AdoptionApplicationGetPayload<{
     applicantPhone: true;
     applicantCity: true;
     applicantState: true;
+    applicantCountry: true;
     status: true;
     submittedAt: true;
     animal: {
@@ -154,6 +155,7 @@ const _fetchUserApplications = async (
           applicantPhone: true,
           applicantCity: true,
           applicantState: true,
+          applicantCountry: true,
           status: true,
           submittedAt: true,
           animal: {

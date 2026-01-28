@@ -45,7 +45,6 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { US_STATES } from "@/app/lib/constants/us-states";
 import { livingSituationOptions } from "@/app/lib/utils/enum-formatter";
 import { useTranslations } from "next-intl";
 
@@ -79,6 +78,7 @@ export function MyApplicationForm({
       applicantAddressLine1: application?.applicantAddressLine1 ?? "",
       applicantAddressLine2: application?.applicantAddressLine2 ?? "",
       applicantCity: application?.applicantCity ?? "",
+      applicantCountry: application?.applicantCountry ?? "",
       applicantState: application?.applicantState ?? "",
       applicantZipCode: application?.applicantZipCode ?? "",
       livingSituation: application?.livingSituation,
@@ -231,7 +231,7 @@ export function MyApplicationForm({
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <FormField
                     control={form.control}
                     name="applicantCity"
@@ -251,23 +251,22 @@ export function MyApplicationForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{t("myApplications.form.applicant.state")}</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={t("myApplications.form.applicant.statePlaceholder")} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {US_STATES.map((state) => (
-                              <SelectItem key={state.code} value={state.code}>
-                                {state.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormControl>
+                          <Input placeholder={t("myApplications.form.applicant.statePlaceholder")} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="applicantCountry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("myApplications.form.applicant.country")}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={t("myApplications.form.applicant.countryPlaceholder")} {...field} />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
