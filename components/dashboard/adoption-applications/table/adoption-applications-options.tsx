@@ -12,37 +12,37 @@ import {
 export const ApplicationStatuses = [
   {
     value: ApplicationStatus.PENDING,
-    label: "Pending",
+    labelKey: "adoptionApplications.statusOptions.PENDING",
     icon: Hourglass,
   },
   {
     value: ApplicationStatus.REVIEWING,
-    label: "Reviewing",
+    labelKey: "adoptionApplications.statusOptions.REVIEWING",
     icon: FileCheck2,
   },
   {
     value: ApplicationStatus.WAITLISTED,
-    label: "Waitlisted",
+    labelKey: "adoptionApplications.statusOptions.WAITLISTED",
     icon: List,
   },
   {
     value: ApplicationStatus.APPROVED,
-    label: "Approved",
+    labelKey: "adoptionApplications.statusOptions.APPROVED",
     icon: UserCheck,
   },
   {
     value: ApplicationStatus.REJECTED,
-    label: "Rejected",
+    labelKey: "adoptionApplications.statusOptions.REJECTED",
     icon: UserX,
   },
   {
     value: ApplicationStatus.WITHDRAWN,
-    label: "Withdrawn",
+    labelKey: "adoptionApplications.statusOptions.WITHDRAWN",
     icon: XCircle,
   },
   {
     value: ApplicationStatus.ADOPTED,
-    label: "Adopted",
+    labelKey: "adoptionApplications.statusOptions.ADOPTED",
     icon: Heart,
   },
 ];

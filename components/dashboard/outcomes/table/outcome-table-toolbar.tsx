@@ -11,12 +11,14 @@ import { ServerSideFacetedFilter } from "@/components/table-common/server-side-f
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
 import { OutcomeWithDetails } from "@/app/lib/data/animals/outcome.data";
 import { ServerSideSort } from "@/components/table-common/server-side-sort";
+import { useTranslations } from "next-intl";
 
 interface OutcomeTableToolbarProps {
   table: Table<OutcomeWithDetails>;
 }
 
 const OutcomeTableToolbar = ({ table }: OutcomeTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -40,7 +42,7 @@ const OutcomeTableToolbar = ({ table }: OutcomeTableToolbarProps) => {
         <div>
           <Input
             id="outcome-search"
-            placeholder="Filter Outcomes..."
+            placeholder={t("outcomes.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -50,16 +52,25 @@ const OutcomeTableToolbar = ({ table }: OutcomeTableToolbarProps) => {
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Type"
+            title={t("outcomes.toolbar.typeFilter")}
             paramKey="type"
-            options={outcomeTypeOptions}
+            options={outcomeTypeOptions.map((option) => ({
+              ...option,
+              label: t(`outcomes.types.${option.value}`),
+            }))}
           />
           <ServerSideSort
             paramKey="sort"
-            placeholder="Select order"
+            placeholder={t("outcomes.toolbar.sortPlaceholder")}
             options={[
-              { label: "Newest First", value: "date.desc" },
-              { label: "Oldest First", value: "date.asc" },
+              {
+                label: t("outcomes.toolbar.sortNewest"),
+                value: "date.desc",
+              },
+              {
+                label: t("outcomes.toolbar.sortOldest"),
+                value: "date.asc",
+              },
             ]}
           />
           {isFiltered && (
@@ -68,7 +79,7 @@ const OutcomeTableToolbar = ({ table }: OutcomeTableToolbarProps) => {
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}

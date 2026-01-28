@@ -11,12 +11,14 @@ import { IDParamType } from "@/app/lib/types";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
 }
 
 const Page = async ({ params }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id: animalId } = await params;
 
   const [animal, partners, colors, speciesList] = await Promise.all([
@@ -35,11 +37,11 @@ const Page = async ({ params }: Props) => {
       <Button asChild variant="ghost" className="mb-4">
         <Link href={`/dashboard/animals/${animalId}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Animal Profile
+          {t("common.backToAnimalProfile")}
         </Link>
       </Button>
 
-      <Suspense fallback={<div>Loading form...</div>}>
+      <Suspense fallback={<div>{t("common.loadingForm")}</div>}>
         <AnimalForm
           speciesList={speciesList}
           partners={partners}

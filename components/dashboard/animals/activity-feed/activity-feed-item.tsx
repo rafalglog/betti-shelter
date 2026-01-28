@@ -17,6 +17,7 @@ import {
 import { AnimalActivityType } from "@prisma/client";
 import { AnimalActivityLogPayload } from "@/app/lib/data/animals/animal-activity.data";
 import { formatTimeAgo } from "@/app/lib/utils/date-utils";
+import { useTranslations } from "next-intl";
 
 const getInitials = (name: string) => {
   if (!name) return "?";
@@ -29,49 +30,49 @@ const activityConfig: Record<
   AnimalActivityType,
   {
     icon: React.ComponentType<LucideProps>;
-    text: string;
+    textKey: string;
   }
 > = {
   [AnimalActivityType.FIELD_UPDATE]: {
     icon: Pencil,
-    text: "updated pet details",
+    textKey: "activity.actions.fieldUpdate",
   },
-  [AnimalActivityType.NOTE_ADDED]: { icon: FileText, text: "added a new note" },
+  [AnimalActivityType.NOTE_ADDED]: { icon: FileText, textKey: "activity.actions.noteAdded" },
   [AnimalActivityType.PHOTO_UPLOADED]: {
     icon: Camera,
-    text: "uploaded a new photo",
+    textKey: "activity.actions.photoUploaded",
   },
   [AnimalActivityType.INTAKE_PROCESSED]: {
     icon: LogIn,
-    text: "was processed for intake",
+    textKey: "activity.actions.intakeProcessed",
   },
   [AnimalActivityType.OUTCOME_PROCESSED]: {
     icon: LogOut,
-    text: "was processed for outcome",
+    textKey: "activity.actions.outcomeProcessed",
   },
   [AnimalActivityType.MEDICAL_RECORD_ADDED]: {
     icon: HeartPulse,
-    text: "had a medical record added",
+    textKey: "activity.actions.medicalRecordAdded",
   },
   [AnimalActivityType.CREATED]: {
     icon: PackagePlus,
-    text: "was created in the system",
+    textKey: "activity.actions.created",
   },
   [AnimalActivityType.STATUS_CHANGE]: {
     icon: ArrowRightLeft,
-    text: "had a status change",
+    textKey: "activity.actions.statusChange",
   },
   [AnimalActivityType.ASSESSMENT_COMPLETED]: {
     icon: ClipboardList,
-    text: "had an assessment completed",
+    textKey: "activity.actions.assessmentCompleted",
   },
   [AnimalActivityType.TASK_CREATED]: {
     icon: ClipboardList,
-    text: "had a task created",
+    textKey: "activity.actions.taskCreated",
   },
   [AnimalActivityType.TASK_STATUS_CHANGED]: {
     icon: ClipboardList,
-    text: "had a task status updated",
+    textKey: "activity.actions.taskStatusChanged",
   },
 };
 
@@ -95,13 +96,15 @@ interface ActivityFeedItemProps {
 }
 
 export default function ActivityFeedItem({ activity }: ActivityFeedItemProps) {
+  const t = useTranslations("dashboard");
   const [isExpanded, setIsExpanded] = useState(false);
 
   const config = activityConfig[activity.activityType] || {
     icon: Pencil,
-    text: "performed an unknown action",
+    textKey: "activity.actions.unknown",
   };
   const Icon = config.icon;
+  const actionText = t(config.textKey);
 
   const canExpand = !!activity.changeSummary;
 
@@ -132,7 +135,7 @@ export default function ActivityFeedItem({ activity }: ActivityFeedItemProps) {
             <span className="font-semibold text-gray-900">
               {activity.changedBy.name}
             </span>{" "}
-            {config.text}
+            {actionText}
           </p>
 
           <span className="ml-2 text-gray-400 whitespace-nowrap">
@@ -148,7 +151,7 @@ export default function ActivityFeedItem({ activity }: ActivityFeedItemProps) {
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="text-xs font-semibold text-blue-600 hover:underline"
               >
-                {isExpanded ? "Hide details" : "Show details"}
+                {isExpanded ? t("activity.hideDetails") : t("activity.showDetails")}
               </button>
               {isExpanded && (
                 <div className="details-box mt-2 p-3 bg-slate-50 border rounded-md">

@@ -9,12 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
 }
 
 export default async function NewAssessmentPage({ params }: Props) {
+  const t = await getTranslations("dashboard");
   const { id: animalId } = await params;
 
   const templates = await fetchAssessmentTemplates();
@@ -22,13 +24,13 @@ export default async function NewAssessmentPage({ params }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>New Assessment</CardTitle>
+        <CardTitle>{t("pages.assessments.newTitle")}</CardTitle>
         <CardDescription>
-          Create a new assessment using one of the available templates.
+          {t("pages.assessments.newDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<div>Loading assessment form...</div>}>
+        <Suspense fallback={<div>{t("common.loadingAssessmentForm")}</div>}>
           <AssessmentForm animalId={animalId} templates={templates} />
         </Suspense>
       </CardContent>

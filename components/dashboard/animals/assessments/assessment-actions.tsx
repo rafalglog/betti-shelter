@@ -16,6 +16,7 @@ import {
 } from "@/app/lib/actions/animal-assessment.actions";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 interface AssessmentActionsProps {
   assessment: AnimalAssessmentListPayload;
@@ -26,6 +27,7 @@ export function AssessmentActions({
   assessment,
   animalId,
 }: AssessmentActionsProps) {
+  const t = useTranslations("dashboard");
   const [isPending, startTransition] = useTransition();
 
   const onRestore = () => {
@@ -44,7 +46,7 @@ export function AssessmentActions({
         if (data?.message) {
           toast.success(data.message, {
             action: {
-              label: "Undo",
+              label: t("common.undo"),
               onClick: () => onRestore(),
             },
           });
@@ -58,7 +60,7 @@ export function AssessmentActions({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-          <span className="sr-only">More options</span>
+          <span className="sr-only">{t("table.moreOptions")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -67,13 +69,13 @@ export function AssessmentActions({
             href={`/dashboard/animals/${animalId}/assessments/${assessment.id}/edit`}
           >
             <Edit className="mr-2 h-4 w-4" />
-            <span>Edit</span>
+            <span>{t("table.edit")}</span>
           </Link>
         </DropdownMenuItem>
         {assessment.deletedAt ? (
           <DropdownMenuItem onClick={onRestore} disabled={isPending}>
             <Undo2 className="mr-2 h-4 w-4" />
-            <span>Restore</span>
+            <span>{t("table.restore")}</span>
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
@@ -82,7 +84,7 @@ export function AssessmentActions({
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            <span>Delete</span>
+            <span>{t("table.delete")}</span>
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

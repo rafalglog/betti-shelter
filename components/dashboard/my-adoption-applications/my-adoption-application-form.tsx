@@ -47,6 +47,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/app/lib/constants/us-states";
 import { livingSituationOptions } from "@/app/lib/utils/enum-formatter";
+import { useTranslations } from "next-intl";
 
 type MyApplicationFormData = z.infer<typeof MyAdoptionAppFormSchema>;
 
@@ -59,6 +60,7 @@ export function MyApplicationForm({
   animal,
   application,
 }: MyApplicationFormProps) {
+  const t = useTranslations("dashboard");
   const isEditMode = !!application;
   const action = isEditMode
     ? updateMyAdoptionApp.bind(null, application.id)
@@ -130,15 +132,14 @@ export function MyApplicationForm({
       {/* Animal Information Header */}
       <Card>
         <CardHeader>
-          <CardTitle>Adoption Application</CardTitle>
+          <CardTitle>{t("myApplications.form.title")}</CardTitle>
           <CardDescription>
-            You are applying to adopt {animal.name}, a wonderful{" "}
-            {animal.breeds.length > 0
-              ? `${animal.breeds.map((b) => b.name).join(" / ")} (${
-                  animal.species.name
-                })`
-              : animal.species.name}
-            .
+            {t("myApplications.form.description", {
+              name: animal.name,
+              breed: animal.breeds.length > 0
+                ? `${animal.breeds.map((b) => b.name).join(" / ")} (${animal.species.name})`
+                : animal.species.name,
+            })}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -151,7 +152,7 @@ export function MyApplicationForm({
           {/* Section 1: Applicant Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Applicant Information</CardTitle>
+              <CardTitle>{t("myApplications.form.applicant.title")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,9 +161,9 @@ export function MyApplicationForm({
                   name="applicantName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name *</FormLabel>
+                      <FormLabel>{t("myApplications.form.applicant.fullName")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input placeholder={t("myApplications.form.applicant.fullNamePlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -173,10 +174,10 @@ export function MyApplicationForm({
                   name="applicantEmail"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email *</FormLabel>
+                      <FormLabel>{t("myApplications.form.applicant.email")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="you@example.com"
+                          placeholder={t("myApplications.form.applicant.emailPlaceholder")}
                           type="email"
                           {...field}
                         />
@@ -190,9 +191,9 @@ export function MyApplicationForm({
                   name="applicantPhone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone *</FormLabel>
+                      <FormLabel>{t("myApplications.form.applicant.phone")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="(123) 456-7890" {...field} />
+                        <Input placeholder={t("myApplications.form.applicant.phonePlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,9 +207,9 @@ export function MyApplicationForm({
                   name="applicantAddressLine1"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address Line 1 *</FormLabel>
+                      <FormLabel>{t("myApplications.form.applicant.address1")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="123 Main St" {...field} />
+                        <Input placeholder={t("myApplications.form.applicant.address1Placeholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -219,10 +220,10 @@ export function MyApplicationForm({
                   name="applicantAddressLine2"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Address Line 2</FormLabel>
+                      <FormLabel>{t("myApplications.form.applicant.address2")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Apt, Suite, etc. (Optional)"
+                          placeholder={t("myApplications.form.applicant.address2Placeholder")}
                           {...field}
                         />
                       </FormControl>
@@ -236,9 +237,9 @@ export function MyApplicationForm({
                     name="applicantCity"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City *</FormLabel>
+                        <FormLabel>{t("myApplications.form.applicant.city")}</FormLabel>
                         <FormControl>
-                          <Input {...field} />
+                          <Input placeholder={t("myApplications.form.applicant.cityPlaceholder")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -249,14 +250,14 @@ export function MyApplicationForm({
                     name="applicantState"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>State *</FormLabel>
+                        <FormLabel>{t("myApplications.form.applicant.state")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a state" />
+                              <SelectValue placeholder={t("myApplications.form.applicant.statePlaceholder")} />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -276,9 +277,9 @@ export function MyApplicationForm({
                     name="applicantZipCode"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>ZIP Code *</FormLabel>
+                        <FormLabel>{t("myApplications.form.applicant.zip")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="12345" {...field} />
+                          <Input placeholder={t("myApplications.form.applicant.zipPlaceholder")} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -292,7 +293,7 @@ export function MyApplicationForm({
           {/* Section 2: Home & Lifestyle */}
           <Card>
             <CardHeader>
-              <CardTitle>Home & Lifestyle</CardTitle>
+              <CardTitle>{t("myApplications.form.home.title")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -301,20 +302,20 @@ export function MyApplicationForm({
                   name="livingSituation"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Living Situation *</FormLabel>
+                      <FormLabel>{t("myApplications.form.home.livingSituation")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select your living situation" />
+                            <SelectValue placeholder={t("myApplications.form.home.livingSituationPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {livingSituationOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                              {t(`myApplications.livingSituationOptions.${option.value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -328,12 +329,12 @@ export function MyApplicationForm({
                   name="householdSize"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Household Size *</FormLabel>
+                      <FormLabel>{t("myApplications.form.home.householdSize")}</FormLabel>
                       <FormControl>
                         <Input type="number" min="1" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Including yourself, how many people live in your home?
+                        {t("myApplications.form.home.householdSizeHint")}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -345,7 +346,7 @@ export function MyApplicationForm({
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <div className="text-sm font-medium">
-                        Do you have a yard? *
+                        {t("myApplications.form.home.hasYard")}
                       </div>
                       <FormControl>
                         <RadioGroup
@@ -357,13 +358,13 @@ export function MyApplicationForm({
                             <FormControl>
                               <RadioGroupItem value="true" />
                             </FormControl>
-                            <FormLabel className="font-normal">Yes</FormLabel>
+                            <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2">
                             <FormControl>
                               <RadioGroupItem value="false" />
                             </FormControl>
-                            <FormLabel className="font-normal">No</FormLabel>
+                            <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -377,7 +378,7 @@ export function MyApplicationForm({
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <div className="text-sm font-medium">
-                        If you rent, do you have landlord permission? *
+                        {t("myApplications.form.home.landlordPermission")}
                       </div>
                       <FormControl>
                         <RadioGroup
@@ -389,13 +390,13 @@ export function MyApplicationForm({
                             <FormControl>
                               <RadioGroupItem value="true" />
                             </FormControl>
-                            <FormLabel className="font-normal">Yes</FormLabel>
+                            <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2">
                             <FormControl>
                               <RadioGroupItem value="false" />
                             </FormControl>
-                            <FormLabel className="font-normal">No</FormLabel>
+                            <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -409,7 +410,7 @@ export function MyApplicationForm({
                   render={({ field }) => (
                     <FormItem className="space-y-3">
                       <div className="text-sm font-medium">
-                        Are there children in the home? *
+                        {t("myApplications.form.home.hasChildren")}
                       </div>
                       <FormControl>
                         <RadioGroup
@@ -421,13 +422,13 @@ export function MyApplicationForm({
                             <FormControl>
                               <RadioGroupItem value="true" />
                             </FormControl>
-                            <FormLabel className="font-normal">Yes</FormLabel>
+                            <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center space-x-2">
                             <FormControl>
                               <RadioGroupItem value="false" />
                             </FormControl>
-                            <FormLabel className="font-normal">No</FormLabel>
+                            <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -443,12 +444,12 @@ export function MyApplicationForm({
                     name="childrenAges"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Children&apos;s Ages *</FormLabel>
+                        <FormLabel>{t("myApplications.form.home.childrenAges")}</FormLabel>
                         <FormControl>
-                          <Input placeholder="e.g., 5, 12, 15" {...field} />
+                          <Input placeholder={t("myApplications.form.home.childrenAgesPlaceholder")} {...field} />
                         </FormControl>
                         <FormDescription>
-                          Please provide a comma-separated list of ages.
+                          {t("myApplications.form.home.childrenAgesHint")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -462,10 +463,10 @@ export function MyApplicationForm({
                 name="otherAnimalsDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Other Animals</FormLabel>
+                    <FormLabel>{t("myApplications.form.home.otherAnimals")}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Describe other animals in the home (species, age, temperament, etc.)."
+                        placeholder={t("myApplications.form.home.otherAnimalsPlaceholder")}
                         className="resize-y"
                         {...field}
                       />
@@ -480,7 +481,7 @@ export function MyApplicationForm({
           {/* Section 3: Experience & Intent */}
           <Card>
             <CardHeader>
-              <CardTitle>Experience & Intent</CardTitle>
+              <CardTitle>{t("myApplications.form.experience.title")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-8">
               <FormField
@@ -488,10 +489,10 @@ export function MyApplicationForm({
                 name="animalExperience"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Animal Experience *</FormLabel>
+                    <FormLabel>{t("myApplications.form.experience.animalExperience")}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Please describe your experience with animals, including past ownership."
+                        placeholder={t("myApplications.form.experience.animalExperiencePlaceholder")}
                         className="resize-y min-h-[100px]"
                         {...field}
                       />
@@ -505,10 +506,10 @@ export function MyApplicationForm({
                 name="reasonForAdoption"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Reason for Adoption *</FormLabel>
+                    <FormLabel>{t("myApplications.form.experience.reason")}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Why do you want to adopt at this time? What are you looking for in a companion?"
+                        placeholder={t("myApplications.form.experience.reasonPlaceholder")}
                         className="resize-y min-h-[100px]"
                         {...field}
                       />
@@ -528,17 +529,17 @@ export function MyApplicationForm({
               type="button"
               disabled={isPending}
             >
-              <Link href="/dashboard/my-applications">Cancel</Link>
+              <Link href="/dashboard/my-applications">{t("common.cancel")}</Link>
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
                 ? isEditMode
-                  ? "Updating..."
-                  : "Submitting..."
+                  ? t("common.updating")
+                  : t("common.submitting")
                 : isEditMode
-                ? "Update Application"
-                : "Submit Application"}
+                ? t("myApplications.form.updateButton")
+                : t("myApplications.form.submitButton")}
             </Button>
           </div>
         </form>

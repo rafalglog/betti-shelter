@@ -10,12 +10,14 @@ import { userApplicationStatusOptions } from "@/app/lib/utils/enum-formatter";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
 import { ApplicationWithAnimal } from "@/app/lib/data/user-application.data";
+import { useTranslations } from "next-intl";
 
 interface UserAppTableToolbarProps {
   table: Table<ApplicationWithAnimal>;
 }
 
 const UserAppTableToolbar = ({ table }: UserAppTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -39,7 +41,7 @@ const UserAppTableToolbar = ({ table }: UserAppTableToolbarProps) => {
         <div>
           <Input
             id="applications-search"
-            placeholder="Filter Applications..."
+            placeholder={t("adoptionApplications.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -49,9 +51,12 @@ const UserAppTableToolbar = ({ table }: UserAppTableToolbarProps) => {
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Status"
+            title={t("adoptionApplications.toolbar.statusFilter")}
             paramKey="status"
-            options={userApplicationStatusOptions}
+            options={userApplicationStatusOptions.map((option) => ({
+              ...option,
+              label: t(`adoptionApplications.statusOptions.${option.value}`),
+            }))}
           />
           {isFiltered && (
             <Button
@@ -59,7 +64,7 @@ const UserAppTableToolbar = ({ table }: UserAppTableToolbarProps) => {
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}

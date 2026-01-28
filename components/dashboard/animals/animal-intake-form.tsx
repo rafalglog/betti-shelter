@@ -70,6 +70,7 @@ import {
 } from "@/app/lib/types";
 import Link from "next/link";
 import { IntakeFormFields } from "./intake-form-fields";
+import { useTranslations } from "next-intl";
 
 type AnimalFormValues = z.infer<typeof AnimalFormSchema>;
 
@@ -86,6 +87,7 @@ const AnimalForm = ({
   colors,
   animal,
 }: AnimalFormProps) => {
+  const t = useTranslations("dashboard");
   const isEditMode = !!animal;
 
   const isStatusLocked =
@@ -203,32 +205,32 @@ const AnimalForm = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="w-full max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle>
-              {isEditMode ? "Edit Animal Details" : "New Animal Intake"}
-            </CardTitle>
-            <CardDescription>
+        <CardHeader>
+          <CardTitle>
+              {isEditMode ? t("animals.form.editTitle") : t("animals.form.createTitle")}
+          </CardTitle>
+          <CardDescription>
               {isEditMode
-                ? `Editing the record for ${animal.name}.`
-                : "Enter all details for the incoming animal on this single form."}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-10">
-            {/* Animal Information Section */}
-            <div className="space-y-6">
-              <h3 className="font-semibold border-b pb-2">
-                Animal Information
-              </h3>
+                ? t("animals.form.editDescription", { name: animal.name })
+                : t("animals.form.createDescription")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-10">
+          {/* Animal Information Section */}
+          <div className="space-y-6">
+            <h3 className="font-semibold border-b pb-2">
+                {t("animals.form.sectionTitle")}
+            </h3>
               <div className="grid grid-cols-1 md:grid-cols-6 gap-x-4 gap-y-8">
                 <FormField
                   control={form.control}
                   name="animalName"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Animal Name</FormLabel>
+                      <FormLabel>{t("animals.fields.name")}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="e.g., Buddy"
+                          placeholder={t("animals.fields.namePlaceholder")}
                           {...field}
                           autoComplete="off"
                         />
@@ -242,7 +244,7 @@ const AnimalForm = ({
                   name="species"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Species</FormLabel>
+                      <FormLabel>{t("animals.fields.species")}</FormLabel>
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
@@ -253,7 +255,7 @@ const AnimalForm = ({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a species" />
+                            <SelectValue placeholder={t("animals.fields.speciesPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -273,7 +275,7 @@ const AnimalForm = ({
                   name="breed"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Breed</FormLabel>
+                      <FormLabel>{t("animals.fields.breed")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -281,7 +283,7 @@ const AnimalForm = ({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a breed" />
+                            <SelectValue placeholder={t("animals.fields.breedPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -301,14 +303,14 @@ const AnimalForm = ({
                   name="primaryColor"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Primary Color</FormLabel>
+                      <FormLabel>{t("animals.fields.primaryColor")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a color" />
+                            <SelectValue placeholder={t("animals.fields.colorPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -328,20 +330,20 @@ const AnimalForm = ({
                   name="sex"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Sex</FormLabel>
+                      <FormLabel>{t("animals.fields.sex")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select sex" />
+                            <SelectValue placeholder={t("animals.fields.sexPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {animalSexOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                              {t(`animals.sexOptions.${option.value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -358,7 +360,7 @@ const AnimalForm = ({
 
                     return (
                       <FormItem className="col-span-2">
-                        <FormLabel>Estimated Birth Date</FormLabel>
+                        <FormLabel>{t("animals.fields.birthDate")}</FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -372,7 +374,7 @@ const AnimalForm = ({
                                 {dateValue ? (
                                   format(dateValue, "PPP")
                                 ) : (
-                                  <span>Pick a date</span>
+                                  <span>{t("animals.fields.datePlaceholder")}</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -408,11 +410,11 @@ const AnimalForm = ({
 
                     return (
                       <FormItem className="col-span-1">
-                        <FormLabel>Weight (kg)</FormLabel>
+                        <FormLabel>{t("animals.fields.weight")}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            placeholder="e.g., 15.5"
+                            placeholder={t("animals.fields.weightPlaceholder")}
                             {...field}
                             value={value}
                             onChange={(e) => {
@@ -439,11 +441,11 @@ const AnimalForm = ({
 
                     return (
                       <FormItem className="col-span-1">
-                        <FormLabel>Height (cm)</FormLabel>
+                        <FormLabel>{t("animals.fields.height")}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            placeholder="e.g., 55"
+                            placeholder={t("animals.fields.heightPlaceholder")}
                             {...field}
                             value={value}
                             onChange={(e) => {
@@ -462,20 +464,20 @@ const AnimalForm = ({
                   name="healthStatus"
                   render={({ field }) => (
                     <FormItem className="col-span-3">
-                      <FormLabel>Health Status</FormLabel>
+                      <FormLabel>{t("animals.fields.healthStatus")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select health status" />
+                            <SelectValue placeholder={t("animals.fields.healthStatusPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {animalHealthStatusOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                              {t(`animals.healthStatusOptions.${option.value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -489,9 +491,9 @@ const AnimalForm = ({
                   name="microchipNumber"
                   render={({ field }) => (
                     <FormItem className="col-span-3">
-                      <FormLabel>Microchip Number</FormLabel>
+                      <FormLabel>{t("animals.fields.microchip")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., 900123000456789" {...field} />
+                        <Input placeholder={t("animals.fields.microchipPlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -502,7 +504,7 @@ const AnimalForm = ({
                   name="listingStatus"
                   render={({ field }) => (
                     <FormItem className="col-span-2">
-                      <FormLabel>Listing Status</FormLabel>
+                      <FormLabel>{t("animals.fields.listingStatus")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
@@ -510,21 +512,20 @@ const AnimalForm = ({
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select listing status" />
+                            <SelectValue placeholder={t("animals.fields.listingStatusPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {availableStatusOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                              {t(`animals.listingStatusOptions.${option.value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       {isStatusLocked && (
                         <FormDescription className="text-amber-600">
-                          Status is locked. It can only be changed via the
-                          application or outcome process.
+                          {t("animals.fields.listingStatusLocked")}
                         </FormDescription>
                       )}
                       <FormMessage />
@@ -536,9 +537,9 @@ const AnimalForm = ({
                   name="city"
                   render={({ field }) => (
                     <FormItem className="col-span-3">
-                      <FormLabel>City</FormLabel>
+                      <FormLabel>{t("animals.fields.city")}</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Anytown" {...field} />
+                        <Input placeholder={t("animals.fields.cityPlaceholder")} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -549,14 +550,14 @@ const AnimalForm = ({
                   name="state"
                   render={({ field }) => (
                     <FormItem className="col-span-3">
-                      <FormLabel>State</FormLabel>
+                      <FormLabel>{t("animals.fields.state")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a state" />
+                            <SelectValue placeholder={t("animals.fields.statePlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -576,10 +577,10 @@ const AnimalForm = ({
                   name="description"
                   render={({ field }) => (
                     <FormItem className="col-span-full">
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{t("animals.fields.description")}</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Tell us about this animal's personality, quirks, and what makes them special! Help potential adopters imagine them in a loving home."
+                          placeholder={t("animals.fields.descriptionPlaceholder")}
                           {...field}
                         />
                       </FormControl>
@@ -608,17 +609,17 @@ const AnimalForm = ({
               type="button"
               disabled={isPending}
             >
-              <Link href={`/dashboard/animals`}>Cancel</Link>
+              <Link href={`/dashboard/animals`}>{t("common.cancel")}</Link>
             </Button>
             <Button type="submit" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
                 ? isEditMode
-                  ? "Updating..."
-                  : "Submitting..."
+                  ? t("common.updating")
+                  : t("animals.form.submitting")
                 : isEditMode
-                ? "Save Changes"
-                : "Create Intake"}
+                ? t("animals.form.saveChanges")
+                : t("animals.form.createButton")}
             </Button>
           </CardFooter>
         </Card>

@@ -52,6 +52,7 @@ import {
 } from "@/app/lib/actions/outcome.actions";
 import { cn } from "@/lib/utils";
 import { OutcomeFormSchema } from "@/app/lib/zod-schemas/outcome.schema";
+import { useTranslations } from "next-intl";
 
 type OutcomeFormData = z.infer<typeof OutcomeFormSchema>;
 
@@ -73,6 +74,7 @@ export function OutcomeForm({
   outcome,
   partners,
 }: OutcomeFormProps) {
+  const t = useTranslations("dashboard");
   const isEditMode = !!outcome;
 
   const isAdoptionOutcome = !!application;
@@ -145,12 +147,12 @@ export function OutcomeForm({
         <Card className="w-full max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle>
-              {isEditMode ? "Edit Outcome" : "Process Animal Outcome"}
+              {isEditMode ? t("outcomes.form.editTitle") : t("outcomes.form.createTitle")}
             </CardTitle>
             <CardDescription>
               {isEditMode
-                ? `Update the outcome details for ${animal.name}.`
-                : `Finalize the journey for ${animal.name}. This action will archive the animal's record.`}
+                ? t("outcomes.form.editDescription", { name: animal.name })
+                : t("outcomes.form.createDescription", { name: animal.name })}
             </CardDescription>
           </CardHeader>
 
@@ -161,7 +163,7 @@ export function OutcomeForm({
                 name="outcomeType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Outcome Type *</FormLabel>
+                    <FormLabel>{t("outcomes.form.typeLabel")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -169,7 +171,7 @@ export function OutcomeForm({
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a reason" />
+                          <SelectValue placeholder={t("outcomes.form.typePlaceholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -189,7 +191,7 @@ export function OutcomeForm({
                 name="outcomeDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date of Outcome *</FormLabel>
+                    <FormLabel>{t("outcomes.form.dateLabel")}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -203,7 +205,7 @@ export function OutcomeForm({
                             {field.value ? (
                               format(field.value, "PPP")
                             ) : (
-                              <span>Pick a date</span>
+                              <span>{t("outcomes.form.datePlaceholder")}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -239,14 +241,14 @@ export function OutcomeForm({
                 name="destinationPartnerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Destination Partner *</FormLabel>
+                    <FormLabel>{t("outcomes.form.partnerLabel")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a partner shelter or rescue" />
+                          <SelectValue placeholder={t("outcomes.form.partnerPlaceholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -268,10 +270,10 @@ export function OutcomeForm({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>{t("outcomes.form.notesLabel")}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Add any relevant notes about this outcome..."
+                      placeholder={t("outcomes.form.notesPlaceholder")}
                       className="resize-y"
                       {...field}
                     />
@@ -289,17 +291,19 @@ export function OutcomeForm({
               type="button"
               disabled={isPending}
             >
-              <Link href={`/dashboard/animals/${animal.id}`}>Cancel</Link>
+              <Link href={`/dashboard/animals/${animal.id}`}>
+                {t("common.cancel")}
+              </Link>
             </Button>
             <Button type="submit" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
                 ? isEditMode
-                  ? "Updating..."
-                  : "Processing..."
+                  ? t("common.updating")
+                  : t("outcomes.form.processing")
                 : isEditMode
-                ? "Update Outcome"
-                : "Process Outcome"}
+                ? t("outcomes.form.updateButton")
+                : t("outcomes.form.createButton")}
             </Button>
           </CardFooter>
         </Card>

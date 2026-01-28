@@ -11,6 +11,7 @@ import { Suspense } from "react";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
@@ -28,15 +29,15 @@ const Page = async ({ params }: Props) => {
 };
 
 const PageContent = async ({ params }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id: animalId } = await params;
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Journey</CardTitle>
+        <CardTitle>{t("pages.journey.title")}</CardTitle>
         <CardDescription>
-          A timeline of significant events in the animal&apos;s story at the
-          shelter.
+          {t("pages.journey.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>

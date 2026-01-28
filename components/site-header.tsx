@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useTranslations } from "next-intl";
 
 // Helper function to format the title string
 const formatTitle = (s: string) => {
@@ -20,13 +21,24 @@ const formatTitle = (s: string) => {
 
 export function SiteHeader() {
   const pathname = usePathname(); // e.g., "/dashboard/adoption-applications"
+  const t = useTranslations("dashboard.routes");
   const segments = pathname.split('/').filter(Boolean); // e.g., ["dashboard", "adoption-applications"]
 
-  let title = "Dashboard"; // Default title
+  let title = t("dashboard");
 
   // If the path is /dashboard/*, use the second segment for the title
   if (segments[0] === 'dashboard' && segments.length > 1) {
-    title = formatTitle(segments[1]);
+    const key = segments[1];
+    const routeMap: Record<string, string> = {
+      "animals": t("animals"),
+      "animal-tasks": t("animalTasks"),
+      "outcomes": t("outcomes"),
+      "adoption-applications": t("adoptionApplications"),
+      "my-applications": t("myApplications"),
+      "users": t("users"),
+      "settings": t("settings"),
+    };
+    title = routeMap[key] ?? formatTitle(key);
   } else if (segments.length > 0) {
     title = formatTitle(segments[0]);
   }

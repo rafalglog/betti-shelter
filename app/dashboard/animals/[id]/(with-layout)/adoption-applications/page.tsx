@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/card";
 import { IDParamType, SearchParamsType } from "@/app/lib/types";
 import DataTable from "@/components/dashboard/adoption-applications/table/adoption-applications-table";
-import { columns } from "@/components/dashboard/adoption-applications/table/adoption-applications-table-columns";
+import { getColumns } from "@/components/dashboard/adoption-applications/table/adoption-applications-table-columns";
 import UserAppTableToolbar from "@/components/dashboard/adoption-applications/table/adoption-applications-table-toolbar";
 import { fetchAnimalApplications } from "@/app/lib/data/animals/animal-adoption-application.data";
 import { notFound } from "next/navigation";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
@@ -33,6 +34,7 @@ const Page = async ({ searchParams, params }: Props) => {
 };
 
 const PageContent = async ({ searchParams, params }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id: animalId } = await params;
 
   const { query = "", page = "1", sort, status } = await searchParams;
@@ -54,10 +56,10 @@ const PageContent = async ({ searchParams, params }: Props) => {
     <Card className="@container/card">
       <CardHeader>
         <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-          Adoption Applications
+          {t("pages.adoptionApplications.title")}
         </CardTitle>
         <CardDescription>
-          Review and compare all adoption applications received for this animal.
+          {t("pages.adoptionApplications.singleDescription")}
         </CardDescription>
         <CardAction></CardAction>
       </CardHeader>
@@ -67,7 +69,7 @@ const PageContent = async ({ searchParams, params }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={applications}
-                columns={columns}
+                columns={getColumns(t)}
                 ToolbarComponent={UserAppTableToolbar}
                 totalPages={totalPages}
               />

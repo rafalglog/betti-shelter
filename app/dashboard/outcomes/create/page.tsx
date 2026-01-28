@@ -12,12 +12,14 @@ import Link from "next/link";
 import { ArrowLeft, ArchiveIcon } from "lucide-react";
 import { AnimalListingStatus } from "@prisma/client";
 import ActionBlockedMessage from "@/components/action-blocked-message";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const CreateOutcomePage = async ({ searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const { animalId, applicationId } = (await searchParams) || {};
 
   let animal: Awaited<ReturnType<typeof fetchAnimalForOutcomeForm>> = null;
@@ -47,23 +49,24 @@ const CreateOutcomePage = async ({ searchParams }: Props) => {
       <Button asChild variant="ghost" className="mb-4">
         <Link href={`/dashboard/animals/${animal.id}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Animal Profile
+          {t("common.backToAnimalProfile")}
         </Link>
       </Button>
 
       {animal.listingStatus === AnimalListingStatus.ARCHIVED ? (
         <ActionBlockedMessage
           icon={ArchiveIcon}
-          title="Outcome Already Processed"
+          title={t("outcomes.alreadyProcessedTitle")}
         >
           <p>
-            An outcome has already been recorded for{" "}
-            <strong>{animal.name}</strong>. This animal&apos;s record is archived,
-            and no further outcomes can be processed.
+            {t.rich("outcomes.alreadyProcessedBody", {
+              name: animal.name,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
         </ActionBlockedMessage>
       ) : (
-        <Suspense fallback={<div>Loading form...</div>}>
+        <Suspense fallback={<div>{t("common.loadingForm")}</div>}>
           <OutcomeForm
             animal={{ id: animal.id, name: animal.name }}
             application={application || undefined}

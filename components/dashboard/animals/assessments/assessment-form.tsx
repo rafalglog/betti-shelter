@@ -40,6 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl";
 
 interface AssessmentFormProps {
   animalId: string;
@@ -52,6 +53,7 @@ export function AssessmentForm({
   templates,
   assessment,
 }: AssessmentFormProps) {
+  const t = useTranslations("dashboard");
   const isEditMode = !!assessment;
 
   const action = isEditMode
@@ -174,10 +176,10 @@ export function AssessmentForm({
     return (
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
-          <CardTitle>No Templates Available</CardTitle>
+          <CardTitle>{t("assessments.noTemplatesTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Please add a template to get started.</p>
+          <p>{t("assessments.noTemplatesDescription")}</p>
         </CardContent>
       </Card>
     );
@@ -189,7 +191,7 @@ export function AssessmentForm({
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6">
           <FormItem className="col-span-full">
             <FormLabel htmlFor="template-switcher">
-              Assessment Template
+              {t("assessments.templateLabel")}
             </FormLabel>
             <Select
               value={selectedTemplate.id}
@@ -198,7 +200,7 @@ export function AssessmentForm({
             >
               <FormControl>
                 <SelectTrigger id="template-switcher">
-                  <SelectValue placeholder="Select a template" />
+                  <SelectValue placeholder={t("assessments.templatePlaceholder")} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
@@ -225,7 +227,7 @@ export function AssessmentForm({
                     htmlFor={`${field.id}_notes`}
                     className="mb-2 block"
                   >
-                    Optional Notes
+                    {t("assessments.optionalNotes")}
                   </FormLabel>
                 )}
                 <Controller
@@ -235,7 +237,7 @@ export function AssessmentForm({
                     <Input
                       {...controllerField}
                       id={`${field.id}_notes`}
-                      placeholder="Add a note..."
+                      placeholder={t("assessments.notePlaceholder")}
                       value={controllerField.value || ""}
                     />
                   )}
@@ -248,12 +250,15 @@ export function AssessmentForm({
             <DynamicFormField
               field={{
                 id: "overallOutcome",
-                label: "Overall Outcome",
+                label: t("assessments.overallOutcomeLabel"),
                 fieldType: FieldType.SELECT,
                 isRequired: false,
-                options: assessmentOutcomeOptions,
+                options: assessmentOutcomeOptions.map((option) => ({
+                  ...option,
+                  label: t(`assessments.outcomeOptions.${option.value}`),
+                })),
                 order: 999,
-                placeholder: "Select an outcome",
+                placeholder: t("assessments.overallOutcomePlaceholder"),
               }}
               control={form.control}
             />
@@ -263,10 +268,10 @@ export function AssessmentForm({
             <DynamicFormField
               field={{
                 id: "summary",
-                label: "Summary / Key Takeaways",
+                label: t("assessments.summaryLabel"),
                 fieldType: FieldType.TEXTAREA,
                 isRequired: false,
-                placeholder: "Briefly summarize the assessment findings...",
+                placeholder: t("assessments.summaryPlaceholder"),
                 options: [],
                 order: 1000,
               }}
@@ -282,18 +287,18 @@ export function AssessmentForm({
               disabled={isPending}
             >
               <Link href={`/dashboard/animals/${animalId}/assessments`}>
-                Cancel
+                {t("common.cancel")}
               </Link>
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isPending
                 ? isEditMode
-                  ? "Updating..."
-                  : "Creating..."
+                  ? t("common.updating")
+                  : t("common.creating")
                 : isEditMode
-                ? "Update Assessment"
-                : "Create Assessment"}
+                ? t("assessments.updateButton")
+                : t("assessments.createButton")}
             </Button>
           </div>
         </div>

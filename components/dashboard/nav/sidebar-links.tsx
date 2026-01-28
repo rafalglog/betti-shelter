@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { NavDocument, NavItem } from "./nav-links.config";
+import { getTranslations } from "next-intl/server";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user: Session["user"];
@@ -24,13 +25,14 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   navSecondaryItems: NavItem[];
 }
 
-export function AppSidebar({
+export async function AppSidebar({
   user,
   navMainItems,
   documentItems,
   navSecondaryItems,
   ...props
 }: AppSidebarProps) {
+  const t = await getTranslations();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -42,7 +44,9 @@ export function AppSidebar({
             >
               <Link href="/">
                 <IconPaw className="!size-5" />
-                <span className="text-base font-semibold">Pet Adopt</span>
+                <span className="text-base font-semibold">
+                  {t("brand.name")}
+                </span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

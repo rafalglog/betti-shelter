@@ -11,12 +11,14 @@ import {
 } from "@/components/ui/card";
 import { fetchAllAnimalsTasks } from "@/app/lib/data/all-animal-tasks.data";
 import { fetchTaskAssigneeList } from "@/app/lib/data/animals/animal-task.data";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const {
     query = "",
     page = "1",
@@ -45,10 +47,10 @@ const Page = async ({ searchParams }: Props) => {
     <Card className="@container/card">
       <CardHeader>
         <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-          Tasks
+          {t("pages.animalTasks.title")}
         </CardTitle>
         <CardDescription>
-          This page displays all tasks that are associated with all the animals.
+          {t("pages.animalTasks.description")}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">

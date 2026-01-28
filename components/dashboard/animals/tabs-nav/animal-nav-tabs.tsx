@@ -13,21 +13,23 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Menu } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 // Define the tabs with their unique suffix and label.
 // The default tab ('Activity') has an empty suffix to match the base route.
 const animalTabDefinitions = [
-  { suffix: "", label: "Activity" },
-  { suffix: "/tasks", label: "Tasks" },
-  { suffix: "/characteristics", label: "Characteristics" },
-  { suffix: "/journey", label: "Journey" },
-  { suffix: "/notes", label: "Notes" },
-  { suffix: "/assessments", label: "Assessments" },
-  { suffix: "/adoption-applications", label: "Applications" },
-  { suffix: "/photos", label: "Photos" },
+  { suffix: "", labelKey: "animals.tabs.activity" },
+  { suffix: "/tasks", labelKey: "animals.tabs.tasks" },
+  { suffix: "/characteristics", labelKey: "animals.tabs.characteristics" },
+  { suffix: "/journey", labelKey: "animals.tabs.journey" },
+  { suffix: "/notes", labelKey: "animals.tabs.notes" },
+  { suffix: "/assessments", labelKey: "animals.tabs.assessments" },
+  { suffix: "/adoption-applications", labelKey: "animals.tabs.applications" },
+  { suffix: "/photos", labelKey: "animals.tabs.photos" },
 ];
 
 export function AnimalNavTabs() {
+  const t = useTranslations("dashboard");
   const pathname = usePathname();
 
   // Extracts the base path, including the dynamic ID.
@@ -38,7 +40,7 @@ export function AnimalNavTabs() {
   // Create the fully-formed, dynamic links by appending the suffix to the base path
   const dynamicLinks = animalTabDefinitions.map((tab) => ({
     href: `${basePath}${tab.suffix}`,
-    label: tab.label,
+    label: t(tab.labelKey),
   }));
 
   return (
@@ -47,7 +49,7 @@ export function AnimalNavTabs() {
         <DropdownMenuTrigger asChild className="w-32 @[581px]/tabs:hidden">
           <Button variant="outline">
             <Menu className="mr-2 h-4 w-4" />
-            Navigation
+            {t("animals.tabs.navigation")}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">

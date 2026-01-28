@@ -31,6 +31,7 @@ import { TaskForm } from "../task-form";
 import { updateAnimalTaskStatus } from "@/app/lib/actions/animal-task.actions";
 import { TaskStatus } from "@prisma/client";
 import { TaskStatusOptions } from "@/app/lib/utils/enum-formatter";
+import { useTranslations } from "next-intl";
 
 interface DataTableRowActionsProps {
   row: Row<FetchAnimalTasksPayload>;
@@ -44,18 +45,19 @@ export function DataTableRowActions({
   animalId,
 }: DataTableRowActionsProps) {
   const task = row.original;
+  const t = useTranslations("dashboard");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const onSoftDelete = () => {
     const originalStatus = task.status;
     updateAnimalTaskStatus(animalId, task.id, TaskStatus.DELETED);
 
-    toast.success("Task moved to trash.", {
+    toast.success(t("tasks.toast.movedToTrash"), {
       action: {
-        label: "Undo",
+        label: t("common.undo"),
         onClick: () => {
           updateAnimalTaskStatus(animalId, task.id, originalStatus);
-          toast.info("Task restored.");
+          toast.info(t("tasks.toast.restored"));
         },
       },
     });
@@ -70,18 +72,18 @@ export function DataTableRowActions({
             className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
           >
             <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
+            <span className="sr-only">{t("table.openMenu")}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[160px]">
           <DialogTrigger asChild>
             <DropdownMenuItem>
-              Edit
+              {t("table.edit")}
             </DropdownMenuItem>
           </DialogTrigger>
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Status</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger>{t("table.status")}</DropdownMenuSubTrigger>
             <DropdownMenuSubContent>
               <DropdownMenuRadioGroup
                 value={task.status}
@@ -91,7 +93,7 @@ export function DataTableRowActions({
                     task.id,
                     newStatus as TaskStatus
                   );
-                  toast.success(`Task status updated`);
+                  toast.success(t("tasks.toast.statusUpdated"));
                 }}
               >
                 {TaskStatusOptions.map((status) => (
@@ -100,7 +102,7 @@ export function DataTableRowActions({
                     value={status.value}
                     disabled={task.status === status.value}
                   >
-                    {status.label}
+                    {t(`tasks.options.status.${status.value}`)}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
@@ -114,16 +116,16 @@ export function DataTableRowActions({
             onClick={onSoftDelete}
             disabled={task.status === TaskStatus.DELETED}
           >
-            Move to Trash
+            {t("table.moveToTrash")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle>{t("tasks.dialog.editTitle")}</DialogTitle>
           <DialogDescription>
-            Update the details for this task. Click update when you&apos;re done.
+            {t("tasks.dialog.editDescription")}
           </DialogDescription>
         </DialogHeader>
         <TaskForm

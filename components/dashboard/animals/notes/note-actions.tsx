@@ -21,6 +21,7 @@ import { NotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { NoteForm } from "./note-form";
 import { deleteAnimalNote, restoreAnimalNote } from "@/app/lib/actions/animal-note.actions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface NoteActionsProps {
   note: NotePayload;
@@ -28,6 +29,7 @@ interface NoteActionsProps {
 }
 
 export function NoteActions({ note, animalId }: NoteActionsProps) {
+  const t = useTranslations("dashboard");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -37,7 +39,7 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
         if (data?.message) {
           toast.success(data.message, {
             action: {
-              label: "Undo",
+              label: t("common.undo"),
               onClick: () => onRestore(),
             },
           });
@@ -66,11 +68,11 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DialogTrigger asChild>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem>{t("table.edit")}</DropdownMenuItem>
           </DialogTrigger>
           {note.deletedAt ? (
             <DropdownMenuItem onClick={onRestore} disabled={isPending}>
-              Restore
+              {t("table.restore")}
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem
@@ -78,7 +80,7 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
               onClick={onSoftDelete}
               disabled={isPending}
             >
-              Delete
+              {t("table.delete")}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
@@ -86,9 +88,9 @@ export function NoteActions({ note, animalId }: NoteActionsProps) {
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Edit Note</DialogTitle>
+          <DialogTitle>{t("notes.dialog.editTitle")}</DialogTitle>
           <DialogDescription>
-            Update the details for this note. Click update when you&apos;re done.
+            {t("notes.dialog.editDescription")}
           </DialogDescription>
         </DialogHeader>
         <NoteForm

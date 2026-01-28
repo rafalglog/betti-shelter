@@ -12,6 +12,7 @@ import { notFound } from "next/navigation";
 import { Permissions } from "@/app/lib/auth/permissions";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: Promise<{ id: string, assessmentId: string }>;
@@ -29,6 +30,7 @@ const Page = async ({ params }: Props) => {
 };
 
 const PageContent = async ({ params }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id: animalId, assessmentId } = await params;
 
   const [templates, assessment] = await Promise.all([
@@ -43,13 +45,13 @@ const PageContent = async ({ params }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Edit Assessment</CardTitle>
+        <CardTitle>{t("pages.assessments.editTitle")}</CardTitle>
         <CardDescription>
-          Edit the details for this assessment.
+          {t("pages.assessments.editDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<div>Loading assessment form...</div>}>
+        <Suspense fallback={<div>{t("common.loadingAssessmentForm")}</div>}>
           <AssessmentForm assessment={assessment} animalId={animalId} templates={templates} />
         </Suspense>
       </CardContent>

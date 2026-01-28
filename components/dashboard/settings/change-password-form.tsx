@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { ChangePasswordSchema } from "@/app/lib/zod-schemas/password.schemas";
 import { changePassword } from "@/app/lib/actions/password.actions";
 import { INITIAL_FORM_STATE, PasswordFormState } from "@/app/lib/form-state-types";
+import { useTranslations } from "next-intl";
 
 type PasswordFormData = z.infer<typeof ChangePasswordSchema>;
 
@@ -22,6 +23,7 @@ const defaultValues: PasswordFormData = {
 };
 
 const ChangePasswordForm = ({ force }: { force?: boolean }) => {
+  const t = useTranslations("dashboard.settings");
   const [state, formAction, isPending] = useActionState<PasswordFormState, PasswordFormData>(
     async (_prev, data) => {
       const formData = new FormData();
@@ -68,11 +70,11 @@ const ChangePasswordForm = ({ force }: { force?: boolean }) => {
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
-        <CardTitle>Change password</CardTitle>
+        <CardTitle>{t("password.title")}</CardTitle>
         <CardDescription>
           {force
-            ? "You must change your password before continuing."
-            : "Update your password to keep your account secure."}
+            ? t("password.forceDescription")
+            : t("password.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,7 +85,7 @@ const ChangePasswordForm = ({ force }: { force?: boolean }) => {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current password</FormLabel>
+                  <FormLabel>{t("password.current")}</FormLabel>
                   <FormControl>
                     <Input type="password" autoComplete="current-password" {...field} />
                   </FormControl>
@@ -96,7 +98,7 @@ const ChangePasswordForm = ({ force }: { force?: boolean }) => {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>New password</FormLabel>
+                  <FormLabel>{t("password.new")}</FormLabel>
                   <FormControl>
                     <Input type="password" autoComplete="new-password" {...field} />
                   </FormControl>
@@ -109,7 +111,7 @@ const ChangePasswordForm = ({ force }: { force?: boolean }) => {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm new password</FormLabel>
+                  <FormLabel>{t("password.confirm")}</FormLabel>
                   <FormControl>
                     <Input type="password" autoComplete="new-password" {...field} />
                   </FormControl>
@@ -119,7 +121,7 @@ const ChangePasswordForm = ({ force }: { force?: boolean }) => {
             />
             <div className="flex justify-end">
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Updating..." : "Update password"}
+                {isPending ? t("password.updating") : t("password.updateButton")}
               </Button>
             </div>
           </form>

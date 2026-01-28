@@ -10,12 +10,14 @@ import { UsersPayload } from "@/app/lib/types";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
 import { UserRoles } from "./users-options";
+import { useTranslations } from "next-intl";
 
 interface UsersTableToolbarProps {
   table: Table<UsersPayload>;
 }
 
 const UsersTableToolbar = ({ table }: UsersTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -39,7 +41,7 @@ const UsersTableToolbar = ({ table }: UsersTableToolbarProps) => {
         <div>
           <Input
             id="emails-search"
-            placeholder="Filter emails..."
+            placeholder={t("users.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -49,9 +51,12 @@ const UsersTableToolbar = ({ table }: UsersTableToolbarProps) => {
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Role"
+            title={t("users.toolbar.roleFilter")}
             paramKey="role"
-            options={UserRoles}
+            options={UserRoles.map((role) => ({
+              ...role,
+              label: t(role.labelKey),
+            }))}
           />
           {isFiltered && (
             <Button
@@ -59,7 +64,7 @@ const UsersTableToolbar = ({ table }: UsersTableToolbarProps) => {
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}

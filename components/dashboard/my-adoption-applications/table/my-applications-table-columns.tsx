@@ -10,7 +10,11 @@ import { MyApplicationPayload } from "@/app/lib/types";
 import { formatTimeAgo } from "@/app/lib/utils/date-utils";
 import Link from "next/link";
 
-export const columns: ColumnDef<MyApplicationPayload>[] = [
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+export const getColumns = (
+  t: Translator
+): ColumnDef<MyApplicationPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -20,7 +24,7 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("table.selectAll")}
         className="translate-y-[2px]"
       />
     ),
@@ -28,7 +32,7 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("table.selectRow")}
         className="translate-y-[2px]"
       />
     ),
@@ -39,7 +43,10 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
     id: "animalName",
     accessorFn: (row) => row.animal.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pet Name" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("myApplications.columns.petName")}
+      />
     ),
     meta: {
       displayName: "Animal Name",
@@ -52,7 +59,9 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
 
       return (
         <div className="flex space-x-2">
-          {status && <Badge variant="outline">{status.label}</Badge>}
+          {status && (
+            <Badge variant="outline">{t(status.labelKey)}</Badge>
+          )}
           <Link
             href={`/pets/${animal.id}`}
             className="font-medium hover:underline"
@@ -66,7 +75,10 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
   {
     accessorKey: "applicantName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Applicant Name" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("myApplications.columns.applicantName")}
+      />
     ),
     meta: {
       displayName: "Applicant Name",
@@ -82,7 +94,10 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("myApplications.columns.status")}
+      />
     ),
     cell: ({ row }) => {
       const status = ApplicationStatuses.find(
@@ -98,7 +113,7 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{status.label}</span>
+          <span>{t(status.labelKey)}</span>
         </Badge>
       );
     },
@@ -110,7 +125,10 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
     id: "animalSpecies",
     accessorFn: (row) => row.animal.species.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Pet Species" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("myApplications.columns.petSpecies")}
+      />
     ),
     meta: {
       displayName: "Species",
@@ -126,7 +144,10 @@ export const columns: ColumnDef<MyApplicationPayload>[] = [
   {
     accessorKey: "submittedAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Submitted At" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("myApplications.columns.submittedAt")}
+      />
     ),
     meta: {
       displayName: "Submitted At",

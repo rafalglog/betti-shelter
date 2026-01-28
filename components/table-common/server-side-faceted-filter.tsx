@@ -21,6 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl";
 
 interface ServerSideFacetedFilterProps {
   title?: string;
@@ -37,6 +38,7 @@ export function ServerSideFacetedFilter({
   paramKey,
   options,
 }: ServerSideFacetedFilterProps) {
+  const t = useTranslations("dashboard.table");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { replace } = useRouter();
@@ -85,7 +87,7 @@ export function ServerSideFacetedFilter({
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} selected
+                    {t("selectedCount", { count: selectedValues.size })}
                   </Badge>
                 ) : (
                   options
@@ -109,7 +111,7 @@ export function ServerSideFacetedFilter({
         <Command>
           <CommandInput placeholder={title} />
           <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandEmpty>{t("noResultsFound")}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
@@ -149,7 +151,7 @@ export function ServerSideFacetedFilter({
                     }}
                     className="justify-center text-center"
                   >
-                    Clear filters
+                    {t("clearFilters")}
                   </CommandItem>
                 </CommandGroup>
               </>

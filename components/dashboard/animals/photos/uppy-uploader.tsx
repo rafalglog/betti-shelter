@@ -7,12 +7,14 @@ import '@/node_modules/@uppy/core/dist/style.min.css';
 import '@/node_modules/@uppy/dashboard/dist/style.min.css';
 import { addAnimalImage } from '@/app/lib/actions/animal.actions';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 interface UppyUploaderProps {
   animalId: string;
 }
 
 const UppyUploader = ({ animalId }: UppyUploaderProps) => {
+  const t = useTranslations('dashboard');
   const [uppy] = useState(() =>
     new Uppy({
       debug: true,
@@ -38,7 +40,7 @@ const UppyUploader = ({ animalId }: UppyUploaderProps) => {
             toast.error(result.message);
           }
         } catch (error) {
-          toast.error('Failed to save image to the database.');
+          toast.error(t('photos.uploadError'));
         }
       }
     };
@@ -56,7 +58,7 @@ const UppyUploader = ({ animalId }: UppyUploaderProps) => {
       <Dashboard
         uppy={uppy}
         hideProgressAfterFinish={true}
-        note="Images will be saved to the animal's record upon successful upload."
+        note={t('photos.uploadNote')}
         proudlyDisplayPoweredByUppy={false}
         width={'100%'}
       />

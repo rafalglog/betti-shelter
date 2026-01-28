@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const Page = async ({ params, searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id: animalId } = await params;
 
   const {
@@ -47,10 +49,9 @@ const Page = async ({ params, searchParams }: Props) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Tasks</CardTitle>
+        <CardTitle>{t("pages.animalTasks.title")}</CardTitle>
         <CardDescription>
-          This page displays all tasks that are associated with this animal,
-          which can be filtered and sorted.
+          {t("pages.animalTasks.singleDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">

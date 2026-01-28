@@ -26,10 +26,12 @@ import { AllAnimalsTasksPayload } from "@/app/lib/data/all-animal-tasks.data";
 
 interface GetColumnsProps {
   assigneeList: TaskAssignee[];
+  t: (key: string, values?: Record<string, unknown>) => string;
 }
 
 export const getColumns = ({
   assigneeList,
+  t,
 }: GetColumnsProps): ColumnDef<AllAnimalsTasksPayload>[] => [
   {
     id: "select",
@@ -40,7 +42,7 @@ export const getColumns = ({
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("table.selectAll")}
         className="translate-y-[2px]"
       />
     ),
@@ -48,7 +50,7 @@ export const getColumns = ({
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("table.selectRow")}
         className="translate-y-[2px]"
       />
     ),
@@ -58,7 +60,7 @@ export const getColumns = ({
   {
     accessorKey: "animal.id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Animal" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.animal")} />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(
@@ -69,7 +71,11 @@ export const getColumns = ({
 
       return (
         <div className="flex space-x-2">
-          {priority && <Badge variant="outline">{priority.label}</Badge>}
+          {priority && (
+            <Badge variant="outline">
+              {t(`tasks.options.priority.${priority.value}`)}
+            </Badge>
+          )}
           <Link
             href={`/dashboard/animals/${animal.id}/tasks`}
             className="font-medium hover:underline"
@@ -83,7 +89,7 @@ export const getColumns = ({
   {
     accessorKey: "title",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.title")} />
     ),
     cell: ({ row }) => {
       return (
@@ -96,7 +102,7 @@ export const getColumns = ({
   {
     accessorKey: "details",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Details" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.details")} />
     ),
     cell: ({ row }) => (
       <span className="max-w-[400px] truncate">{row.getValue("details")}</span>
@@ -105,7 +111,7 @@ export const getColumns = ({
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.status")} />
     ),
     cell: ({ row }) => {
       const status = statuses.find(
@@ -121,7 +127,7 @@ export const getColumns = ({
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{status.label}</span>
+          <span>{t(`tasks.options.status.${status.value}`)}</span>
         </Badge>
       );
     },
@@ -132,7 +138,7 @@ export const getColumns = ({
   {
     accessorKey: "category",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Category" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.category")} />
     ),
     cell: ({ row }) => {
       const category = categories.find(
@@ -144,7 +150,7 @@ export const getColumns = ({
           {category.icon && (
             <category.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{category.label}</span>
+          <span>{t(`tasks.options.category.${category.value}`)}</span>
         </Badge>
       ) : null;
     },
@@ -155,7 +161,7 @@ export const getColumns = ({
   {
     accessorKey: "priority",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.priority")} />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(
@@ -171,7 +177,7 @@ export const getColumns = ({
           {priority.icon && (
             <priority.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{priority.label}</span>
+          <span>{t(`tasks.options.priority.${priority.value}`)}</span>
         </Badge>
       );
     },
@@ -182,7 +188,7 @@ export const getColumns = ({
   {
     accessorKey: "assignee",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Assignee" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.assignee")} />
     ),
     cell: ({ row }) => {
       const task = row.original;
@@ -197,17 +203,19 @@ export const getColumns = ({
         if (!result.success) {
           toast.error(result.message);
         } else {
-          toast.success("Assignee updated successfully.");
+          toast.success(t("tasks.toast.assigneeUpdated"));
         }
       };
 
       return (
         <Select value={currentAssigneeId} onValueChange={handleAssigneeChange}>
           <SelectTrigger className="w-full max-w-[180px]">
-            <SelectValue placeholder="Assign..." />
+            <SelectValue placeholder={t("tasks.fields.assigneePlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="unassigned">Unassigned</SelectItem>
+            <SelectItem value="unassigned">
+              {t("tasks.fields.assigneeUnassigned")}
+            </SelectItem>
             {assigneeList.map((assignee) => (
               <SelectItem key={assignee.id} value={assignee.id}>
                 {assignee.name}
@@ -221,7 +229,7 @@ export const getColumns = ({
   {
     accessorKey: "dueDate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Due Date" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.dueDate")} />
     ),
     meta: {
       displayName: "Due Date",
@@ -250,7 +258,7 @@ export const getColumns = ({
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Created At" />
+      <DataTableColumnHeader column={column} title={t("tasks.fields.createdAt")} />
     ),
     meta: {
       displayName: "Created At",

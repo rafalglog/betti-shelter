@@ -20,6 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { DataTablePagination } from "../../../table-common/data-table-pagination";
+import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +38,7 @@ const DataTable = <TData, TValue>({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("dashboard");
 
   // useMemo calculates the sorting state from the URL.
   // This logic only re-runs when 'searchParams' changes.
@@ -126,7 +128,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

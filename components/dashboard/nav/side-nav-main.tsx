@@ -19,9 +19,11 @@ import {
 import { getIcon } from "./icon-map";
 import { NavItem } from "./nav-links.config";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
+  const t = useTranslations();
 
   // Check if a path is active (matches exactly or is a sub-path)
   const isActive = (itemUrl: string) => {
@@ -35,26 +37,27 @@ export function NavMain({ items }: { items: NavItem[] }) {
   
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("dashboard.nav.sections.platform")}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           const Icon = getIcon(item.icon);
           const active = isActive(item.url);
+          const label = item.labelKey ? t(item.labelKey) : item.title;
           
           // Handle items with sub-items (collapsible)
           if (item.items && item.items.length > 0) {
             return (
               <Collapsible
-                key={item.title}
+                key={item.id}
                 asChild
                 defaultOpen={item.isActive || active}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton tooltip={item.title} isActive={active}>
+                    <SidebarMenuButton tooltip={label} isActive={active}>
                       <Icon className="size-4" />
-                      <span>{item.title}</span>
+                      <span>{label}</span>
                       <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
@@ -62,11 +65,12 @@ export function NavMain({ items }: { items: NavItem[] }) {
                     <SidebarMenuSub>
                       {item.items.map((subItem) => {
                         const subActive = isActive(subItem.url);
+                        const subLabel = subItem.labelKey ? t(subItem.labelKey) : subItem.title;
                         return (
-                          <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubItem key={subItem.id}>
                             <SidebarMenuSubButton asChild isActive={subActive}>
                               <Link href={subItem.url}>
-                                <span>{subItem.title}</span>
+                                <span>{subLabel}</span>
                               </Link>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
@@ -81,11 +85,11 @@ export function NavMain({ items }: { items: NavItem[] }) {
 
           // Handle simple items without sub-items
           return (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild tooltip={item.title} isActive={active}>
+            <SidebarMenuItem key={item.id}>
+              <SidebarMenuButton asChild tooltip={label} isActive={active}>
                 <Link href={item.url}>
                   <Icon className="size-4" />
-                  <span>{item.title}</span>
+                  <span>{label}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

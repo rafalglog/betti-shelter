@@ -19,12 +19,14 @@ import {
   withdrawMyApplication,
 } from "@/app/lib/actions/my-application.action";
 import { ApplicationStatus } from "@prisma/client";
+import { useTranslations } from "next-intl";
 
 interface DataTableRowActionsProps {
   row: Row<MyApplicationPayload>;
 }
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const t = useTranslations("dashboard");
   const myApplication = row.original;
   const [isPending, startTransition] = useTransition();
 
@@ -32,9 +34,9 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     startTransition(async () => {
       const result = await withdrawMyApplication(myApplication.id);
       if (result.success) {
-        toast.success("Application withdrawn successfully.");
+        toast.success(t("myApplications.toast.withdrawSuccess"));
       } else {
-        toast.error(result.message || "Failed to withdraw application.");
+        toast.error(result.message || t("myApplications.toast.withdrawError"));
       }
     });
   };
@@ -43,9 +45,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
     startTransition(async () => {
       const result = await reactivateMyApplication(myApplication.id);
       if (result.success) {
-        toast.success("Application reactivated successfully.");
+        toast.success(t("myApplications.toast.reactivateSuccess"));
       } else {
-        toast.error(result.message || "Failed to reactivate application.");
+        toast.error(
+          result.message || t("myApplications.toast.reactivateError")
+        );
       }
     });
   };
@@ -61,7 +65,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
         >
           <MoreHorizontal className="h-4 w-4" />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{t("table.openMenu")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
@@ -69,7 +73,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         {isEditable && (
           <>
             <Link href={`/dashboard/my-applications/${myApplication.id}/edit`}>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem>{t("table.edit")}</DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
           </>
@@ -78,7 +82,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         {/* Conditionally render Withdraw or Reactivate */}
         {myApplication.status === ApplicationStatus.WITHDRAWN ? (
           <DropdownMenuItem onClick={onReactivate} disabled={isPending}>
-            Reactivate
+            {t("myApplications.actions.reactivate")}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem
@@ -86,7 +90,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             onClick={onWithdraw}
             disabled={isPending}
           >
-            Withdraw
+            {t("myApplications.actions.withdraw")}
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

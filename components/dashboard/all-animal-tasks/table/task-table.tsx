@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { TaskAssignee } from "@/app/lib/types";
 import { DataTablePagination } from "@/components/table-common/data-table-pagination";
+import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
   getColumns: (props: any) => ColumnDef<TData, TValue>[];
@@ -42,6 +43,7 @@ const DataTable = <TData, TValue>({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("dashboard");
 
   // useMemo calculates the sorting state from the URL.
   // This logic only re-runs when 'searchParams' changes.
@@ -53,8 +55,8 @@ const DataTable = <TData, TValue>({
   }, [searchParams]);
 
   const columns = React.useMemo(
-    () => getColumns({ assigneeList }),
-    [getColumns, assigneeList]
+    () => getColumns({ assigneeList, t }),
+    [getColumns, assigneeList, t]
   );
 
   // State for UI-only features remains managed by useState.
@@ -141,7 +143,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

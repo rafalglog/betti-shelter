@@ -11,6 +11,7 @@ import * as React from "react";
 import { NavItem } from "./nav-links.config";
 import { getIcon } from "./icon-map";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function NavSecondary({
   items,
@@ -19,6 +20,7 @@ export function NavSecondary({
   items: NavItem[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   const pathname = usePathname();
+  const t = useTranslations();
 
   const isActive = (itemUrl: string) => {
     return pathname === itemUrl || pathname.startsWith(itemUrl + "/");
@@ -30,12 +32,13 @@ export function NavSecondary({
         {items.map((item) => {
           const Icon = getIcon(item.icon);
           const active = isActive(item.url);
+          const label = item.labelKey ? t(item.labelKey) : item.title;
           return (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem key={item.id}>
               <SidebarMenuButton asChild isActive={active}>
                 <Link href={item.url}>
                   <Icon className="size-4" />
-                  <span>{item.title}</span>
+                  <span>{label}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

@@ -33,6 +33,7 @@ import { ServerSideSort } from "@/components/table-common/server-side-sort";
 import { ServerSideSwitch } from "@/components/table-common/server-side-switch";
 import { AssessmentActions } from "./assessment-actions";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
+import { useTranslations } from "next-intl";
 
 const getOutcomeBadgeVariant = (outcome: AssessmentOutcome) => {
   switch (outcome) {
@@ -60,17 +61,18 @@ const AnimalAssessmentsTab = ({
   animalId,
   totalPages,
 }: Props) => {
+  const t = useTranslations("dashboard");
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Animal Assessments</CardTitle>
+        <CardTitle>{t("assessments.title")}</CardTitle>
         <CardDescription>
-          A log of all behavioral and medical evaluations.
+          {t("assessments.description")}
         </CardDescription>
         <CardAction>
           <Button asChild>
             <Link href={`/dashboard/animals/${animalId}/assessments/create`}>
-              Create Assessment
+              {t("assessments.createButton")}
             </Link>
           </Button>
         </CardAction>
@@ -78,24 +80,30 @@ const AnimalAssessmentsTab = ({
         {/* Filter and Sort Controls */}
         <div className="mt-4 flex flex-row flex-wrap items-center gap-3">
           <ServerSideFacetedFilter
-            title="Type"
+            title={t("assessments.filters.type")}
             paramKey="type"
-            options={assessmentTypeOptions}
+            options={assessmentTypeOptions.map((option) => ({
+              ...option,
+              label: t(`assessments.typeOptions.${option.value}`),
+            }))}
           />
           <ServerSideFacetedFilter
-            title="Outcome"
+            title={t("assessments.filters.outcome")}
             paramKey="outcome"
-            options={assessmentOutcomeOptions}
+            options={assessmentOutcomeOptions.map((option) => ({
+              ...option,
+              label: t(`assessments.outcomeOptions.${option.value}`),
+            }))}
           />
           <ServerSideSort
             paramKey="sort"
-            placeholder="Select order"
+            placeholder={t("assessments.filters.sortPlaceholder")}
             options={[
-              { label: "Newest First", value: "date.desc" },
-              { label: "Oldest First", value: "date.asc" },
+              { label: t("assessments.filters.newestFirst"), value: "date.desc" },
+              { label: t("assessments.filters.oldestFirst"), value: "date.asc" },
             ]}
           />
-          <ServerSideSwitch paramKey="showDeleted" label="Show Deleted" />
+          <ServerSideSwitch paramKey="showDeleted" label={t("assessments.filters.showDeleted")} />
         </div>
       </CardHeader>
 
@@ -109,13 +117,15 @@ const AnimalAssessmentsTab = ({
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="font-semibold text-primary">
                         {assessment.template &&
-                          formatSingleEnumOption(assessment.template.type)}
+                          t(`assessments.typeOptions.${assessment.template.type}`)}
                       </span>
                       <span className="text-muted-foreground text-sm whitespace-nowrap">
-                        on {formatDateToLongString(assessment.date)}
+                        {t("assessments.onDate", {
+                          date: formatDateToLongString(assessment.date),
+                        })}
                       </span>
                       <span className="text-sm text-muted-foreground whitespace-nowrap">
-                        by {assessment.assessor.name}
+                        {t("assessments.byAssessor", { name: assessment.assessor.name })}
                       </span>
                       {assessment.overallOutcome && (
                         <Badge
@@ -123,7 +133,7 @@ const AnimalAssessmentsTab = ({
                             assessment.overallOutcome
                           )}
                         >
-                          {formatSingleEnumOption(assessment.overallOutcome)}
+                          {t(`assessments.outcomeOptions.${assessment.overallOutcome}`)}
                         </Badge>
                       )}
                     </div>
@@ -141,7 +151,7 @@ const AnimalAssessmentsTab = ({
                   <div className="space-y-4 pt-2">
                     {assessment.summary && (
                       <div>
-                        <h4 className="font-semibold">Overall Summary</h4>
+                        <h4 className="font-semibold">{t("assessments.summaryTitle")}</h4>
                         <p className="text-sm text-muted-foreground mt-1">
                           {assessment.summary}
                         </p>
@@ -151,7 +161,7 @@ const AnimalAssessmentsTab = ({
                     <Separator />
 
                     <div>
-                      <h4 className="font-semibold">Detailed Findings</h4>
+                      <h4 className="font-semibold">{t("assessments.detailsTitle")}</h4>
                       <ul className="mt-2 space-y-2">
                         {assessment.fields.map((field) => (
                           <li
@@ -167,7 +177,7 @@ const AnimalAssessmentsTab = ({
                               </p>
                               {field.notes && (
                                 <p className="text-xs text-muted-foreground mt-1 italic">
-                                  Note: {field.notes}
+                                  {t("assessments.notePrefix", { note: field.notes })}
                                 </p>
                               )}
                             </div>
@@ -183,10 +193,10 @@ const AnimalAssessmentsTab = ({
         ) : (
           <div className="text-center py-12 border-2 border-dashed rounded-lg">
             <p className="font-semibold text-lg">
-              No Matching Assessments Found
+              {t("assessments.emptyTitle")}
             </p>
             <p className="text-sm mt-1 text-muted-foreground">
-              Try adjusting your filters or creating a new assessment.
+              {t("assessments.emptyDescription")}
             </p>
           </div>
         )}

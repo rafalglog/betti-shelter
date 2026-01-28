@@ -10,7 +10,11 @@ import { ApplicationWithAnimal } from "@/app/lib/data/user-application.data";
 import { formatTimeAgo } from "@/app/lib/utils/date-utils";
 import Link from "next/link";
 
-export const columns: ColumnDef<ApplicationWithAnimal>[] = [
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+export const getColumns = (
+  t: Translator
+): ColumnDef<ApplicationWithAnimal>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -20,7 +24,7 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("table.selectAll")}
         className="translate-y-[2px]"
       />
     ),
@@ -28,7 +32,7 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("table.selectRow")}
         className="translate-y-[2px]"
       />
     ),
@@ -38,7 +42,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
     accessorKey: "applicantName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Applicant Name" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.applicantName")}
+      />
     ),
     meta: {
       displayName: "Applicant Name",
@@ -50,7 +57,9 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
 
       return (
         <div className="flex space-x-2">
-          {status && <Badge variant="outline">{status.label}</Badge>}
+          {status && (
+            <Badge variant="outline">{t(status.labelKey)}</Badge>
+          )}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("applicantName")}
           </span>
@@ -61,7 +70,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
     accessorKey: "applicantEmail",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Applicant Email" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.applicantEmail")}
+      />
     ),
     meta: {
       displayName: "Applicant Email",
@@ -75,7 +87,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
     accessorKey: "applicantPhone",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Applicant Phone" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.applicantPhone")}
+      />
     ),
     meta: {
       displayName: "Applicant Phone",
@@ -89,7 +104,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.status")}
+      />
     ),
     cell: ({ row }) => {
       const status = ApplicationStatuses.find(
@@ -105,7 +123,7 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
           {status.icon && (
             <status.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{status.label}</span>
+          <span>{t(status.labelKey)}</span>
         </Badge>
       );
     },
@@ -117,7 +135,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
     id: "animalName",
     accessorFn: (row) => row.animal.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Animal Name" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.animalName")}
+      />
     ),
     meta: {
       displayName: "Animal Name",
@@ -135,7 +156,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
     id: "animalSpecies",
     accessorFn: (row) => row.animal.species.name,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Animal Species" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.animalSpecies")}
+      />
     ),
     meta: {
       displayName: "Species",
@@ -151,7 +175,10 @@ export const columns: ColumnDef<ApplicationWithAnimal>[] = [
   {
     accessorKey: "submittedAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Submitted At" />
+      <DataTableColumnHeader
+        column={column}
+        title={t("adoptionApplications.columns.submittedAt")}
+      />
     ),
     meta: {
       displayName: "Submitted At",

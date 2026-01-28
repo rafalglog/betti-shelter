@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { ArrowUpDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
 
 interface ServerSideSortProps {
   paramKey: string;
@@ -26,6 +27,7 @@ export function ServerSideSort({
   placeholder,
   options,
 }: ServerSideSortProps) {
+  const t = useTranslations("dashboard.table");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -46,7 +48,7 @@ export function ServerSideSort({
   return (
     <>
       <Label htmlFor="sort-order" className="sr-only text-sm font-medium">
-        Sort by:
+        {t("sortBy")}
       </Label>
       <Select onValueChange={handleValueChange} value={currentValue}>
         <SelectTrigger id="sort-order" className="w-[160px] font-medium" size="sm">

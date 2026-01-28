@@ -11,6 +11,7 @@ import {
 import { SimplePagination } from "../../../simple-pagination";
 import { AnimalActivityLogPayload } from "@/app/lib/data/animals/animal-activity.data";
 import ActivityFeedItem from "./activity-feed-item";
+import { useTranslations } from "next-intl";
 
 interface Props {
   activityLogs: AnimalActivityLogPayload[];
@@ -18,13 +19,13 @@ interface Props {
 }
 
 const ActivityFeed = ({ activityLogs = [], totalPages }: Props) => {
+  const t = useTranslations("dashboard");
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Activity</CardTitle>
+        <CardTitle>{t("activity.title")}</CardTitle>
         <CardDescription>
-          This page displays the most recent activity logs for this animal,
-          including who made the change and a summary of the action.
+          {t("activity.description")}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -48,9 +49,9 @@ const ActivityFeed = ({ activityLogs = [], totalPages }: Props) => {
           </div>
         ) : (
           <div className="text-center text-gray-500 py-12 border-2 border-dashed rounded-lg">
-            <p className="font-semibold text-lg">No Activity Found</p>
+            <p className="font-semibold text-lg">{t("activity.emptyTitle")}</p>
             <p className="text-sm mt-1">
-              There is no activity history for this animal yet.
+              {t("activity.emptyDescription")}
             </p>
           </div>
         )}

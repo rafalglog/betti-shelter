@@ -8,17 +8,17 @@ import {
 export const UserRoles = [
   {
     value: Role.USER,
-    label: "User",
+    labelKey: "users.roleOptions.USER",
     icon: User,
   },
   {
     value: Role.STAFF,
-    label: "Staff",
+    labelKey: "users.roleOptions.STAFF",
     icon: Users,
   },
   {
     value: Role.VOLUNTEER,
-    label: "Volunteer",
+    labelKey: "users.roleOptions.VOLUNTEER",
     icon: Handshake,
   }
 ];

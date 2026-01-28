@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { TaskAssignee } from "@/app/lib/types";
+import { useTranslations } from "next-intl";
 
 interface DataTableProps<TData, TValue> {
   getColumns: (props: any) => ColumnDef<TData, TValue>[];
@@ -39,6 +40,7 @@ const DataTable = <TData, TValue>({
   ToolbarComponent,
   assigneeList,
 }: DataTableProps<TData, TValue>) => {
+  const t = useTranslations("dashboard.table");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -122,7 +124,7 @@ const DataTable = <TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("noResults")}
                 </TableCell>
               </TableRow>
             )}

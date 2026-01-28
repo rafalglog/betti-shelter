@@ -41,6 +41,7 @@ import { AnimalReIntakeFormPayload, PartnerPayload } from "@/app/lib/types";
 import Link from "next/link";
 import { IntakeFormFields } from "./intake-form-fields";
 import { ReIntakeFormSchema } from "@/app/lib/zod-schemas/intake.schema";
+import { useTranslations } from "next-intl";
 
 type ReIntakeFormValues = z.infer<typeof ReIntakeFormSchema>;
 
@@ -50,6 +51,7 @@ interface ReIntakeFormProps {
 }
 
 const ReIntakeForm = ({ animal, partners }: ReIntakeFormProps) => {
+  const t = useTranslations("dashboard");
   const action = createReIntake.bind(null, animal.id);
 
   const [state, formAction, isPending] = useActionState(
@@ -107,37 +109,38 @@ const ReIntakeForm = ({ animal, partners }: ReIntakeFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <Card className="w-full max-w-4xl mx-auto">
           <CardHeader>
-            <CardTitle>Re-Intake Animal: {animal.name}</CardTitle>
+            <CardTitle>{t("intake.reIntakeTitle", { name: animal.name })}</CardTitle>
             <CardDescription>
-              This animal is returning to the shelter. Record the new intake
-              details below to reactivate their profile.
+              {t("intake.reIntakeDescription")}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-10">
             {/* Health Status Selection */}
             <div className="space-y-6">
-              <h3 className="font-semibold border-b pb-2">Current Health Status</h3>
+              <h3 className="font-semibold border-b pb-2">
+                {t("intake.currentHealthTitle")}
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="healthStatus"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Health Status</FormLabel>
+                      <FormLabel>{t("animals.fields.healthStatus")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select health status" />
+                            <SelectValue placeholder={t("animals.fields.healthStatusPlaceholder")} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {animalHealthStatusOptions.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
-                              {option.label}
+                              {t(`animals.healthStatusOptions.${option.value}`)}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -165,11 +168,13 @@ const ReIntakeForm = ({ animal, partners }: ReIntakeFormProps) => {
               type="button"
               disabled={isPending}
             >
-              <Link href={`/dashboard/animals/${animal.id}`}>Cancel</Link>
+              <Link href={`/dashboard/animals/${animal.id}`}>
+                {t("common.cancel")}
+              </Link>
             </Button>
             <Button type="submit" size="lg" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? "Processing..." : "Process Re-Intake"}
+              {isPending ? t("intake.processing") : t("intake.processReIntake")}
             </Button>
           </CardFooter>
         </Card>

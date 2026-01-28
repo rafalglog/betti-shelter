@@ -32,9 +32,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from "next-intl"
 
 export function NavUser({ user }: { user: Session["user"] }) {
   const { isMobile } = useSidebar()
+  const t = useTranslations("dashboard.userMenu")
   const userName = user.name ?? ""
   const userInitials = userName
     ? userName
@@ -93,23 +95,23 @@ export function NavUser({ user }: { user: Session["user"] }) {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Account
+                {t("account")}
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/settings">
                   <IconSettings />
-                  Settings
+                  {t("settings")}
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <IconNotification />
-                Notifications
+                {t("notifications")}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
               <IconLogout />
-              Log out
+              {t("logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

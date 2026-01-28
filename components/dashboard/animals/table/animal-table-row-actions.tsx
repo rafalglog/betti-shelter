@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { AnimalsPayload } from "@/app/lib/types";
+import { useTranslations } from "next-intl";
 
 interface DataTableRowActionsProps {
   row: Row<AnimalsPayload>;
@@ -19,6 +20,7 @@ interface DataTableRowActionsProps {
 
 export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
   const animal = row.original;
+  const t = useTranslations("dashboard.table");
 
   return (
     <DropdownMenu>
@@ -28,16 +30,16 @@ export function AnimalTableRowActions({ row }: DataTableRowActionsProps) {
           className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
         >
           <MoreHorizontal />
-          <span className="sr-only">Open menu</span>
+          <span className="sr-only">{t("openMenu")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <Link href={`/dashboard/animals/${animal.id}`}>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem>{t("profile")}</DropdownMenuItem>
         </Link>
         <DropdownMenuSeparator />
         <Link href={`/dashboard/animals/${animal.id}/edit`}>
-          <DropdownMenuItem>Edit</DropdownMenuItem>
+          <DropdownMenuItem>{t("edit")}</DropdownMenuItem>
         </Link>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -8,12 +8,13 @@ import {
 } from "@/components/ui/card";
 import { SearchParamsType } from "@/app/lib/types";
 import DataTable from "@/components/dashboard/adoption-applications/table/adoption-applications-table";
-import { columns } from "@/components/dashboard/adoption-applications/table/adoption-applications-table-columns";
+import { getColumns } from "@/components/dashboard/adoption-applications/table/adoption-applications-table-columns";
 import UserAppTableToolbar from "@/components/dashboard/adoption-applications/table/adoption-applications-table-toolbar";
 import { fetchUserApplications } from "@/app/lib/data/user-application.data";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
@@ -31,6 +32,7 @@ const Page = async ({ searchParams }: Props) => {
 };
 
 const PageContent = async ({ searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const { query = "", page = "1", sort, status } = await searchParams;
   const currentPage = Number(page);
 
@@ -45,10 +47,10 @@ const PageContent = async ({ searchParams }: Props) => {
     <Card className="@container/card">
       <CardHeader>
         <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-          Adoption Applications
+          {t("pages.adoptionApplications.title")}
         </CardTitle>
         <CardDescription>
-          Manage all incoming animal adoption applications.
+          {t("pages.adoptionApplications.description")}
         </CardDescription>
         <CardAction></CardAction>
       </CardHeader>
@@ -58,7 +60,7 @@ const PageContent = async ({ searchParams }: Props) => {
             <div className="flex flex-col gap-4 md:gap-6">
               <DataTable
                 data={userApplications}
-                columns={columns}
+                columns={getColumns(t)}
                 ToolbarComponent={UserAppTableToolbar}
                 totalPages={totalPages}
               />

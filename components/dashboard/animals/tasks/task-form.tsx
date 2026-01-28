@@ -47,6 +47,7 @@ import {
 } from "@/app/lib/actions/animal-task.actions";
 import { FetchAnimalTasksPayload } from "@/app/lib/data/animals/animal-task.data";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type TaskFormValues = z.infer<typeof TaskFormSchema>;
 
@@ -65,6 +66,7 @@ export const TaskForm = ({
   assigneeList,
   task,
 }: TaskFormProps) => {
+  const t = useTranslations("dashboard");
   const action = task
     ? updateAnimalTask.bind(null, task.id, animalId)
     : createAnimalTask.bind(null, animalId);
@@ -145,9 +147,9 @@ export const TaskForm = ({
             name="title"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Title</FormLabel>
+                <FormLabel>{t("tasks.fields.title")}</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g., Administer medication" {...field} />
+                  <Input placeholder={t("tasks.fields.titlePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -160,10 +162,10 @@ export const TaskForm = ({
             name="details"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Details</FormLabel>
+                <FormLabel>{t("tasks.fields.details")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Provide a detailed description of the task..."
+                    placeholder={t("tasks.fields.detailsPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -178,20 +180,20 @@ export const TaskForm = ({
             name="category"
             render={({ field }) => (
               <FormItem className="md:col-span-3">
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{t("tasks.fields.category")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder={t("tasks.fields.categoryPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {TaskCategoryOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`tasks.options.category.${option.value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -207,17 +209,17 @@ export const TaskForm = ({
             name="status"
             render={({ field }) => (
               <FormItem className="md:col-span-3 md:col-start-4 self-start">
-                <FormLabel>Status</FormLabel>
+                <FormLabel>{t("tasks.fields.status")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a status" />
+                      <SelectValue placeholder={t("tasks.fields.statusPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {TaskStatusOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`tasks.options.status.${option.value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -233,18 +235,18 @@ export const TaskForm = ({
             name="priority"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>Priority</FormLabel>
+                <FormLabel>{t("tasks.fields.priority")}</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder={t("tasks.fields.priorityPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {/* Assuming you create TaskPriorityOptions */}
                     {TaskPriorityOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`tasks.options.priority.${option.value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -263,7 +265,7 @@ export const TaskForm = ({
 
               return (
                 <FormItem className="md:col-span-2 md:col-start-4">
-                  <FormLabel>Due Date</FormLabel>
+                  <FormLabel>{t("tasks.fields.dueDate")}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -277,7 +279,7 @@ export const TaskForm = ({
                           {dateValue ? (
                             format(dateValue, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>{t("tasks.fields.datePlaceholder")}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -304,14 +306,14 @@ export const TaskForm = ({
             name="assigneeId"
             render={({ field }) => (
               <FormItem className="md:col-span-3">
-                <FormLabel>Assign to</FormLabel>
+                <FormLabel>{t("tasks.fields.assignee")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select a staff member or volunteer" />
+                      <SelectValue placeholder={t("tasks.fields.assigneePlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -330,19 +332,19 @@ export const TaskForm = ({
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline" disabled={isPending}>
-              Cancel
+              {t("common.cancel")}
             </Button>
           </DialogClose>
           <Button type="submit" disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {task ? "Updating..." : "Creating..."}
+                {task ? t("common.updating") : t("common.creating")}
               </>
             ) : task ? (
-              "Update Task"
+              t("tasks.dialog.updateButton")
             ) : (
-              "Create Task"
+              t("tasks.dialog.createButton")
             )}
           </Button>
         </DialogFooter>

@@ -24,6 +24,7 @@ import { TaskForm } from "../task-form";
 import { TaskAssignee } from "@/app/lib/types";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
+import { useTranslations } from "next-intl";
 
 interface TasksDataTableToolbarProps {
   table: Table<FetchAnimalTasksPayload>;
@@ -32,6 +33,7 @@ interface TasksDataTableToolbarProps {
 }
 
 const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -59,7 +61,7 @@ const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTable
         <div>
           <Input
             id="task-search"
-            placeholder="Filter Tasks..."
+            placeholder={t("tasks.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -69,14 +71,20 @@ const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTable
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Category"
+            title={t("tasks.fields.category")}
             paramKey="category"
-            options={TaskCategoryOptions}
+            options={TaskCategoryOptions.map((option) => ({
+              ...option,
+              label: t(`tasks.options.category.${option.value}`),
+            }))}
           />
           <ServerSideFacetedFilter
-            title="Status"
+            title={t("tasks.fields.status")}
             paramKey="status"
-            options={TaskStatusOptions}
+            options={TaskStatusOptions.map((option) => ({
+              ...option,
+              label: t(`tasks.options.status.${option.value}`),
+            }))}
           />
           {isFiltered && (
             <Button
@@ -84,7 +92,7 @@ const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTable
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}
@@ -96,13 +104,15 @@ const TasksDataTableToolbar = ({ table, animalId, assigneeList }: TasksDataTable
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="h-8">Add Task</Button>
+            <Button variant="outline" className="h-8">
+              {t("tasks.toolbar.addTask")}
+            </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>Create Task</DialogTitle>
+              <DialogTitle>{t("tasks.dialog.createTitle")}</DialogTitle>
               <DialogDescription>
-                Create a new task for this animal. Click create task when you&apos;re done.
+                {t("tasks.dialog.createDescription")}
               </DialogDescription>
             </DialogHeader>
             <TaskForm

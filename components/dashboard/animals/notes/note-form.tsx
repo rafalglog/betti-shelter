@@ -33,6 +33,7 @@ import {
 import { FetchAnimalNotePayload } from "@/app/lib/data/animals/animal-note.data";
 import { NoteFormSchema } from "@/app/lib/zod-schemas/animal.schemas";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 const INITIAL_FORM_STATE: AnimalNoteFormState = {
   success: false,
@@ -49,6 +50,7 @@ interface Props {
 }
 
 export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
+  const t = useTranslations("dashboard");
   const action = note
     ? updateAnimalNote.bind(null, note.id, animalId)
     : createAnimalNote.bind(null, animalId);
@@ -83,7 +85,7 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
     }
     // If it failed and there are specific field errors, set them on the form.
     else if (state.errors) {
-      toast.error(state.message || "Please check the form for errors.");
+      toast.error(state.message || t("common.formError"));
       for (const [key, value] of Object.entries(state.errors)) {
         form.setError(key as keyof NoteFormValues, {
           type: "server",
@@ -118,7 +120,7 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
             name="category"
             render={({ field }) => (
               <FormItem className="md:col-span-3">
-                <FormLabel htmlFor="category">Category</FormLabel>
+                <FormLabel htmlFor="category">{t("notes.fields.category")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -126,13 +128,13 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
                 >
                   <FormControl>
                     <SelectTrigger className="w-full" id="category">
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder={t("notes.fields.categoryPlaceholder")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {noteCategoryOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
-                        {option.label}
+                        {t(`notes.categoryOptions.${option.value}`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -148,10 +150,10 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
             name="content"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Content</FormLabel>
+                <FormLabel>{t("notes.fields.content")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Provide a detailed description of the note..."
+                    placeholder={t("notes.fields.contentPlaceholder")}
                     {...field}
                   />
                 </FormControl>
@@ -163,19 +165,19 @@ export const NoteForm = ({ animalId, onFormSubmit, note }: Props) => {
         <DialogFooter>
           <DialogClose asChild>
             <Button type="button" variant="outline" disabled={isPending}>
-              Cancel
+              {t("common.cancel")}
             </Button>
           </DialogClose>
           <Button type="submit" disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {note ? "Updating..." : "Creating..."}
+                {note ? t("common.updating") : t("common.creating")}
               </>
             ) : note ? (
-              "Update Note"
+              t("notes.dialog.updateButton")
             ) : (
-              "Create Note"
+              t("notes.dialog.createButton")
             )}
           </Button>
         </DialogFooter>

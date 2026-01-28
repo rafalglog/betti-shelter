@@ -9,7 +9,9 @@ import { DataTableRowActions } from "./outcome-table-row-actions";
 import { OutcomeWithDetails } from "@/app/lib/data/animals/outcome.data";
 import { formatDateOrNA } from "@/app/lib/utils/date-utils";
 
-export const columns: ColumnDef<OutcomeWithDetails>[] = [
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+export const getColumns = (t: Translator): ColumnDef<OutcomeWithDetails>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -19,7 +21,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("table.selectAll")}
         className="translate-y-[2px]"
       />
     ),
@@ -27,7 +29,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("table.selectRow")}
         className="translate-y-[2px]"
       />
     ),
@@ -38,7 +40,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
     accessorFn: (row) => row.animal.name,
     id: "animal",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Animal" />
+      <DataTableColumnHeader column={column} title={t("outcomes.columns.animal")} />
     ),
     cell: ({ row }) => {
       const { animal } = row.original;
@@ -53,18 +55,18 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
       "",
     id: "recipient",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Recipient" />
+      <DataTableColumnHeader column={column} title={t("outcomes.columns.recipient")} />
     ),
     cell: ({ row }) => (
       <span className="max-w-[500px] truncate font-medium">
-        {row.getValue("recipient") || "N/A"}
+        {row.getValue("recipient") || t("common.na")}
       </span>
     ),
   },
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Type" />
+      <DataTableColumnHeader column={column} title={t("outcomes.columns.type")} />
     ),
     cell: ({ row }) => {
       const outcomeType = OutcomeTypesOptions.find(
@@ -90,7 +92,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
       return (
         <Badge variant={variant} className="whitespace-nowrap">
           {outcomeType.icon && <outcomeType.icon className="mr-2 h-4 w-4" />}
-          {outcomeType.label}
+          {t(`outcomes.types.${outcomeType.value}`)}
         </Badge>
       );
     },
@@ -102,7 +104,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
     accessorFn: (row) => row.outcomeDate,
     id: "outcomeDate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Outcome Date" />
+      <DataTableColumnHeader column={column} title={t("outcomes.columns.date")} />
     ),
     meta: {
       displayName: "Outcome Date",
@@ -119,7 +121,7 @@ export const columns: ColumnDef<OutcomeWithDetails>[] = [
   {
     accessorKey: "staffMember.name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Processed By" />
+      <DataTableColumnHeader column={column} title={t("outcomes.columns.processedBy")} />
     ),
     meta: {
       displayName: "Staff Name",

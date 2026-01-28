@@ -13,12 +13,14 @@ import {
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { DataTableViewOptions } from "@/components/table-common/data-table-view-options";
 import { AllAnimalsTasksPayload } from "@/app/lib/data/all-animal-tasks.data";
+import { useTranslations } from "next-intl";
 
 interface TasksDataTableToolbarProps {
   table: Table<AllAnimalsTasksPayload>;
 }
 
 const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -45,7 +47,7 @@ const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {
         <div>
           <Input
             id="task-search"
-            placeholder="Filter Tasks..."
+            placeholder={t("tasks.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -55,14 +57,20 @@ const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Category"
+            title={t("tasks.fields.category")}
             paramKey="category"
-            options={TaskCategoryOptions}
+            options={TaskCategoryOptions.map((option) => ({
+              ...option,
+              label: t(`tasks.options.category.${option.value}`),
+            }))}
           />
           <ServerSideFacetedFilter
-            title="Status"
+            title={t("tasks.fields.status")}
             paramKey="status"
-            options={TaskStatusOptions}
+            options={TaskStatusOptions.map((option) => ({
+              ...option,
+              label: t(`tasks.options.status.${option.value}`),
+            }))}
           />
           {isFiltered && (
             <Button
@@ -70,7 +78,7 @@ const TasksDataTableToolbar = ({ table }: TasksDataTableToolbarProps) => {
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}

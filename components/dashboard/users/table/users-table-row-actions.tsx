@@ -26,6 +26,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useTranslations } from "next-intl";
 
 interface DataTableRowActionsProps {
   row: Row<UsersPayload>;
@@ -34,6 +35,7 @@ interface DataTableRowActionsProps {
 const assignableRoles: Role[] = [Role.STAFF, Role.USER, Role.VOLUNTEER];
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
+  const t = useTranslations("dashboard");
   const user = row.original;
   const [isPending, startTransition] = useTransition();
   const [isResetOpen, setIsResetOpen] = useState(false);
@@ -56,11 +58,11 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
 
   const handleResetPassword = () => {
     if (!tempPassword || tempPassword.length < 6) {
-      setResetError("Password must be at least 6 characters.");
+      setResetError(t("users.reset.errors.shortPassword"));
       return;
     }
     if (tempPassword !== confirmPassword) {
-      setResetError("Passwords do not match.");
+      setResetError(t("users.reset.errors.mismatch"));
       return;
     }
 
@@ -86,86 +88,89 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   return (
     <>
       <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 w-8 p-0"
-          disabled={isPending}
-        >
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        {assignableRoles.map((role) => (
-          <DropdownMenuItem
-            key={role}
-            disabled={user.role === role || isPending}
-            onSelect={() => handleRoleChange(role)}
-            className="capitalize"
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex h-8 w-8 p-0"
+            disabled={isPending}
           >
-            Set as {role.toLowerCase()}
+            <span className="sr-only">{t("table.openMenu")}</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-[160px]">
+          <DropdownMenuLabel>{t("users.actions.title")}</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {assignableRoles.map((role) => (
+            <DropdownMenuItem
+              key={role}
+              disabled={user.role === role || isPending}
+              onSelect={() => handleRoleChange(role)}
+              className="capitalize"
+            >
+              {t("users.actions.setRole", {
+                role: t(`users.roleOptions.${role}`),
+              })}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              setIsResetOpen(true);
+              setResetError(null);
+            }}
+          >
+            {t("users.actions.resetPassword")}
           </DropdownMenuItem>
-        ))}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onSelect={(event) => {
-            event.preventDefault();
-            setIsResetOpen(true);
-            setResetError(null);
-          }}
-        >
-          Reset password
-        </DropdownMenuItem>
-      </DropdownMenuContent>
+        </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={isResetOpen} onOpenChange={setIsResetOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Reset user password</DialogTitle>
-          <DialogDescription>
-            Set a temporary password. The user will be required to change it on
-            next login.
-          </DialogDescription>
-        </DialogHeader>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("users.reset.title")}</DialogTitle>
+            <DialogDescription>
+              {t("users.reset.description")}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-3">
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Temporary password
-            </label>
-            <Input
-              type="password"
-              value={tempPassword}
-              onChange={(event) => setTempPassword(event.target.value)}
-              placeholder="At least 6 characters"
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                {t("users.reset.tempPasswordLabel")}
+              </label>
+              <Input
+                type="password"
+                value={tempPassword}
+                onChange={(event) => setTempPassword(event.target.value)}
+                placeholder={t("users.reset.tempPasswordPlaceholder")}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                {t("users.reset.confirmPasswordLabel")}
+              </label>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder={t("users.reset.confirmPasswordPlaceholder")}
+              />
+            </div>
+            {resetError && <p className="text-sm text-red-600">{resetError}</p>}
           </div>
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Confirm password
-            </label>
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="Repeat password"
-            />
-          </div>
-          {resetError && <p className="text-sm text-red-600">{resetError}</p>}
-        </div>
 
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={() => setIsResetOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleResetPassword} disabled={isResetPending}>
-            {isResetPending ? "Resetting..." : "Set temporary password"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsResetOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button onClick={handleResetPassword} disabled={isResetPending}>
+              {isResetPending
+                ? t("users.reset.submitting")
+                : t("users.reset.submitButton")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );

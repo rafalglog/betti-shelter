@@ -8,7 +8,9 @@ import { DataTableColumnHeader } from "../../../table-common/data-table-column-h
 import { DataTableRowActions } from "./users-table-row-actions";
 import { UsersPayload } from "@/app/lib/types";
 
-export const columns: ColumnDef<UsersPayload>[] = [
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+export const getColumns = (t: Translator): ColumnDef<UsersPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -18,7 +20,7 @@ export const columns: ColumnDef<UsersPayload>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
+        aria-label={t("table.selectAll")}
         className="translate-y-[2px]"
       />
     ),
@@ -26,7 +28,7 @@ export const columns: ColumnDef<UsersPayload>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
+        aria-label={t("table.selectRow")}
         className="translate-y-[2px]"
       />
     ),
@@ -36,7 +38,7 @@ export const columns: ColumnDef<UsersPayload>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Email" />
+      <DataTableColumnHeader column={column} title={t("users.columns.email")} />
     ),
     cell: ({ row }) => {
       const role = UserRoles.find(
@@ -45,7 +47,7 @@ export const columns: ColumnDef<UsersPayload>[] = [
 
       return (
         <div className="flex space-x-2">
-          {role && <Badge variant="outline">{role.label}</Badge>}
+          {role && <Badge variant="outline">{t(role.labelKey)}</Badge>}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("email")}
           </span>
@@ -56,13 +58,15 @@ export const columns: ColumnDef<UsersPayload>[] = [
   {
     accessorKey: "role",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Role" />
+      <DataTableColumnHeader column={column} title={t("users.columns.role")} />
     ),
     cell: ({ row }) => {
       const role = row.getValue("role") as string;
 
       return (
-        <span className="max-w-[400px] truncate capitalize">{role.toLowerCase()}</span>
+        <span className="max-w-[400px] truncate">
+          {t(`users.roleOptions.${role}`)}
+        </span>
       );
     },
   },

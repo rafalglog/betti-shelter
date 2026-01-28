@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 type UserFormData = z.infer<typeof UserCreateSchema>;
 
@@ -27,6 +28,7 @@ const defaultValues: UserFormData = {
 };
 
 const UserCreateForm = () => {
+  const t = useTranslations("dashboard");
   const [state, formAction, isPending] = useActionState<UserFormState, FormData>(
     createUser,
     INITIAL_FORM_STATE
@@ -70,9 +72,9 @@ const UserCreateForm = () => {
       <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
         <Card className="w-full max-w-3xl mx-auto">
           <CardHeader>
-            <CardTitle>Add User</CardTitle>
+            <CardTitle>{t("users.form.title")}</CardTitle>
             <CardDescription>
-              Create a new user account and assign their role.
+              {t("users.form.description")}
             </CardDescription>
           </CardHeader>
 
@@ -83,9 +85,9 @@ const UserCreateForm = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t("users.form.nameLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Full name" {...field} />
+                      <Input placeholder={t("users.form.namePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -97,9 +99,13 @@ const UserCreateForm = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("users.form.emailLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="name@example.com" {...field} />
+                      <Input
+                        type="email"
+                        placeholder={t("users.form.emailPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -111,7 +117,7 @@ const UserCreateForm = () => {
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role</FormLabel>
+                    <FormLabel>{t("users.form.roleLabel")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -119,13 +125,13 @@ const UserCreateForm = () => {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select role" />
+                          <SelectValue placeholder={t("users.form.rolePlaceholder")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {UserRoles.map((role) => (
                           <SelectItem key={role.value} value={role.value}>
-                            {role.label}
+                            {t(role.labelKey)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -140,9 +146,13 @@ const UserCreateForm = () => {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Temporary Password</FormLabel>
+                    <FormLabel>{t("users.form.passwordLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="At least 6 characters" {...field} />
+                      <Input
+                        type="password"
+                        placeholder={t("users.form.passwordPlaceholder")}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -153,10 +163,10 @@ const UserCreateForm = () => {
 
           <CardFooter className="flex items-center justify-end gap-3">
             <Button variant="outline" asChild>
-              <Link href="/dashboard/users">Cancel</Link>
+              <Link href="/dashboard/users">{t("common.cancel")}</Link>
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create User"}
+              {isPending ? t("common.creating") : t("users.form.createButton")}
             </Button>
           </CardFooter>
         </Card>

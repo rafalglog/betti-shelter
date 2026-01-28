@@ -11,12 +11,14 @@ import { sexOptions } from "./animal-options";
 import { animalListingStatusOptions } from "@/app/lib/utils/enum-formatter";
 import { AnimalsPayload } from "@/app/lib/types";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
+import { useTranslations } from "next-intl";
 
 interface AnimalsDataTableToolbarProps {
   table: Table<AnimalsPayload>;
 }
 
 const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {
+  const t = useTranslations("dashboard");
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -43,7 +45,7 @@ const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {
         <div>
           <Input
             id="animal-search"
-            placeholder="Filter Animals..."
+            placeholder={t("animals.toolbar.searchPlaceholder")}
             onChange={(e) => {
               handleSearch(e.target.value);
             }}
@@ -53,14 +55,20 @@ const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {
         </div>
         <div className="space-x-2 @[736px]/toolbar:justify-self-start items-center flex">
           <ServerSideFacetedFilter
-            title="Status"
+            title={t("animals.filters.status")}
             paramKey="listingStatus"
-            options={animalListingStatusOptions}
+            options={animalListingStatusOptions.map((option) => ({
+              ...option,
+              label: t(`animals.listingStatusOptions.${option.value}`),
+            }))}
           />
           <ServerSideFacetedFilter
-            title="Sex"
+            title={t("animals.filters.sex")}
             paramKey="sex"
-            options={sexOptions}
+            options={sexOptions.map((option) => ({
+              ...option,
+              label: t(`animals.sexOptions.${option.value}`),
+            }))}
           />
           {isFiltered && (
             <Button
@@ -68,7 +76,7 @@ const AnimalsDataTableToolbar = ({ table }: AnimalsDataTableToolbarProps) => {
               onClick={() => router.push(pathname)}
               className="h-8 px-2 lg:px-3"
             >
-              Reset
+              {t("common.reset")}
               <X className="ml-2 h-4 w-4" />
             </Button>
           )}

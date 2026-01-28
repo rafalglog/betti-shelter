@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { IconChevronDown, IconLayoutColumns } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -21,6 +22,7 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
+  const t = useTranslations("dashboard.table");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -34,13 +36,13 @@ export function DataTableViewOptions<TData>({
         </Button> */}
         <Button variant="outline" size="sm">
           <IconLayoutColumns />
-          <span className="hidden lg:inline">Customize Columns</span>
-          <span className="lg:hidden">Columns</span>
+          <span className="hidden lg:inline">{t("customizeColumns")}</span>
+          <span className="lg:hidden">{t("columns")}</span>
           <IconChevronDown />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[150px]">
-        <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("toggleColumns")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {table
           .getAllColumns()

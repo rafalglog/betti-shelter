@@ -14,6 +14,7 @@ import ReIntakeForm from "@/components/dashboard/animals/re-intake-form";
 import { notFound } from "next/navigation";
 import ActionBlockedMessage from "@/components/action-blocked-message";
 import { formatSingleEnumOption } from "@/app/lib/utils/enum-formatter";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
@@ -33,6 +34,7 @@ const Page = async ({ params }: Props) => {
 };
 
 const PageContent = async ({ animalId }: { animalId: string }) => {
+  const t = await getTranslations("dashboard");
   const animal = await fetchAnimalForReIntake(animalId);
   const partners = await fetchPartners();
 
@@ -47,25 +49,26 @@ const PageContent = async ({ animalId }: { animalId: string }) => {
         <Button asChild variant="ghost" className="mb-4">
           <Link href={`/dashboard/animals/${animalId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Animal Profile
+            {t("common.backToAnimalProfile")}
           </Link>
         </Button>
 
         <ActionBlockedMessage
           icon={AlertTriangleIcon}
-          title="Cannot Process Re-Intake"
+          title={t("intake.reIntakeBlockedTitle")}
         >
           <p>
-            This animal, <strong>{animal.name}</strong>, cannot be processed for
-            re-intake because its current status is{" "}
-            <span className="font-semibold">
-              {formatSingleEnumOption(animal.listingStatus)}
-            </span>
-            .
+            {t.rich("intake.reIntakeBlockedBody", {
+              name: animal.name,
+              status: formatSingleEnumOption(animal.listingStatus),
+              strong: (chunks) => <strong>{chunks}</strong>,
+              span: (chunks) => <span className="font-semibold">{chunks}</span>,
+            })}
           </p>
           <p>
-            Re-intake is only available for animals that are no longer in the
-            shelter (i.e., have an <strong>ARCHIVED</strong> status).
+            {t.rich("intake.reIntakeBlockedHint", {
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
         </ActionBlockedMessage>
       </main>
@@ -77,7 +80,7 @@ const PageContent = async ({ animalId }: { animalId: string }) => {
       <Button asChild variant="ghost" className="mb-4">
         <Link href={`/dashboard/animals/${animalId}`}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Animal Profile
+          {t("common.backToAnimalProfile")}
         </Link>
       </Button>
 

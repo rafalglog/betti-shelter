@@ -15,7 +15,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimalListingStatus, Sex } from "@prisma/client";
 import { calculateAgeString, formatTimeAgo } from "@/app/lib/utils/date-utils";
-import { formatSingleEnumOption } from "@/app/lib/utils/enum-formatter";
 import {
   Calendar,
   MapPin,
@@ -24,12 +23,14 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
 }
 
 const AnimalSectionCards = async ({ params }: Props) => {
+  const t = await getTranslations("dashboard");
   const { id } = await params;
 
   const animal: AnimalSectionCardPayload | null =
@@ -56,21 +57,21 @@ const AnimalSectionCards = async ({ params }: Props) => {
     if (!animal.healthStatus || animal.healthStatus === "HEALTHY") return null;
 
     const statusConfig = {
-      AWAITING_VET_EXAM: { variant: "secondary", label: "Awaiting Vet Exam" },
-      AWAITING_TRIAGE: { variant: "secondary", label: "Awaiting Triage" },
-      UNDER_VET_CARE: { variant: "destructive", label: "Under Vet Care" },
-      HOSPITALISED: { variant: "destructive", label: "Hospitalized" },
+      AWAITING_VET_EXAM: { variant: "secondary", labelKey: "animals.healthStatusOptions.AWAITING_VET_EXAM" },
+      AWAITING_TRIAGE: { variant: "secondary", labelKey: "animals.healthStatusOptions.AWAITING_TRIAGE" },
+      UNDER_VET_CARE: { variant: "destructive", labelKey: "animals.healthStatusOptions.UNDER_VET_CARE" },
+      HOSPITALISED: { variant: "destructive", labelKey: "animals.healthStatusOptions.HOSPITALISED" },
       AWAITING_SPAY_NEUTER: {
         variant: "secondary",
-        label: "Awaiting Spay/Neuter",
+        labelKey: "animals.healthStatusOptions.AWAITING_SPAY_NEUTER",
       },
       AWAITING_OTHER_SURGERY: {
         variant: "secondary",
-        label: "Awaiting Other Surgery",
+        labelKey: "animals.healthStatusOptions.AWAITING_OTHER_SURGERY",
       },
       RECOVERING_FROM_SURGERY: {
         variant: "secondary",
-        label: "Recovering from Surgery",
+        labelKey: "animals.healthStatusOptions.RECOVERING_FROM_SURGERY",
       },
     };
 
@@ -79,7 +80,7 @@ const AnimalSectionCards = async ({ params }: Props) => {
       <Alert className="mb-4">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          <span className="font-medium">{config.label}</span>
+          <span className="font-medium">{t(config.labelKey)}</span>
         </AlertDescription>
       </Alert>
     ) : null;
@@ -107,7 +108,7 @@ const AnimalSectionCards = async ({ params }: Props) => {
             </div>
             <CardAction>
               <Badge variant="outline">
-                {formatSingleEnumOption(animal.listingStatus)}
+                {t(`animals.listingStatusOptions.${animal.listingStatus}`)}
               </Badge>
             </CardAction>
           </div>
@@ -120,7 +121,7 @@ const AnimalSectionCards = async ({ params }: Props) => {
               {firstImage ? (
                 <Image
                   src={firstImage}
-                  alt={`Photo of ${animal.name}`}
+                  alt={t("animals.sectionCards.photoAlt", { name: animal.name })}
                   fill
                   sizes="112px"
                   className="object-cover"
@@ -132,25 +133,33 @@ const AnimalSectionCards = async ({ params }: Props) => {
 
             <div className="flex-1 grid grid-cols-2 gap-2 text-sm">
               <div className="rounded-md p-2.5">
-                <p className="text-xs text-muted-foreground mb-0.5">Species</p>
+                <p className="text-xs text-muted-foreground mb-0.5">
+                  {t("animals.sectionCards.species")}
+                </p>
                 <p className="font-semibold">{animal.species.name}</p>
               </div>
               <div className="rounded-md p-2.5">
-                <p className="text-xs text-muted-foreground mb-0.5">Age</p>
+                <p className="text-xs text-muted-foreground mb-0.5">
+                  {t("animals.sectionCards.age")}
+                </p>
                 <p className="font-semibold">
                   {calculateAgeString({ birthDate: animal.birthDate })}
                 </p>
               </div>
               <div className="rounded-md p-2.5">
-                <p className="text-xs text-muted-foreground mb-0.5">Sex</p>
+                <p className="text-xs text-muted-foreground mb-0.5">
+                  {t("animals.sectionCards.sex")}
+                </p>
                 <p className="font-semibold">
-                  {formatSingleEnumOption(animal.sex)}
+                  {t(`animals.sexOptions.${animal.sex}`)}
                 </p>
               </div>
               <div className="rounded-md p-2.5">
-                <p className="text-xs text-muted-foreground mb-0.5">Size</p>
+                <p className="text-xs text-muted-foreground mb-0.5">
+                  {t("animals.sectionCards.size")}
+                </p>
                 <p className="font-semibold">
-                  {formatSingleEnumOption(animal.size)}
+                  {t(`animals.sizeOptions.${animal.size}`)}
                 </p>
               </div>
             </div>
@@ -164,13 +173,17 @@ const AnimalSectionCards = async ({ params }: Props) => {
             <div className="flex items-center gap-1.5">
               <Heart className="h-4 w-4 text-red-500" />
               <span className="font-medium">{likesCount}</span>
-              <span className="text-muted-foreground">likes</span>
+              <span className="text-muted-foreground">
+                {t("animals.sectionCards.likesLabel", { count: likesCount })}
+              </span>
             </div>
             {daysSinceIntake && (
               <div className="flex items-center gap-1.5">
                 <Calendar className="h-4 w-4 text-blue-500" />
                 <span className="text-muted-foreground">
-                  In care {daysSinceIntake}
+                  {t("animals.sectionCards.inCare", {
+                    duration: daysSinceIntake,
+                  })}
                 </span>
               </div>
             )}
@@ -179,7 +192,9 @@ const AnimalSectionCards = async ({ params }: Props) => {
                 {applicationCount}
               </span>
               <span className="text-muted-foreground">
-                application{applicationCount > 1 ? "s" : ""}
+                {t("animals.sectionCards.applicationsLabel", {
+                  count: applicationCount,
+                })}
               </span>
             </div>
           </div>
@@ -194,10 +209,10 @@ const AnimalSectionCards = async ({ params }: Props) => {
               }
             >
               {approvedApplications > 0
-                ? "Complete Adoption"
+                ? t("animals.sectionCards.completeAdoption")
                 : animal.listingStatus === AnimalListingStatus.ARCHIVED
-                ? "Create Intake"
-                : "Create Outcome"}
+                ? t("animals.sectionCards.createIntake")
+                : t("animals.sectionCards.createOutcome")}
             </Link>
           </Button>
         </CardContent>
@@ -206,14 +221,14 @@ const AnimalSectionCards = async ({ params }: Props) => {
       {/* Secondary Card - Detailed Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Details & Medical</CardTitle>
+          <CardTitle>{t("animals.sectionCards.detailsTitle")}</CardTitle>
           <CardDescription>
-            Medical and identification information
+            {t("animals.sectionCards.detailsDescription")}
           </CardDescription>
           <CardAction>
             <Button asChild size="sm">
               <Link href={`/dashboard/animals/${animal.id}/edit`}>
-                Edit Profile
+                {t("animals.sectionCards.editProfile")}
               </Link>
             </Button>
           </CardAction>
@@ -223,39 +238,49 @@ const AnimalSectionCards = async ({ params }: Props) => {
           {/* Medical Information */}
           <div>
             <h4 className="mb-3 text-sm font-semibold text-foreground">
-              Medical Information
+              {t("animals.sectionCards.medicalTitle")}
             </h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b pb-2 text-sm">
-                <span className="text-muted-foreground">Spayed/Neutered</span>
+                <span className="text-muted-foreground">
+                  {t("animals.sectionCards.spayedNeutered")}
+                </span>
                 <span className="font-medium">
                   {animal.sex !== Sex.UNKNOWN ? (
                     animal.isSpayedNeutered ? (
                       <span className="flex items-center gap-1 text-green-600">
-                        <CheckCircle2 className="h-4 w-4" /> Yes
+                        <CheckCircle2 className="h-4 w-4" /> {t("common.yes")}
                       </span>
                     ) : (
-                      <span className="text-muted-foreground">No</span>
+                      <span className="text-muted-foreground">
+                        {t("common.no")}
+                      </span>
                     )
                   ) : (
-                    <span className="text-muted-foreground">N/A</span>
+                    <span className="text-muted-foreground">
+                      {t("common.na")}
+                    </span>
                   )}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b pb-2 text-sm">
-                <span className="text-muted-foreground">Health Status</span>
+                <span className="text-muted-foreground">
+                  {t("animals.sectionCards.healthStatus")}
+                </span>
                 <span className="font-medium capitalize">
-                  {formatSingleEnumOption(animal.healthStatus) === "N/A"
-                    ? "Healthy"
-                    : formatSingleEnumOption(animal.healthStatus)}
+                  {animal.healthStatus
+                    ? t(`animals.healthStatusOptions.${animal.healthStatus}`)
+                    : t("animals.healthStatusOptions.HEALTHY")}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b pb-2 text-sm">
-                <span className="text-muted-foreground">Legal Status</span>
+                <span className="text-muted-foreground">
+                  {t("animals.sectionCards.legalStatus")}
+                </span>
                 <span className="font-medium">
-                  {animal.legalStatus === "NONE" || !animal.legalStatus
-                    ? "Clear"
-                    : formatSingleEnumOption(animal.legalStatus)}
+                  {animal.legalStatus
+                    ? t(`animals.legalStatusOptions.${animal.legalStatus}`)
+                    : t("animals.legalStatusOptions.NONE")}
                 </span>
               </div>
             </div>
@@ -264,19 +289,23 @@ const AnimalSectionCards = async ({ params }: Props) => {
           {/* Identification */}
           <div>
             <h4 className="mb-3 text-sm font-semibold text-foreground">
-              Identification
+              {t("animals.sectionCards.identificationTitle")}
             </h4>
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b pb-2 text-sm">
-                <span className="text-muted-foreground">Microchip</span>
+                <span className="text-muted-foreground">
+                  {t("animals.sectionCards.microchip")}
+                </span>
                 <span className="font-mono text-xs font-medium">
-                  {animal.microchipNumber || "Not microchipped"}
+                  {animal.microchipNumber || t("animals.sectionCards.noMicrochip")}
                 </span>
               </div>
               <div className="flex items-center justify-between border-b pb-2 text-sm">
-                <span className="text-muted-foreground">Primary Color</span>
+                <span className="text-muted-foreground">
+                  {t("animals.sectionCards.primaryColor")}
+                </span>
                 <span className="font-medium">
-                  {animal.colors[0]?.name || "N/A"}
+                  {animal.colors[0]?.name || t("common.na")}
                 </span>
               </div>
             </div>
@@ -288,11 +317,12 @@ const AnimalSectionCards = async ({ params }: Props) => {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <span className="font-medium">
-                  {pendingTasksCount} pending task
-                  {pendingTasksCount > 1 ? "s" : ""}
+                  {t("animals.sectionCards.pendingTasks", {
+                    count: pendingTasksCount,
+                  })}
                 </span>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Review tasks tab for items requiring attention
+                  {t("animals.sectionCards.pendingTasksHint")}
                 </p>
               </AlertDescription>
             </Alert>

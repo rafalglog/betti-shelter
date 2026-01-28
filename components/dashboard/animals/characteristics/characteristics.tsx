@@ -50,6 +50,7 @@ import {
 import { CharacteristicWithAssignment } from "@/app/lib/data/animals/animal-characteristics.data";
 import { updateAnimalCharacteristics } from "@/app/lib/actions/animal-characteristics.actions";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 type CategoryUIDefinition = {
   label: string;
@@ -97,6 +98,7 @@ const AnimalCharacteristicsManager = ({
   animalCharacteristics,
   animalId,
 }: Props) => {
+  const t = useTranslations("dashboard");
   const [isPending, startTransition] = useTransition();
 
   // Component state
@@ -158,12 +160,10 @@ const AnimalCharacteristicsManager = ({
       });
 
       if (result.success) {
-        toast.success(
-          result.message || "Characteristics updated successfully!"
-        );
+        toast.success(result.message || t("characteristics.toast.updated"));
         setIsDialogOpen(false);
       } else {
-        toast.error(result.message || "An unexpected error occurred.");
+        toast.error(result.message || t("common.unexpectedError"));
       }
     });
   }, [animalId, stagedChanges]);
@@ -191,15 +191,15 @@ const AnimalCharacteristicsManager = ({
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <Card className="w-full mx-auto">
         <CardHeader className="relative">
-          <CardTitle>Characteristics</CardTitle>
+          <CardTitle>{t("characteristics.title")}</CardTitle>
           <CardDescription>
-            Unique behavioral and medical traits for this animal.
+            {t("characteristics.description")}
           </CardDescription>
           <CardAction>
             <DialogTrigger asChild>
               <Button variant="default" size="sm" onClick={handleOpenDialog}>
                 <Pencil className="size-4 mr-2" />
-                Edit
+                {t("table.edit")}
               </Button>
             </DialogTrigger>
           </CardAction>
@@ -216,7 +216,7 @@ const AnimalCharacteristicsManager = ({
                   <div key={key} className="border rounded-lg p-4 bg-white">
                     <h4 className="font-medium mb-3 flex items-center gap-2 text-gray-700">
                       <Icon className="h-5 w-5 text-gray-500" />
-                      {CATEGORIES[key].label}
+                      {t(`characteristics.categories.${key}`)}
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {characteristicsForCategory.map((char) => (
@@ -239,7 +239,7 @@ const AnimalCharacteristicsManager = ({
             {initialAssignedIds.size === 0 && (
               <div className="text-center py-8 px-4 border-2 border-dashed rounded-lg">
                 <p className="text-muted-foreground text-sm">
-                  This animal has no characteristics assigned.
+                  {t("characteristics.empty")}
                 </p>
                 <DialogTrigger asChild>
                   <Button
@@ -249,7 +249,7 @@ const AnimalCharacteristicsManager = ({
                     onClick={handleOpenDialog}
                   >
                     <PlusCircle className="size-4 mr-2" />
-                    Add Characteristics
+                    {t("characteristics.addButton")}
                   </Button>
                 </DialogTrigger>
               </div>
@@ -260,15 +260,14 @@ const AnimalCharacteristicsManager = ({
 
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
-          <DialogTitle>Edit Characteristics</DialogTitle>
+          <DialogTitle>{t("characteristics.dialog.title")}</DialogTitle>
           <DialogDescription>
-            Add or remove characteristics for this animal. Click save when
-            you&apos;re done.
+            {t("characteristics.dialog.description")}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4 py-4">
           <div className="p-3 border rounded-lg space-y-3 bg-slate-50/50">
-            <Label>Selected Characteristics</Label>
+            <Label>{t("characteristics.selectedLabel")}</Label>
             <div className="flex flex-wrap gap-2 min-h-[2.5rem] max-h-40 overflow-y-auto">
               {assignedCharacteristics.map((char) => (
                 <Badge
@@ -290,7 +289,7 @@ const AnimalCharacteristicsManager = ({
               ))}
               {assignedCharacteristics.length === 0 && (
                 <p className="text-muted-foreground text-sm p-2">
-                  Search below to add characteristics.
+                  {t("characteristics.searchHint")}
                 </p>
               )}
             </div>
@@ -304,15 +303,15 @@ const AnimalCharacteristicsManager = ({
                 aria-expanded={openCombobox}
                 className="w-full justify-between font-normal text-muted-foreground"
               >
-                Add a characteristic...
+                {t("characteristics.addPlaceholder")}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
               <Command>
-                <CommandInput placeholder="Search characteristics..." />
+                <CommandInput placeholder={t("characteristics.searchPlaceholder")} />
                 <CommandList>
-                  <CommandEmpty>No characteristic found.</CommandEmpty>
+                  <CommandEmpty>{t("characteristics.noResults")}</CommandEmpty>
                   <CommandGroup>
                     {availableForAdding.map((char) => (
                       <CommandItem
@@ -322,7 +321,7 @@ const AnimalCharacteristicsManager = ({
                       >
                         <div className="flex-grow">{char.name}</div>
                         <Badge variant="outline" className="ml-2">
-                          {CATEGORIES[char.category]?.label}
+                          {t(`characteristics.categories.${char.category}`)}
                         </Badge>
                       </CommandItem>
                     ))}
@@ -334,16 +333,16 @@ const AnimalCharacteristicsManager = ({
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={handleCancel} disabled={isPending}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={isPending}>
             {isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                {t("common.saving")}
               </>
             ) : (
-              "Save Changes"
+              t("common.saveChanges")
             )}
           </Button>
         </DialogFooter>

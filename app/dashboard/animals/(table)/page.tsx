@@ -7,18 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import DataTable from "@/components/dashboard/animals/table/animal-table";
-import { columns } from "@/components/dashboard/animals/table/animal-table-columns";
+import { getColumns } from "@/components/dashboard/animals/table/animal-table-columns";
 import { fetchAnimals } from "@/app/lib/data/animals/animal.data";
 import { SearchParamsType } from "@/app/lib/types";
 import AnimalsDataTableToolbar from "@/components/dashboard/animals/table/animal-table-toolbar";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
 }
 
 const Page = async ({ searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const {
     query = "",
     page = "1",
@@ -40,21 +42,23 @@ const Page = async ({ searchParams }: Props) => {
     currentPageSize,
     sort
   );
+  const columns = getColumns(t);
 
   return (
     <>
       <Card className="@container/card">
         <CardHeader>
           <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-            Animals
+            {t("pages.animals.title")}
           </CardTitle>
           <CardDescription>
-            Manage all animals currently in your care or begin the intake
-            process for a new arrival.
+            {t("pages.animals.description")}
           </CardDescription>
           <CardAction>
             <Button asChild>
-              <Link href="/dashboard/animals/create">Add Animal</Link>
+              <Link href="/dashboard/animals/create">
+                {t("pages.animals.addAnimal")}
+              </Link>
             </Button>
           </CardAction>
         </CardHeader>

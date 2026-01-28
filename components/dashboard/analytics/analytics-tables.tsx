@@ -9,7 +9,7 @@ import { getColumns as getTaskColumns } from "@/components/dashboard/analytics/t
 import TasksDataTableToolbar from "@/components/dashboard/analytics/tables/tasks/task-table-toolbar";
 
 import HealthTable from "@/components/dashboard/analytics/tables/animal-health/health-table";
-import { columns as getHealthColumns } from "@/components/dashboard/analytics/tables/animal-health/health-table-columns";
+import { getColumns as getHealthColumns } from "@/components/dashboard/analytics/tables/animal-health/health-table-columns";
 import HealthDataTableToolbar from "@/components/dashboard/analytics/tables/animal-health/health-table-toolbar";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,8 +20,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTranslations } from "next-intl/server";
 
 const AnalyticsTables = async () => {
+  const t = await getTranslations("dashboard");
   // Move the data fetching here
   const [tasks, animalHealth, assigneeList] = await Promise.all([
     fetchAnalyticsTaskTableData(),
@@ -32,22 +34,23 @@ const AnalyticsTables = async () => {
   return (
     <Tabs defaultValue="animal-tasks">
       <TabsList>
-        <TabsTrigger value="animal-tasks">Tasks</TabsTrigger>
-        <TabsTrigger value="health">Health</TabsTrigger>
+        <TabsTrigger value="animal-tasks">
+          {t("analytics.tabs.tasks")}
+        </TabsTrigger>
+        <TabsTrigger value="health">{t("analytics.tabs.health")}</TabsTrigger>
       </TabsList>
       <TabsContent value="animal-tasks">
         <Card>
           <CardHeader>
-            <CardTitle>Animal Tasks</CardTitle>
+            <CardTitle>{t("analytics.tasks.title")}</CardTitle>
             <CardDescription>
-              This table provides a direct to-do list for shelter staff, showing
-              all tasks that are not yet completed.
+              {t("analytics.tasks.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <TaskTable
               data={tasks}
-              getColumns={getTaskColumns}
+              getColumns={(args) => getTaskColumns(t, args)}
               ToolbarComponent={TasksDataTableToolbar}
               assigneeList={assigneeList}
             />
@@ -57,16 +60,15 @@ const AnalyticsTables = async () => {
       <TabsContent value="health">
         <Card>
           <CardHeader>
-            <CardTitle>Animal Health</CardTitle>
+            <CardTitle>{t("analytics.health.title")}</CardTitle>
             <CardDescription>
-              This tab flags animals that are in a special state requiring
-              administrative or medical oversight.
+              {t("analytics.health.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <HealthTable
               data={animalHealth}
-              columns={getHealthColumns}
+              columns={getHealthColumns(t)}
               ToolbarComponent={HealthDataTableToolbar}
             />
           </CardContent>

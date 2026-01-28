@@ -12,10 +12,7 @@ import { ApplicationWithOutcome } from "@/app/lib/data/user-application.data";
 import { staffUpdateAdoptionApp } from "@/app/lib/actions/adoption-application.actions";
 import { INITIAL_FORM_STATE } from "@/app/lib/form-state-types";
 import { AnimalForApplicationPayload } from "@/app/lib/types";
-import {
-  formatSingleEnumOption,
-  livingSituationOptions,
-} from "@/app/lib/utils/enum-formatter";
+import { livingSituationOptions } from "@/app/lib/utils/enum-formatter";
 import { StaffUpdateAdoptionAppFormSchema } from "@/app/lib/zod-schemas/application.schemas";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -47,6 +44,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { US_STATES } from "@/app/lib/constants/us-states";
+import { useTranslations } from "next-intl";
 
 type StaffUpdateFormData = z.infer<typeof StaffUpdateAdoptionAppFormSchema>;
 
@@ -73,6 +71,7 @@ export function StaffApplicationUpdateForm({
   animal,
   application,
 }: StaffApplicationUpdateFormProps) {
+  const t = useTranslations("dashboard");
   const isAdopted = application.status === "ADOPTED";
   const isApproved = application.status === "APPROVED";
   const outcome = application.outcome;
@@ -80,13 +79,13 @@ export function StaffApplicationUpdateForm({
   const applicationStatusOptions: StatusOption[] =
     updatableApplicationStatuses.map((status) => ({
       value: status,
-      label: formatSingleEnumOption(status),
+      label: t(`adoptionApplications.statusOptions.${status}`),
     }));
 
   if (isAdopted) {
     applicationStatusOptions.unshift({
       value: "ADOPTED",
-      label: "Adopted",
+      label: t("adoptionApplications.statusOptions.ADOPTED"),
     });
   }
 
@@ -151,19 +150,23 @@ export function StaffApplicationUpdateForm({
         >
           <Card className="border-primary">
             <CardHeader>
-              <CardTitle>Staff Actions</CardTitle>
+              <CardTitle>{t("adoptionApplications.staff.title")}</CardTitle>
               <CardDescription className="flex items-center pt-1">
-                Reviewing application from
-                <span className="font-semibold mx-1">
-                  {application.applicantName}
-                </span>
-                for
-                <Button variant="link" asChild className="p-1 h-auto">
-                  <Link href={`/dashboard/animals/${animal.id}`}>
-                    {animal.name}
-                    <ArrowRight className="ml-1 h-4 w-4" />
-                  </Link>
-                </Button>
+                {t.rich("adoptionApplications.staff.description", {
+                  applicant: (chunks) => (
+                    <span className="font-semibold mx-1">{chunks}</span>
+                  ),
+                  animal: (chunks) => (
+                    <Button variant="link" asChild className="p-1 h-auto">
+                      <Link href={`/dashboard/animals/${animal.id}`}>
+                        {chunks}
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  ),
+                  applicantName: application.applicantName,
+                  animalName: animal.name,
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -171,16 +174,17 @@ export function StaffApplicationUpdateForm({
                 <Alert className="mb-6 border-blue-300 bg-blue-50">
                   <Info className="h-4 w-4 text-blue-600" />
                   <AlertTitle className="text-blue-800">
-                    Application Finalized
+                    {t("adoptionApplications.staff.finalizedTitle")}
                   </AlertTitle>
                   <AlertDescription className="text-blue-700">
-                    This application was finalized on{" "}
-                    {new Date(outcome.outcomeDate).toLocaleDateString()}.
+                    {t("adoptionApplications.staff.finalizedDescription", {
+                      date: new Date(outcome.outcomeDate).toLocaleDateString(),
+                    })}
                     <Link
                       href={`/dashboard/outcomes/${outcome.id}/edit`}
                       className="ml-2 font-semibold text-blue-800 underline hover:text-blue-600"
                     >
-                      View Outcome Record
+                      {t("adoptionApplications.staff.viewOutcome")}
                     </Link>
                   </AlertDescription>
                 </Alert>
@@ -189,17 +193,15 @@ export function StaffApplicationUpdateForm({
                 <Alert className="mb-6 border-green-300 bg-green-50">
                   <Info className="h-4 w-4 text-green-600" />
                   <AlertTitle className="text-green-800">
-                    Next Step: Finalize Adoption
+                    {t("adoptionApplications.staff.nextStepTitle")}
                   </AlertTitle>
                   <AlertDescription className="flex items-center justify-between text-green-700">
-                    <span>
-                      This application is approved and ready for the final step.
-                    </span>
+                    <span>{t("adoptionApplications.staff.nextStepDescription")}</span>
                     <Button asChild>
                       <Link
                         href={`/dashboard/outcomes/create?applicationId=${application.id}`}
                       >
-                        Create Outcome
+                        {t("adoptionApplications.staff.createOutcome")}
                       </Link>
                     </Button>
                   </AlertDescription>
@@ -212,7 +214,7 @@ export function StaffApplicationUpdateForm({
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Application Status *</FormLabel>
+                      <FormLabel>{t("adoptionApplications.staff.statusLabel")}</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -220,7 +222,11 @@ export function StaffApplicationUpdateForm({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a new status" />
+                            <SelectValue
+                              placeholder={t(
+                                "adoptionApplications.staff.statusPlaceholder"
+                              )}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -242,17 +248,21 @@ export function StaffApplicationUpdateForm({
                     name="statusChangeReason"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Reason for Status Change *</FormLabel>
+                        <FormLabel>
+                          {t("adoptionApplications.staff.statusReasonLabel")}
+                        </FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Provide a reason for changing the status..."
+                            placeholder={t(
+                              "adoptionApplications.staff.statusReasonPlaceholder"
+                            )}
                             className="resize-y"
                             disabled={isPending || isAdopted}
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          This reason will be logged in the application history.
+                          {t("adoptionApplications.staff.statusReasonHint")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -265,10 +275,14 @@ export function StaffApplicationUpdateForm({
                   name="internalNotes"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Internal Notes</FormLabel>
+                      <FormLabel>
+                        {t("adoptionApplications.staff.internalNotesLabel")}
+                      </FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Add or update internal notes for staff view only."
+                          placeholder={t(
+                            "adoptionApplications.staff.internalNotesPlaceholder"
+                          )}
                           className="resize-y min-h-[100px]"
                           disabled={isPending || isAdopted}
                           {...field}
@@ -286,12 +300,12 @@ export function StaffApplicationUpdateForm({
 
           <Card>
             <CardHeader>
-              <CardTitle>Applicant Information (Read-Only)</CardTitle>
+              <CardTitle>{t("adoptionApplications.readOnly.applicantTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.fullName")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.applicantName}
@@ -301,7 +315,7 @@ export function StaffApplicationUpdateForm({
                   </FormControl>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.email")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.applicantEmail}
@@ -311,7 +325,7 @@ export function StaffApplicationUpdateForm({
                   </FormControl>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Phone</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.phone")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.applicantPhone}
@@ -324,7 +338,7 @@ export function StaffApplicationUpdateForm({
               <Separator />
               <div className="space-y-6">
                 <FormItem>
-                  <FormLabel>Address Line 1</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.address1")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.applicantAddressLine1}
@@ -334,7 +348,7 @@ export function StaffApplicationUpdateForm({
                   </FormControl>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Address Line 2</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.address2")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.applicantAddressLine2 ?? ""}
@@ -345,7 +359,7 @@ export function StaffApplicationUpdateForm({
                 </FormItem>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <FormItem>
-                    <FormLabel>City</FormLabel>
+                    <FormLabel>{t("adoptionApplications.readOnly.city")}</FormLabel>
                     <FormControl>
                       <Input
                         value={application.applicantCity}
@@ -355,7 +369,7 @@ export function StaffApplicationUpdateForm({
                     </FormControl>
                   </FormItem>
                   <FormItem>
-                    <FormLabel>State</FormLabel>
+                    <FormLabel>{t("adoptionApplications.readOnly.state")}</FormLabel>
                     <Select value={application.applicantState} disabled>
                       <SelectTrigger>
                         <SelectValue />
@@ -370,7 +384,7 @@ export function StaffApplicationUpdateForm({
                     </Select>
                   </FormItem>
                   <FormItem>
-                    <FormLabel>ZIP Code</FormLabel>
+                    <FormLabel>{t("adoptionApplications.readOnly.zip")}</FormLabel>
                     <FormControl>
                       <Input
                         value={application.applicantZipCode}
@@ -386,12 +400,12 @@ export function StaffApplicationUpdateForm({
 
           <Card>
             <CardHeader>
-              <CardTitle>Home & Lifestyle (Read-Only)</CardTitle>
+              <CardTitle>{t("adoptionApplications.readOnly.homeTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <FormItem>
-                  <FormLabel>Living Situation</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.livingSituation")}</FormLabel>
                   <Select value={application.livingSituation} disabled>
                     <SelectTrigger>
                       <SelectValue />
@@ -399,14 +413,14 @@ export function StaffApplicationUpdateForm({
                     <SelectContent>
                       {livingSituationOptions.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
-                          {option.label}
+                          {t(`myApplications.livingSituationOptions.${option.value}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Household Size</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.householdSize")}</FormLabel>
                   <FormControl>
                     <Input
                       value={application.householdSize}
@@ -416,7 +430,7 @@ export function StaffApplicationUpdateForm({
                   </FormControl>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Do you have a yard?</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.hasYard")}</FormLabel>
                   <RadioGroup
                     value={application.hasYard ? "true" : "false"}
                     disabled
@@ -426,20 +440,20 @@ export function StaffApplicationUpdateForm({
                         <FormControl>
                           <RadioGroupItem value="true" />
                         </FormControl>
-                        <FormLabel className="font-normal">Yes</FormLabel>
+                        <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2">
                         <FormControl>
                           <RadioGroupItem value="false" />
                         </FormControl>
-                        <FormLabel className="font-normal">No</FormLabel>
+                        <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                       </FormItem>
                     </div>
                   </RadioGroup>
                 </FormItem>
                 <FormItem>
                   <FormLabel>
-                    If you rent, do you have landlord permission?
+                    {t("adoptionApplications.readOnly.landlordPermission")}
                   </FormLabel>
                   <RadioGroup
                     value={application.landlordPermission ? "true" : "false"}
@@ -450,19 +464,19 @@ export function StaffApplicationUpdateForm({
                         <FormControl>
                           <RadioGroupItem value="true" />
                         </FormControl>
-                        <FormLabel className="font-normal">Yes</FormLabel>
+                        <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2">
                         <FormControl>
                           <RadioGroupItem value="false" />
                         </FormControl>
-                        <FormLabel className="font-normal">No</FormLabel>
+                        <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                       </FormItem>
                     </div>
                   </RadioGroup>
                 </FormItem>
                 <FormItem>
-                  <FormLabel>Are there children in the home?</FormLabel>
+                  <FormLabel>{t("adoptionApplications.readOnly.hasChildren")}</FormLabel>
                   <RadioGroup
                     value={application.hasChildren ? "true" : "false"}
                     disabled
@@ -472,23 +486,23 @@ export function StaffApplicationUpdateForm({
                         <FormControl>
                           <RadioGroupItem value="true" />
                         </FormControl>
-                        <FormLabel className="font-normal">Yes</FormLabel>
+                        <FormLabel className="font-normal">{t("common.yes")}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-2">
                         <FormControl>
                           <RadioGroupItem value="false" />
                         </FormControl>
-                        <FormLabel className="font-normal">No</FormLabel>
+                        <FormLabel className="font-normal">{t("common.no")}</FormLabel>
                       </FormItem>
                     </div>
                   </RadioGroup>
                 </FormItem>
                 {application.hasChildren && (
                   <FormItem>
-                    <FormLabel>Children&apos;s Ages</FormLabel>
+                    <FormLabel>{t("adoptionApplications.readOnly.childrenAges")}</FormLabel>
                     <FormControl>
                       <Input
-                        value={application.childrenAges?.join(", ") ?? "N/A"}
+                        value={application.childrenAges?.join(", ") ?? t("common.na")}
                         disabled
                         readOnly
                       />
@@ -498,10 +512,10 @@ export function StaffApplicationUpdateForm({
               </div>
               <Separator />
               <FormItem>
-                <FormLabel>Other Animals in the Home</FormLabel>
+                <FormLabel>{t("adoptionApplications.readOnly.otherAnimals")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    value={application.otherAnimalsDescription ?? "N/A"}
+                    value={application.otherAnimalsDescription ?? t("common.na")}
                     className="resize-y"
                     disabled
                     readOnly
@@ -513,14 +527,14 @@ export function StaffApplicationUpdateForm({
 
           <Card>
             <CardHeader>
-              <CardTitle>Experience & Intent (Read-Only)</CardTitle>
+              <CardTitle>{t("adoptionApplications.readOnly.experienceTitle")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-8">
               <FormItem>
-                <FormLabel>Animal Experience</FormLabel>
+                <FormLabel>{t("adoptionApplications.readOnly.animalExperience")}</FormLabel>
                 <FormControl>
                   <Textarea
-                    value={application.animalExperience ?? "N/A"}
+                    value={application.animalExperience ?? t("common.na")}
                     className="resize-y min-h-[100px]"
                     disabled
                     readOnly
@@ -528,7 +542,7 @@ export function StaffApplicationUpdateForm({
                 </FormControl>
               </FormItem>
               <FormItem>
-                <FormLabel>Reason for Adoption</FormLabel>
+                <FormLabel>{t("adoptionApplications.readOnly.reason")}</FormLabel>
                 <FormControl>
                   <Textarea
                     value={application.reasonForAdoption}
@@ -548,11 +562,15 @@ export function StaffApplicationUpdateForm({
               type="button"
               disabled={isPending}
             >
-              <Link href="/dashboard/adoption-applications">Cancel</Link>
+              <Link href="/dashboard/adoption-applications">
+                {t("common.cancel")}
+              </Link>
             </Button>
             <Button type="submit" disabled={isPending || isAdopted}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isPending ? "Updating..." : "Update Application"}
+              {isPending
+                ? t("common.updating")
+                : t("adoptionApplications.staff.updateButton")}
             </Button>
           </div>
         </form>

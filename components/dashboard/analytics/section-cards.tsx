@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { fetchPetCardData } from "@/app/lib/data/analytics.data";
+import { getTranslations } from "next-intl/server";
 
 // Helper function to format percentage
 const formatPercentage = (value: number) => {
@@ -17,53 +18,65 @@ const formatPercentage = (value: number) => {
 };
 
 // Helper function to get trend message
-const getTrendMessage = (change: number, context: string) => {
+const getTrendMessage = (
+  t: (key: string, values?: Record<string, unknown>) => string,
+  change: number,
+  context: string
+) => {
   const isPositive = change >= 0;
 
   if (Math.abs(change) < 5) {
-    return `Stable ${context}`;
+    return t("analytics.trends.stable", { context });
   }
 
   if (isPositive) {
-    return `Trending up this month`;
+    return t("analytics.trends.up", { context });
   }
 
-  return `Down ${Math.abs(change).toFixed(1)}% this period`;
+  return t("analytics.trends.down", {
+    percentage: Math.abs(change).toFixed(1),
+    context,
+  });
 };
 
 // Helper function to get footer description
-const getFooterDescription = (cardType: string, change: number) => {
+const getFooterDescription = (
+  t: (key: string, values?: Record<string, unknown>) => string,
+  cardType: string,
+  change: number
+) => {
   const descriptions = {
     totalAnimals: {
-      positive: "New intakes showing growth",
-      negative: "Fewer intakes this period",
-      stable: "Consistent intake volume",
+      positive: t("analytics.footer.totalAnimals.positive"),
+      negative: t("analytics.footer.totalAnimals.negative"),
+      stable: t("analytics.footer.totalAnimals.stable"),
     },
     adopted: {
-      positive: "Strong adoption success",
-      negative: "Adoption needs attention",
-      stable: "Steady adoption rate",
+      positive: t("analytics.footer.adopted.positive"),
+      negative: t("analytics.footer.adopted.negative"),
+      stable: t("analytics.footer.adopted.stable"),
     },
     published: {
-      positive: "Engagement exceeds targets",
-      negative: "Listing activity below target",
-      stable: "Consistent listing activity",
+      positive: t("analytics.footer.published.positive"),
+      negative: t("analytics.footer.published.negative"),
+      stable: t("analytics.footer.published.stable"),
     },
     tasks: {
-      positive: "Task backlog increasing",
-      negative: "Task completion improving",
-      stable: "Task volume stable",
+      positive: t("analytics.footer.tasks.positive"),
+      negative: t("analytics.footer.tasks.negative"),
+      stable: t("analytics.footer.tasks.stable"),
     },
   };
 
   const category = descriptions[cardType as keyof typeof descriptions];
-  if (!category) return "Monitoring performance";
+  if (!category) return t("analytics.footer.default");
 
   if (Math.abs(change) < 5) return category.stable;
   return change >= 0 ? category.positive : category.negative;
 };
 
 export async function SectionCards() {
+  const t = await getTranslations("dashboard");
   const data = await fetchPetCardData();
   const {
     totalPets,
@@ -77,7 +90,7 @@ export async function SectionCards() {
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Animals</CardDescription>
+          <CardDescription>{t("analytics.cards.totalAnimals")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {totalPets}
           </CardTitle>
@@ -94,7 +107,11 @@ export async function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {getTrendMessage(trends.totalPetsChange, "this month")}
+            {getTrendMessage(
+              t,
+              trends.totalPetsChange,
+              t("analytics.trends.context.thisMonth")
+            )}
             {trends.totalPetsChange >= 0 ? (
               <IconTrendingUp className="size-4" />
             ) : (
@@ -102,14 +119,14 @@ export async function SectionCards() {
             )}
           </div>
           <div className="text-muted-foreground">
-            {getFooterDescription("totalAnimals", trends.totalPetsChange)}
+            {getFooterDescription(t, "totalAnimals", trends.totalPetsChange)}
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Adopted Animals</CardDescription>
+          <CardDescription>{t("analytics.cards.adoptedAnimals")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {adoptedPetsCount}
           </CardTitle>
@@ -126,7 +143,11 @@ export async function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {getTrendMessage(trends.adoptedPetsChange, "this period")}
+            {getTrendMessage(
+              t,
+              trends.adoptedPetsChange,
+              t("analytics.trends.context.thisPeriod")
+            )}
             {trends.adoptedPetsChange >= 0 ? (
               <IconTrendingUp className="size-4" />
             ) : (
@@ -134,14 +155,14 @@ export async function SectionCards() {
             )}
           </div>
           <div className="text-muted-foreground">
-            {getFooterDescription("adopted", trends.adoptedPetsChange)}
+            {getFooterDescription(t, "adopted", trends.adoptedPetsChange)}
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Published Animals</CardDescription>
+          <CardDescription>{t("analytics.cards.publishedAnimals")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {publishedPetsCount}
           </CardTitle>
@@ -158,7 +179,11 @@ export async function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {getTrendMessage(trends.publishedPetsChange, "this month")}
+            {getTrendMessage(
+              t,
+              trends.publishedPetsChange,
+              t("analytics.trends.context.thisMonth")
+            )}
             {trends.publishedPetsChange >= 0 ? (
               <IconTrendingUp className="size-4" />
             ) : (
@@ -166,14 +191,14 @@ export async function SectionCards() {
             )}
           </div>
           <div className="text-muted-foreground">
-            {getFooterDescription("published", trends.publishedPetsChange)}
+            {getFooterDescription(t, "published", trends.publishedPetsChange)}
           </div>
         </CardFooter>
       </Card>
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>To-do Tasks</CardDescription>
+          <CardDescription>{t("analytics.cards.todoTasks")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {todoTasksCount}
           </CardTitle>
@@ -190,7 +215,11 @@ export async function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            {getTrendMessage(trends.todoTasksChange, "compared to last month")}
+            {getTrendMessage(
+              t,
+              trends.todoTasksChange,
+              t("analytics.trends.context.comparedToLastMonth")
+            )}
             {trends.todoTasksChange >= 0 ? (
               <IconTrendingUp className="size-4" />
             ) : (
@@ -198,7 +227,7 @@ export async function SectionCards() {
             )}
           </div>
           <div className="text-muted-foreground">
-            {getFooterDescription("tasks", trends.todoTasksChange)}
+            {getFooterDescription(t, "tasks", trends.todoTasksChange)}
           </div>
         </CardFooter>
       </Card>

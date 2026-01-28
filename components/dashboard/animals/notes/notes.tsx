@@ -36,6 +36,7 @@ import { SimplePagination } from "../../../simple-pagination";
 import { ServerSideFacetedFilter } from "@/components/table-common/server-side-faceted-filter";
 import { ServerSideSort } from "@/components/table-common/server-side-sort";
 import { ServerSideSwitch } from "@/components/table-common/server-side-switch";
+import { useTranslations } from "next-intl";
 
 export const noteCategoryColors: Record<NoteCategory, string> = {
   [NoteCategory.BEHAVIORAL]: "bg-blue-100 text-blue-800 border-blue-200",
@@ -54,31 +55,31 @@ interface Props {
 }
 
 const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
+  const t = useTranslations("dashboard");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   return (
     <>
       <Card className="@container/card">
         <CardHeader>
-          <CardTitle>Animal Notes</CardTitle>
+          <CardTitle>{t("notes.title")}</CardTitle>
 
           <CardDescription>
-            Keep track of important notes about this animal.
+            {t("notes.description")}
           </CardDescription>
 
           <CardAction>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="h-8">
-                  Add Note
+                  {t("notes.addButton")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[600px]">
                 <DialogHeader>
-                  <DialogTitle>Add Note</DialogTitle>
+                  <DialogTitle>{t("notes.dialog.addTitle")}</DialogTitle>
                   <DialogDescription>
-                    Add a new note for this animal. Click create note when
-                    you&apos;re done.
+                    {t("notes.dialog.addDescription")}
                   </DialogDescription>
                 </DialogHeader>
                 <NoteForm
@@ -93,24 +94,27 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
           <div className="mt-4 flex flex-row flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
               <ServerSideFacetedFilter
-                title="Category"
+                title={t("notes.filters.category")}
                 paramKey="category"
-                options={noteCategoryOptions}
+                options={noteCategoryOptions.map((option) => ({
+                  ...option,
+                  label: t(`notes.categoryOptions.${option.value}`),
+                }))}
               />
             </div>
 
             <div className="flex items-center gap-2">
               <ServerSideSort
                 paramKey="sort"
-                placeholder="Select order"
+                placeholder={t("notes.filters.sortPlaceholder")}
                 options={[
-                  { label: "Newest First", value: "createdAt.desc" },
-                  { label: "Oldest First", value: "createdAt.asc" },
+                  { label: t("notes.filters.newestFirst"), value: "createdAt.desc" },
+                  { label: t("notes.filters.oldestFirst"), value: "createdAt.asc" },
                 ]}
               />
             </div>
 
-            <ServerSideSwitch paramKey="showDeleted" label="Show Deleted" />
+            <ServerSideSwitch paramKey="showDeleted" label={t("notes.filters.showDeleted")} />
           </div>
         </CardHeader>
 
@@ -136,10 +140,10 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
                             noteCategoryColors[note.category]
                           )}
                         >
-                          {note.category}
+                          {t(`notes.categoryOptions.${note.category}`)}
                         </Badge>
                         {note.deletedAt && (
-                          <Badge variant="destructive">Deleted</Badge>
+                          <Badge variant="destructive">{t("notes.deleted")}</Badge>
                         )}
                       </div>
 
@@ -148,7 +152,7 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
                       </p>
 
                       <div className="text-xs text-gray-500 mt-3">
-                        <span>{note.author?.name ?? "Unknown User"}</span> &middot;{" "}
+                        <span>{note.author?.name ?? t("notes.unknownUser")}</span> &middot;{" "}
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="underline decoration-dotted cursor-help">
@@ -167,10 +171,10 @@ const AnimalNotes = ({ notes, totalPages, animalId }: Props) => {
               ))
             ) : (
               <div className="text-center text-gray-500 py-12 border-2 border-dashed rounded-lg">
-                <p className="font-semibold text-lg">No Matching Notes Found</p>
+                <p className="font-semibold text-lg">{t("notes.emptyTitle")}</p>
 
                 <p className="text-sm mt-1">
-                  Try adjusting your filters or creating a new note.
+                  {t("notes.emptyDescription")}
                 </p>
               </div>
             )}

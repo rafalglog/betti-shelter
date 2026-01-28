@@ -11,7 +11,9 @@ import { AnimalsPayload } from "@/app/lib/types";
 import { animalListingStatusOptions } from "@/app/lib/utils/enum-formatter";
 import Link from "next/link";
 
-export const columns: ColumnDef<AnimalsPayload>[] = [
+type Translator = (key: string, values?: Record<string, unknown>) => string;
+
+export const getColumns = (t: Translator): ColumnDef<AnimalsPayload>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -22,7 +24,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
             (table.getIsSomePageRowsSelected() && "indeterminate")
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
+          aria-label={t("table.selectAll")}
           className="translate-y-[2px]"
         />
       </div>
@@ -32,7 +34,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          aria-label={t("table.selectRow")}
           className="translate-y-[2px]"
         />
       </div>
@@ -43,7 +45,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Name" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.name")} />
     ),
     cell: ({ row }) => {
       const status = animalListingStatusOptions.find(
@@ -52,7 +54,11 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
 
       return (
         <div className="flex space-x-2">
-          {status && <Badge variant="outline">{status.label}</Badge>}{" "}
+          {status && (
+            <Badge variant="outline">
+              {t(`animals.listingStatusOptions.${status.value}`)}
+            </Badge>
+          )}{" "}
           <Link
             className="font-medium hover:underline"
             href={`/dashboard/animals/${row.original.id}`}
@@ -66,7 +72,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "birthDate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Age" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.age")} />
     ),
     cell: ({ row }) => {
       return (
@@ -82,7 +88,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "sex",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Sex" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.sex")} />
     ),
     cell: ({ row }) => {
       const sex = sexOptions.find((sex) => sex.value === row.getValue("sex"));
@@ -92,7 +98,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
           {sex.icon && (
             <sex.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{sex.label}</span>
+          <span>{t(`animals.sexOptions.${sex.value}`)}</span>
         </Badge>
       ) : null;
     },
@@ -103,7 +109,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "size",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Size" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.size")} />
     ),
     cell: ({ row }) => {
       const size = sizeOptions.find(
@@ -119,7 +125,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
           {size.icon && (
             <size.icon className="mr-2 h-4 w-4 text-muted-foreground" />
           )}
-          <span>{size.label}</span>
+          <span>{t(`animals.sizeOptions.${size.value}`)}</span>
         </Badge>
       );
     },
@@ -130,7 +136,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "city",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="City" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.city")} />
     ),
     cell: ({ row }) => (
       <span className="max-w-[200px] truncate">{row.getValue("city")}</span>
@@ -139,7 +145,7 @@ export const columns: ColumnDef<AnimalsPayload>[] = [
   {
     accessorKey: "state",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="State" />
+      <DataTableColumnHeader column={column} title={t("animals.columns.state")} />
     ),
     cell: ({ row }) => (
       <span className="max-w-[200px] truncate">{row.getValue("state")}</span>

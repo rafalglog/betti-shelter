@@ -8,12 +8,13 @@ import {
 } from "@/components/ui/card";
 import { SearchParamsType } from "@/app/lib/types";
 import DataTable from "@/components/dashboard/outcomes/table/outcome-table";
-import { columns } from "@/components/dashboard/outcomes/table/outcome-table-columns";
+import { getColumns } from "@/components/dashboard/outcomes/table/outcome-table-columns";
 import OutcomeTableToolbar from "@/components/dashboard/outcomes/table/outcome-table-toolbar";
 import { fetchOutcomes } from "@/app/lib/data/animals/outcome.data";
 import { Authorize } from "@/components/auth/authorize";
 import PageNotFoundOrAccessDenied from "@/components/PageNotFoundOrAccessDenied";
 import { Permissions } from "@/app/lib/auth/permissions";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams: SearchParamsType;
@@ -31,6 +32,7 @@ const Page = async ({ searchParams }: Props) => {
 };
 
 const PageContent = async ({ searchParams }: Props) => {
+  const t = await getTranslations("dashboard");
   const { query = "", page = "1", sort, type } = await searchParams;
   const currentPage = Number(page);
 
@@ -40,16 +42,16 @@ const PageContent = async ({ searchParams }: Props) => {
     sort,
     type
   );
+  const columns = getColumns(t);
 
   return (
     <Card className="@container/card">
       <CardHeader>
         <CardTitle className="font-semibold tabular-nums @[650px]/card:text-xl">
-          Outcomes
+          {t("pages.outcomes.title")}
         </CardTitle>
         <CardDescription>
-          Track and review the final disposition of all animals that have left
-          the shelter.
+          {t("pages.outcomes.description")}
         </CardDescription>
         <CardAction></CardAction>
       </CardHeader>

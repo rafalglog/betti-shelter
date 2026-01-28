@@ -1,6 +1,7 @@
 import { fetchAnimalJourney } from "@/app/lib/data/animals/animal-journey.data";
 import { formatJourneyItem } from "@/app/lib/journey-utils";
 import { Briefcase, HeartHandshake, LogIn } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 // The icon map
 const iconMap = {
@@ -19,6 +20,8 @@ const getIcon = (activityType: string) => {
 };
 
 const AnimalJourney = async ({ animalId }: { animalId: string }) => {
+  const t = await getTranslations("dashboard");
+  const locale = await getLocale();
   const journeyData = await fetchAnimalJourney(animalId);
 
   const visibleJourneyItems = journeyData
@@ -29,10 +32,9 @@ const AnimalJourney = async ({ animalId }: { animalId: string }) => {
   if (visibleJourneyItems.length === 0) {
     return (
       <div className="text-center py-12 border-2 border-dashed rounded-lg">
-        <p className="font-semibold text-lg">No Journey Events Found</p>
+        <p className="font-semibold text-lg">{t("journey.emptyTitle")}</p>
         <p className="text-sm mt-1 text-muted-foreground">
-          Significant events like intake, status changes, and adoption will
-          appear here.
+          {t("journey.emptyDescription")}
         </p>
       </div>
     );
@@ -71,12 +73,12 @@ const AnimalJourney = async ({ animalId }: { animalId: string }) => {
                         {formattedItem.description}
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        By: {item.changedBy.name}
+                        {t("journey.by", { name: item.changedBy.name })}
                       </p>
                     </div>
                     <div className="whitespace-nowrap text-right text-xs text-gray-500">
                       <time dateTime={item.changedAt.toISOString()}>
-                        {new Date(item.changedAt).toLocaleDateString("en-US", {
+                        {new Date(item.changedAt).toLocaleDateString(locale, {
                           year: "numeric",
                           month: "short",
                           day: "numeric",

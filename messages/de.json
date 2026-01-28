@@ -239,5 +239,870 @@
     "giraffeAlt": "Eine überraschte Giraffe.",
     "cobraAlt": "Eine Kobra in Abwehrhaltung.",
     "racoonAlt": "Ein überraschter Waschbär."
+  },
+  "dashboard": {
+    "nav": {
+      "sections": {
+        "platform": "Plattform",
+        "documents": "Dokumente"
+      },
+      "main": {
+        "dashboard": "Dashboard",
+        "animals": "Tiere",
+        "users": "Benutzer",
+        "myApplications": "Meine Anträge",
+        "adoptionApplications": "Adoptionsanträge",
+        "outcomes": "Ergebnisse",
+        "animalTasks": "Tieraufgaben"
+      },
+      "collapsible": {
+        "capture": "Erfassung",
+        "proposal": "Vorschläge",
+        "activeProposals": "Aktive Vorschläge",
+        "archived": "Archiviert"
+      },
+      "secondary": {
+        "settings": "Einstellungen",
+        "help": "Hilfe",
+        "search": "Suche"
+      },
+      "documents": {
+        "reports": "Berichte"
+      }
+    },
+    "routes": {
+      "dashboard": "Dashboard",
+      "animals": "Tiere",
+      "animalTasks": "Tieraufgaben",
+      "outcomes": "Ergebnisse",
+      "adoptionApplications": "Adoptionsanträge",
+      "myApplications": "Meine Anträge",
+      "users": "Benutzer",
+      "settings": "Einstellungen"
+    },
+    "userMenu": {
+      "account": "Konto",
+      "settings": "Einstellungen",
+      "notifications": "Benachrichtigungen",
+      "logOut": "Abmelden"
+    },
+    "settings": {
+      "password": {
+        "title": "Passwort ändern",
+        "description": "Aktualisieren Sie Ihr Passwort für mehr Kontosicherheit.",
+        "forceDescription": "Sie müssen Ihr Passwort aktualisieren, bevor Sie fortfahren.",
+        "current": "Aktuelles Passwort",
+        "new": "Neues Passwort",
+        "confirm": "Neues Passwort bestätigen",
+        "updating": "Aktualisieren...",
+        "updateButton": "Passwort aktualisieren"
+      }
+    },
+    "common": {
+      "backToAnimalProfile": "Zurück zum Tierprofil",
+      "backToApplications": "Zurück zu den Anträgen",
+      "backToOutcomes": "Zurück zu den Ergebnissen",
+      "cancel": "Abbrechen",
+      "creating": "Erstellen...",
+      "formError": "Bitte korrigieren Sie die markierten Fehler.",
+      "item": "Element",
+      "loadingAdoptionApplicationEdit": "Adoptionsantrag wird geladen...",
+      "loadingApplication": "Antrag wird geladen...",
+      "loadingAssessmentForm": "Bewertungsformular wird geladen...",
+      "loadingForm": "Formular wird geladen...",
+      "na": "k. A.",
+      "no": "Nein",
+      "reset": "Zurücksetzen",
+      "saveChanges": "Änderungen speichern",
+      "saving": "Speichern...",
+      "submitting": "Senden...",
+      "tryAgain": "Erneut versuchen",
+      "undo": "Rückgängig",
+      "unexpectedError": "Etwas ist schiefgelaufen.",
+      "updating": "Aktualisieren...",
+      "yes": "Ja"
+    },
+    "table": {
+      "clearFilters": "Filter löschen",
+      "columns": "Spalten",
+      "customizeColumns": "Spalten anpassen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "goToFirstPage": "Zur ersten Seite",
+      "goToLastPage": "Zur letzten Seite",
+      "goToNextPage": "Zur nächsten Seite",
+      "goToPreviousPage": "Zur vorherigen Seite",
+      "hide": "Ausblenden",
+      "moreOptions": "Weitere Optionen",
+      "moveToTrash": "In den Papierkorb",
+      "noResults": "Keine Ergebnisse.",
+      "noResultsFound": "Keine Ergebnisse gefunden.",
+      "openMenu": "Menü öffnen",
+      "page": "Seite",
+      "pageOf": "Seite {page} von {total}",
+      "pageSize": "Seitengröße",
+      "profile": "Profil",
+      "restore": "Wiederherstellen",
+      "rowsPerPage": "Zeilen pro Seite",
+      "rowsSelected": "{count, plural, one {# Zeile ausgewählt} other {# Zeilen ausgewählt}}",
+      "selectedCount": "{count} ausgewählt",
+      "selectAll": "Alles auswählen",
+      "selectRow": "Zeile auswählen",
+      "sort": "Sortieren",
+      "sortAsc": "Aufsteigend sortieren",
+      "sortBy": "Sortieren nach",
+      "sortDesc": "Absteigend sortieren",
+      "status": "Status",
+      "toggleColumns": "Spalten umschalten"
+    },
+    "pages": {
+      "animals": {
+        "title": "Tiere",
+        "description": "Tierprofile und Statusänderungen verwalten.",
+        "addAnimal": "Tier hinzufügen"
+      },
+      "animalTasks": {
+        "title": "Tieraufgaben",
+        "description": "Aufgaben für alle Tiere verfolgen.",
+        "singleDescription": "Aufgaben für dieses Tier verwalten."
+      },
+      "assessments": {
+        "newTitle": "Neue Bewertung",
+        "newDescription": "Neuen Bewertungsdatensatz erstellen.",
+        "editTitle": "Bewertung bearbeiten",
+        "editDescription": "Bewertungsdatensatz aktualisieren."
+      },
+      "journey": {
+        "title": "Verlauf",
+        "description": "Zeitachse der Ereignisse und Aktualisierungen für dieses Tier."
+      },
+      "adoptionApplications": {
+        "title": "Adoptionsanträge",
+        "description": "Adoptionsanträge prüfen und verwalten.",
+        "singleDescription": "Anträge für dieses Tier."
+      },
+      "myApplications": {
+        "title": "Meine Anträge",
+        "description": "Ihre Adoptionsanträge verfolgen und verwalten.",
+        "editTitle": "Antrag bearbeiten",
+        "editDescription": "Details Ihres Adoptionsantrags aktualisieren.",
+        "adoptPets": "Tiere adoptieren"
+      },
+      "outcomes": {
+        "title": "Ergebnisse",
+        "description": "Abschließende Ergebnisse für Tiere verwalten."
+      },
+      "photos": {
+        "currentTitle": "Aktuelle Fotos",
+        "currentDescription": "Bestehende Fotos des Tieres verwalten.",
+        "uploadTitle": "Fotos hochladen",
+        "uploadDescription": "Neue Fotos zum Tierprofil hinzufügen."
+      },
+      "users": {
+        "title": "Benutzer",
+        "description": "Benutzerkonten und Rollen verwalten.",
+        "addUser": "Benutzer hinzufügen"
+      }
+    },
+    "animals": {
+      "toolbar": {
+        "searchPlaceholder": "Tiere suchen..."
+      },
+      "filters": {
+        "sex": "Geschlecht",
+        "status": "Status"
+      },
+      "form": {
+        "createTitle": "Tier erstellen",
+        "createDescription": "Neues Tierprofil hinzufügen.",
+        "editTitle": "Tier bearbeiten",
+        "editDescription": "Details für {name} aktualisieren.",
+        "sectionTitle": "Tierdetails",
+        "submitting": "Senden...",
+        "saveChanges": "Änderungen speichern",
+        "createButton": "Tier erstellen"
+      },
+      "fields": {
+        "name": "Name",
+        "namePlaceholder": "Name eingeben",
+        "species": "Art",
+        "speciesPlaceholder": "Art auswählen",
+        "breed": "Rasse",
+        "breedPlaceholder": "Rasse auswählen",
+        "primaryColor": "Primärfarbe",
+        "colorPlaceholder": "Farbe auswählen",
+        "sex": "Geschlecht",
+        "sexPlaceholder": "Geschlecht auswählen",
+        "birthDate": "Geburtsdatum",
+        "datePlaceholder": "Datum auswählen",
+        "weight": "Gewicht",
+        "weightPlaceholder": "Gewicht eingeben",
+        "height": "Größe",
+        "heightPlaceholder": "Größe eingeben",
+        "healthStatus": "Gesundheitsstatus",
+        "healthStatusPlaceholder": "Gesundheitsstatus auswählen",
+        "microchip": "Mikrochip-Nummer",
+        "microchipPlaceholder": "Mikrochip-Nummer eingeben",
+        "listingStatus": "Anzeigenstatus",
+        "listingStatusPlaceholder": "Status auswählen",
+        "listingStatusLocked": "Anzeigenstatus kann bei adoptierten Tieren nicht geändert werden.",
+        "city": "Stadt",
+        "cityPlaceholder": "Stadt eingeben",
+        "state": "Bundesland",
+        "statePlaceholder": "Bundesland auswählen",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Beschreibung hinzufügen"
+      },
+      "sexOptions": {
+        "MALE": "Männlich",
+        "FEMALE": "Weiblich",
+        "UNKNOWN": "Unbekannt"
+      },
+      "sizeOptions": {
+        "SMALL": "Klein",
+        "MEDIUM": "Mittel",
+        "LARGE": "Groß",
+        "XLARGE": "Sehr groß"
+      },
+      "listingStatusOptions": {
+        "DRAFT": "Entwurf",
+        "PUBLISHED": "Veröffentlicht",
+        "ARCHIVED": "Archiviert"
+      },
+      "healthStatusOptions": {
+        "HEALTHY": "Gesund",
+        "AWAITING_VET_EXAM": "Wartet auf Tierarztuntersuchung",
+        "AWAITING_TRIAGE": "Wartet auf Triage",
+        "UNDER_VET_CARE": "In tierärztlicher Behandlung",
+        "HOSPITALISED": "Hospitalisiert",
+        "AWAITING_SPAY_NEUTER": "Wartet auf Kastration/Sterilisation",
+        "AWAITING_OTHER_SURGERY": "Wartet auf andere Operation",
+        "RECOVERING_FROM_SURGERY": "Erholt sich von Operation"
+      },
+      "legalStatusOptions": {
+        "NONE": "Frei",
+        "STRAY_HOLD": "Fundtier-Sperrfrist",
+        "BITE_QUARANTINE": "Bissquarantäne",
+        "COURT_HOLD": "Gerichtliche Sperre",
+        "POLICE_HOLD": "Polizeiliche Sperre",
+        "PROTECTIVE_CUSTODY": "Schutzverwahrung"
+      },
+      "sectionCards": {
+        "photoAlt": "Foto von {name}",
+        "species": "Art",
+        "age": "Alter",
+        "sex": "Geschlecht",
+        "size": "Größe",
+        "likesLabel": "{count, plural, one {Like} other {Likes}}",
+        "inCare": "In Betreuung {duration}",
+        "applicationsLabel": "{count, plural, one {Antrag} other {Anträge}}",
+        "completeAdoption": "Adoption abschließen",
+        "createIntake": "Aufnahme erstellen",
+        "createOutcome": "Ergebnis erstellen",
+        "detailsTitle": "Details & Medizin",
+        "detailsDescription": "Medizinische und Identifikationsinformationen.",
+        "editProfile": "Profil bearbeiten",
+        "medicalTitle": "Medizinische Informationen",
+        "spayedNeutered": "Kastriert/Sterilisiert",
+        "healthStatus": "Gesundheitsstatus",
+        "legalStatus": "Rechtsstatus",
+        "identificationTitle": "Identifikation",
+        "microchip": "Mikrochip",
+        "noMicrochip": "Kein Mikrochip",
+        "primaryColor": "Primärfarbe",
+        "pendingTasks": "{count, plural, one {# offene Aufgabe} other {# offene Aufgaben}}",
+        "pendingTasksHint": "Bitte den Aufgaben-Tab für erforderliche Punkte prüfen."
+      },
+      "tabs": {
+        "navigation": "Navigation",
+        "activity": "Aktivität",
+        "tasks": "Aufgaben",
+        "characteristics": "Merkmale",
+        "journey": "Verlauf",
+        "notes": "Notizen",
+        "assessments": "Bewertungen",
+        "applications": "Anträge",
+        "photos": "Fotos"
+      }
+    },
+    "intake": {
+      "sectionTitle": "Aufnahme",
+      "typeLabel": "Aufnahmetyp",
+      "typePlaceholder": "Aufnahmetyp auswählen",
+      "selectTypeHint": "Wählen Sie, wie das Tier aufgenommen wurde.",
+      "dateLabel": "Aufnahmedatum",
+      "datePlaceholder": "Datum auswählen",
+      "notesLabel": "Aufnahmenotizen",
+      "notesPlaceholder": "Notizen hinzufügen",
+      "transfer": {
+        "title": "Transferdetails",
+        "partnerLabel": "Partnername",
+        "partnerPlaceholder": "Partner auswählen"
+      },
+      "stray": {
+        "title": "Funddetails",
+        "addressLabel": "Fundadresse",
+        "addressPlaceholder": "Adresse eingeben",
+        "cityLabel": "Fundstadt",
+        "cityPlaceholder": "Stadt eingeben",
+        "stateLabel": "Bundesland",
+        "statePlaceholder": "Bundesland auswählen"
+      },
+      "surrender": {
+        "title": "Abgabedetails",
+        "nameLabel": "Abgebende Person",
+        "namePlaceholder": "Name eingeben",
+        "phoneLabel": "Telefonnummer",
+        "phonePlaceholder": "Telefonnummer eingeben"
+      },
+      "currentHealthTitle": "Aktueller Gesundheitsstatus",
+      "processing": "Wird verarbeitet...",
+      "reIntakeTitle": "Wiederaufnahme",
+      "reIntakeDescription": "Aufnahmedaten für dieses Tier aktualisieren.",
+      "reIntakeBlockedTitle": "Wiederaufnahme blockiert",
+      "reIntakeBlockedBody": "Für dieses Tier existiert bereits eine aktive Aufnahme.",
+      "reIntakeBlockedHint": "Bitte die aktive Aufnahme abschließen, bevor eine neue erstellt wird.",
+      "processReIntake": "Wiederaufnahme verarbeiten",
+      "typeOptions": {
+        "OWNER_SURRENDER": "Abgabe durch Besitzer",
+        "STRAY": "Fundtier",
+        "BORN_IN_CARE": "In Obhut geboren",
+        "TRANSFER_IN": "Eingangstransfer",
+        "SEIZE": "Beschlagnahmung",
+        "SERVICE_IN": "Service-Aufnahme",
+        "ACO_IMPOUND": "Behördliche Sicherstellung"
+      }
+    },
+    "tasks": {
+      "toolbar": {
+        "searchPlaceholder": "Aufgaben suchen...",
+        "addTask": "Aufgabe hinzufügen"
+      },
+      "dialog": {
+        "createTitle": "Aufgabe erstellen",
+        "createDescription": "Neue Aufgabe für dieses Tier hinzufügen.",
+        "createButton": "Aufgabe erstellen",
+        "editTitle": "Aufgabe bearbeiten",
+        "editDescription": "Details der Aufgabe aktualisieren.",
+        "updateButton": "Aufgabe aktualisieren"
+      },
+      "fields": {
+        "title": "Titel",
+        "titlePlaceholder": "Aufgabentitel eingeben",
+        "details": "Details",
+        "detailsPlaceholder": "Details hinzufügen",
+        "status": "Status",
+        "statusPlaceholder": "Status auswählen",
+        "category": "Kategorie",
+        "categoryPlaceholder": "Kategorie auswählen",
+        "priority": "Priorität",
+        "priorityPlaceholder": "Priorität auswählen",
+        "assignee": "Zuständig",
+        "assigneePlaceholder": "Zuweisen...",
+        "assigneeUnassigned": "Nicht zugewiesen",
+        "dueDate": "Fällig am",
+        "datePlaceholder": "Datum auswählen"
+      },
+      "columns": {
+        "title": "Titel",
+        "animal": "Tier",
+        "status": "Status",
+        "category": "Kategorie",
+        "priority": "Priorität",
+        "assignee": "Zuständig",
+        "dueDate": "Fällig am",
+        "createdAt": "Erstellt am"
+      },
+      "options": {
+        "status": {
+          "TODO": "Offen",
+          "IN_PROGRESS": "In Bearbeitung",
+          "DONE": "Erledigt",
+          "SKIPPED": "Übersprungen",
+          "CANCELED": "Abgebrochen",
+          "ON_HOLD": "Angehalten",
+          "DELETED": "Gelöscht"
+        },
+        "category": {
+          "MEDICAL": "Medizinisch",
+          "BEHAVIORAL": "Verhalten",
+          "ADMINISTRATIVE": "Administrativ",
+          "CLEANING": "Reinigung",
+          "FEEDING": "Fütterung"
+        },
+        "priority": {
+          "HIGH": "Hoch",
+          "MEDIUM": "Mittel",
+          "LOW": "Niedrig"
+        }
+      },
+      "toast": {
+        "movedToTrash": "Aufgabe in den Papierkorb verschoben.",
+        "restored": "Aufgabe wiederhergestellt.",
+        "statusUpdated": "Aufgabenstatus aktualisiert.",
+        "assigneeUpdated": "Zuweisung erfolgreich aktualisiert."
+      }
+    },
+    "notes": {
+      "title": "Notizen",
+      "description": "Aktualisierungen und Beobachtungen für dieses Tier verfolgen.",
+      "addButton": "Notiz hinzufügen",
+      "deleted": "Gelöscht",
+      "unknownUser": "Unbekannter Benutzer",
+      "emptyTitle": "Noch keine Notizen",
+      "emptyDescription": "Fügen Sie die erste Notiz hinzu, um zu beginnen.",
+      "filters": {
+        "category": "Kategorie",
+        "sortPlaceholder": "Notizen sortieren",
+        "newestFirst": "Neueste zuerst",
+        "oldestFirst": "Älteste zuerst",
+        "showDeleted": "Gelöschte anzeigen"
+      },
+      "fields": {
+        "category": "Kategorie",
+        "categoryPlaceholder": "Kategorie auswählen",
+        "content": "Inhalt",
+        "contentPlaceholder": "Notiz schreiben..."
+      },
+      "dialog": {
+        "addTitle": "Notiz hinzufügen",
+        "addDescription": "Neue Notiz für dieses Tier erstellen.",
+        "createButton": "Notiz erstellen",
+        "editTitle": "Notiz bearbeiten",
+        "editDescription": "Diese Notiz aktualisieren.",
+        "updateButton": "Notiz aktualisieren"
+      },
+      "categoryOptions": {
+        "BEHAVIORAL": "Verhalten",
+        "MEDICAL": "Medizinisch",
+        "FEEDING": "Fütterung",
+        "GENERAL": "Allgemein",
+        "ADOPTION_UPDATE": "Adoptions-Update"
+      }
+    },
+    "assessments": {
+      "title": "Bewertungen",
+      "description": "Bewertungsdatensätze prüfen und verwalten.",
+      "detailsTitle": "Bewertungsdetails",
+      "summaryTitle": "Zusammenfassung",
+      "createButton": "Bewertung erstellen",
+      "updateButton": "Bewertung aktualisieren",
+      "templateLabel": "Vorlage",
+      "templatePlaceholder": "Vorlage auswählen",
+      "optionalNotes": "Optionale Notizen",
+      "notePlaceholder": "Notizen hinzufügen",
+      "overallOutcomeLabel": "Gesamtergebnis",
+      "overallOutcomePlaceholder": "Ergebnis auswählen",
+      "summaryLabel": "Zusammenfassung",
+      "summaryPlaceholder": "Zusammenfassung hinzufügen",
+      "notePrefix": "Notiz:",
+      "onDate": "am {date}",
+      "byAssessor": "von {name}",
+      "emptyTitle": "Noch keine Bewertungen",
+      "emptyDescription": "Erstellen Sie eine Bewertung, um zu beginnen.",
+      "noTemplatesTitle": "Keine Vorlagen verfügbar",
+      "noTemplatesDescription": "Erstellen Sie Vorlagen, bevor Sie eine Bewertung hinzufügen.",
+      "filters": {
+        "type": "Typ",
+        "outcome": "Ergebnis",
+        "sortPlaceholder": "Bewertungen sortieren",
+        "newestFirst": "Neueste zuerst",
+        "oldestFirst": "Älteste zuerst",
+        "showDeleted": "Gelöschte anzeigen"
+      },
+      "outcomeOptions": {
+        "EXCELLENT": "Hervorragend",
+        "GOOD": "Gut",
+        "FAIR": "Mittel",
+        "POOR": "Schlecht",
+        "NEEDS_ATTENTION": "Benötigt Aufmerksamkeit",
+        "MONITOR": "Überwachen",
+        "NOT_APPLICABLE": "Nicht zutreffend"
+      },
+      "typeOptions": {
+        "INTAKE_MEDICAL": "Medizinische Aufnahme",
+        "INTAKE_BEHAVIORAL": "Verhaltensaufnahme",
+        "DAILY_MONITORING": "Tägliches Monitoring",
+        "PLAYGROUP_EVALUATION": "Spielgruppenbewertung",
+        "CAT_TEST": "Katzentest",
+        "DOG_TEST": "Hundetest",
+        "HANDLING_SENSITIVITY": "Empfindlichkeit beim Handling",
+        "LEASH_MANNER": "Leinenführigkeit",
+        "QUARANTINE_CHECK": "Quarantäneprüfung",
+        "POST_ADOPTION_FOLLOWUP": "Nachadoptions-Nachverfolgung",
+        "OTHER": "Sonstiges"
+      }
+    },
+    "outcomes": {
+      "columns": {
+        "animal": "Tier",
+        "recipient": "Empfänger",
+        "type": "Typ",
+        "date": "Ergebnisdatum",
+        "processedBy": "Bearbeitet von"
+      },
+      "types": {
+        "ADOPTION": "Adoption",
+        "TRANSFER_OUT": "Weitergabe",
+        "RETURN_TO_OWNER": "Rückgabe an Besitzer",
+        "DECEASED": "Verstorben",
+        "OTHER": "Sonstiges"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Ergebnisse filtern...",
+        "typeFilter": "Typ",
+        "sortPlaceholder": "Reihenfolge auswählen",
+        "sortNewest": "Neueste zuerst",
+        "sortOldest": "Älteste zuerst"
+      },
+      "form": {
+        "createTitle": "Ergebnis erstellen",
+        "createDescription": "Abschließendes Ergebnis für dieses Tier erfassen.",
+        "editTitle": "Ergebnis bearbeiten",
+        "editDescription": "Ergebnisdatensatz aktualisieren.",
+        "typeLabel": "Ergebnistyp",
+        "typePlaceholder": "Ergebnistyp auswählen",
+        "dateLabel": "Ergebnisdatum",
+        "datePlaceholder": "Datum auswählen",
+        "partnerLabel": "Partner",
+        "partnerPlaceholder": "Partner auswählen",
+        "notesLabel": "Notizen",
+        "notesPlaceholder": "Notizen hinzufügen",
+        "processing": "Wird verarbeitet...",
+        "createButton": "Ergebnis erstellen",
+        "updateButton": "Ergebnis aktualisieren"
+      },
+      "alreadyProcessedTitle": "Ergebnis bereits erfasst",
+      "alreadyProcessedBody": "Für dieses Tier wurde bereits ein Ergebnis erfasst."
+    },
+    "adoptionApplications": {
+      "columns": {
+        "applicantName": "Name des Antragstellers",
+        "applicantEmail": "E-Mail des Antragstellers",
+        "applicantPhone": "Telefon des Antragstellers",
+        "status": "Status",
+        "animalName": "Tiername",
+        "animalSpecies": "Tierart",
+        "submittedAt": "Eingereicht am"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Anträge filtern...",
+        "statusFilter": "Status"
+      },
+      "statusOptions": {
+        "PENDING": "Ausstehend",
+        "REVIEWING": "In Prüfung",
+        "WAITLISTED": "Warteliste",
+        "APPROVED": "Genehmigt",
+        "REJECTED": "Abgelehnt",
+        "WITHDRAWN": "Zurückgezogen",
+        "ADOPTED": "Adoptiert"
+      },
+      "staff": {
+        "title": "Mitarbeiteraktionen",
+        "description": "Antrag von <applicant>{applicantName}</applicant> für <animal>{animalName}</animal> wird geprüft",
+        "finalizedTitle": "Antrag abgeschlossen",
+        "finalizedDescription": "Dieser Antrag wurde am {date} abgeschlossen.",
+        "viewOutcome": "Ergebnisdatensatz ansehen",
+        "nextStepTitle": "Nächster Schritt: Adoption abschließen",
+        "nextStepDescription": "Dieser Antrag ist genehmigt und bereit für den letzten Schritt.",
+        "createOutcome": "Ergebnis erstellen",
+        "statusLabel": "Antragsstatus *",
+        "statusPlaceholder": "Neuen Status auswählen",
+        "statusReasonLabel": "Grund für Statusänderung *",
+        "statusReasonPlaceholder": "Grund für die Statusänderung angeben...",
+        "statusReasonHint": "Dieser Grund wird in der Antrags-Historie gespeichert.",
+        "internalNotesLabel": "Interne Notizen",
+        "internalNotesPlaceholder": "Interne Notizen nur für Mitarbeitende hinzufügen oder aktualisieren.",
+        "updateButton": "Antrag aktualisieren"
+      },
+      "readOnly": {
+        "applicantTitle": "Antragstellerinformationen (nur lesen)",
+        "fullName": "Vollständiger Name",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "address1": "Adresszeile 1",
+        "address2": "Adresszeile 2",
+        "city": "Stadt",
+        "state": "Bundesland",
+        "zip": "PLZ",
+        "homeTitle": "Wohnen & Lebensstil (nur lesen)",
+        "livingSituation": "Wohnsituation",
+        "householdSize": "Haushaltsgröße",
+        "hasYard": "Haben Sie einen Garten?",
+        "landlordPermission": "Wenn Sie mieten: haben Sie die Erlaubnis des Vermieters?",
+        "hasChildren": "Gibt es Kinder im Haushalt?",
+        "childrenAges": "Alter der Kinder",
+        "otherAnimals": "Weitere Tiere im Haushalt",
+        "experienceTitle": "Erfahrung & Absicht (nur lesen)",
+        "animalExperience": "Erfahrung mit Tieren",
+        "reason": "Grund für die Adoption"
+      }
+    },
+    "myApplications": {
+      "columns": {
+        "petName": "Tiername",
+        "petSpecies": "Tierart",
+        "applicantName": "Name des Antragstellers",
+        "status": "Status",
+        "submittedAt": "Eingereicht am"
+      },
+      "toolbar": {
+        "searchPlaceholder": "Anträge filtern...",
+        "statusFilter": "Status"
+      },
+      "statusOptions": {
+        "PENDING": "Ausstehend",
+        "REVIEWING": "In Prüfung",
+        "WAITLISTED": "Warteliste",
+        "APPROVED": "Genehmigt",
+        "REJECTED": "Abgelehnt",
+        "WITHDRAWN": "Zurückgezogen",
+        "ADOPTED": "Adoptiert"
+      },
+      "livingSituationOptions": {
+        "OWN_HOME": "Eigenes Zuhause",
+        "RENT_APARTMENT": "Mietwohnung",
+        "RENT_HOUSE": "Mietshaus",
+        "LIVE_WITH_FAMILY": "Bei Familie wohnen",
+        "OTHER": "Sonstiges"
+      },
+      "actions": {
+        "withdraw": "Zurückziehen",
+        "reactivate": "Reaktivieren"
+      },
+      "toast": {
+        "withdrawSuccess": "Antrag erfolgreich zurückgezogen.",
+        "withdrawError": "Antrag konnte nicht zurückgezogen werden.",
+        "reactivateSuccess": "Antrag erfolgreich reaktiviert.",
+        "reactivateError": "Antrag konnte nicht reaktiviert werden."
+      },
+      "form": {
+        "title": "Adoptionsantrag",
+        "description": "Antrag zur Adoption von {name} ({breed}).",
+        "updateButton": "Antrag aktualisieren",
+        "submitButton": "Antrag senden",
+        "applicant": {
+          "title": "Antragstellerinformationen",
+          "fullName": "Vollständiger Name",
+          "fullNamePlaceholder": "Vollständigen Namen eingeben",
+          "email": "E-Mail",
+          "emailPlaceholder": "you@example.com",
+          "phone": "Telefon",
+          "phonePlaceholder": "Telefonnummer eingeben",
+          "address1": "Adresszeile 1",
+          "address1Placeholder": "Straße und Hausnummer",
+          "address2": "Adresszeile 2",
+          "address2Placeholder": "Wohnung, Suite usw.",
+          "city": "Stadt",
+          "cityPlaceholder": "Stadt eingeben",
+          "state": "Bundesland",
+          "statePlaceholder": "Bundesland auswählen",
+          "zip": "PLZ",
+          "zipPlaceholder": "PLZ eingeben"
+        },
+        "home": {
+          "title": "Wohnen & Lebensstil",
+          "livingSituation": "Wohnsituation",
+          "livingSituationPlaceholder": "Wohnsituation auswählen",
+          "householdSize": "Haushaltsgröße",
+          "householdSizeHint": "Wie viele Personen leben im Haushalt?",
+          "hasYard": "Haben Sie einen Garten?",
+          "landlordPermission": "Wenn Sie mieten: haben Sie die Erlaubnis des Vermieters?",
+          "hasChildren": "Gibt es Kinder im Haushalt?",
+          "childrenAges": "Alter der Kinder",
+          "childrenAgesPlaceholder": "Alter durch Kommas getrennt angeben",
+          "childrenAgesHint": "Beispiel: 3, 7, 12",
+          "otherAnimals": "Weitere Tiere im Haushalt",
+          "otherAnimalsPlaceholder": "Beschreiben Sie weitere Tiere"
+        },
+        "experience": {
+          "title": "Erfahrung & Absicht",
+          "animalExperience": "Erfahrung mit Tieren",
+          "animalExperiencePlaceholder": "Beschreiben Sie Ihre Erfahrung",
+          "reason": "Grund für die Adoption",
+          "reasonPlaceholder": "Warum möchten Sie adoptieren?"
+        }
+      }
+    },
+    "photos": {
+      "confirmDelete": "Möchten Sie dieses Foto wirklich löschen?",
+      "deleteAria": "Foto löschen",
+      "empty": "Noch keine Fotos.",
+      "imageAlt": "Tierfoto",
+      "uploadNote": "Bilder werden nach erfolgreichem Upload im Datensatz des Tieres gespeichert.",
+      "uploadError": "Das Bild konnte nicht in der Datenbank gespeichert werden."
+    },
+    "activity": {
+      "title": "Aktivität",
+      "description": "Aktuelle Updates und Ereignisse für dieses Tier.",
+      "emptyTitle": "Noch keine Aktivität",
+      "emptyDescription": "Aktualisierungen werden hier angezeigt, sobald sie stattfinden.",
+      "showDetails": "Details anzeigen",
+      "hideDetails": "Details ausblenden",
+      "actions": {
+        "fieldUpdate": "Feld aktualisiert",
+        "noteAdded": "Notiz hinzugefügt",
+        "photoUploaded": "Foto hochgeladen",
+        "intakeProcessed": "Aufnahme verarbeitet",
+        "outcomeProcessed": "Ergebnis verarbeitet",
+        "medicalRecordAdded": "Medizinischer Eintrag hinzugefügt",
+        "created": "Tierdatensatz erstellt",
+        "statusChange": "Status geändert",
+        "assessmentCompleted": "Bewertung abgeschlossen",
+        "taskCreated": "Aufgabe erstellt",
+        "taskStatusChanged": "Aufgabenstatus geändert",
+        "unknown": "Aktivität aktualisiert"
+      }
+    },
+    "journey": {
+      "emptyTitle": "Noch keine Verlaufseinträge",
+      "emptyDescription": "Ereignisse werden hier angezeigt, sobald sie erfasst werden.",
+      "by": "Von: {name}"
+    },
+    "analytics": {
+      "cards": {
+        "totalAnimals": "Gesamtzahl Tiere",
+        "adoptedAnimals": "Adoptierte Tiere",
+        "publishedAnimals": "Veröffentlichte Tiere",
+        "todoTasks": "Offene Aufgaben"
+      },
+      "trends": {
+        "stable": "Stabil {context}",
+        "up": "Aufwärtstrend {context}",
+        "down": "{percentage}% Rückgang {context}",
+        "context": {
+          "thisMonth": "diesen Monat",
+          "thisPeriod": "in diesem Zeitraum",
+          "comparedToLastMonth": "im Vergleich zum letzten Monat"
+        }
+      },
+      "footer": {
+        "default": "Leistung wird überwacht",
+        "totalAnimals": {
+          "positive": "Mehr Aufnahmen",
+          "negative": "Weniger Aufnahmen in diesem Zeitraum",
+          "stable": "Konstante Aufnahmezahl"
+        },
+        "adopted": {
+          "positive": "Starke Adoptionserfolge",
+          "negative": "Adoptionen benötigen Aufmerksamkeit",
+          "stable": "Stabile Adoptionsrate"
+        },
+        "published": {
+          "positive": "Engagement über Zielwert",
+          "negative": "Aktivität der Anzeigen unter Zielwert",
+          "stable": "Konstante Anzeigenaktivität"
+        },
+        "tasks": {
+          "positive": "Aufgabenrückstand nimmt zu",
+          "negative": "Aufgabenerledigung verbessert sich",
+          "stable": "Aufgabenumfang stabil"
+        }
+      },
+      "tabs": {
+        "tasks": "Aufgaben",
+        "health": "Gesundheit"
+      },
+      "tasks": {
+        "title": "Tieraufgaben",
+        "description": "To-do-Liste für Mitarbeitende mit nicht abgeschlossenen Aufgaben."
+      },
+      "health": {
+        "title": "Tiergesundheit",
+        "description": "Kennzeichnet Tiere, die administrative oder medizinische Aufmerksamkeit benötigen.",
+        "columns": {
+          "name": "Name",
+          "healthStatus": "Gesundheitsstatus",
+          "legalStatus": "Rechtsstatus",
+          "intakeDate": "Aufnahmedatum"
+        }
+      },
+      "chart": {
+        "title": "Aufnahmen vs. Ergebnisse",
+        "description": "Tägliche Aufnahmen im Vergleich zu Adoptionen.",
+        "shortDescription": "Aufnahmen vs. Adoptionen",
+        "intakes": "Aufnahmen",
+        "adoptions": "Adoptionen",
+        "range": {
+          "90d": "Letzte 90 Tage",
+          "30d": "Letzte 30 Tage",
+          "7d": "Letzte 7 Tage",
+          "ariaLabel": "Zeitraum auswählen"
+        }
+      }
+    },
+    "users": {
+      "columns": {
+        "email": "E-Mail",
+        "role": "Rolle"
+      },
+      "toolbar": {
+        "searchPlaceholder": "E-Mails filtern...",
+        "roleFilter": "Rolle"
+      },
+      "roleOptions": {
+        "USER": "Benutzer",
+        "STAFF": "Mitarbeiter",
+        "VOLUNTEER": "Freiwilliger"
+      },
+      "form": {
+        "title": "Benutzer hinzufügen",
+        "description": "Neues Benutzerkonto erstellen und Rolle zuweisen.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Vollständiger Name",
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "name@example.com",
+        "roleLabel": "Rolle",
+        "rolePlaceholder": "Rolle auswählen",
+        "passwordLabel": "Temporäres Passwort",
+        "passwordPlaceholder": "Mindestens 6 Zeichen",
+        "createButton": "Benutzer erstellen"
+      },
+      "actions": {
+        "title": "Aktionen",
+        "setRole": "Als {role} festlegen",
+        "resetPassword": "Passwort zurücksetzen"
+      },
+      "reset": {
+        "title": "Benutzerpasswort zurücksetzen",
+        "description": "Temporäres Passwort setzen. Der Benutzer muss es beim nächsten Login ändern.",
+        "tempPasswordLabel": "Temporäres Passwort",
+        "tempPasswordPlaceholder": "Mindestens 6 Zeichen",
+        "confirmPasswordLabel": "Passwort bestätigen",
+        "confirmPasswordPlaceholder": "Passwort wiederholen",
+        "submitting": "Zurücksetzen...",
+        "submitButton": "Temporäres Passwort festlegen",
+        "errors": {
+          "shortPassword": "Passwort muss mindestens 6 Zeichen haben.",
+          "mismatch": "Passwörter stimmen nicht überein."
+        }
+      }
+    },
+    "characteristics": {
+      "title": "Merkmale",
+      "description": "Tiermerkmale hinzufügen und verwalten.",
+      "addButton": "Merkmal hinzufügen",
+      "addPlaceholder": "Merkmal hinzufügen...",
+      "searchPlaceholder": "Merkmale suchen...",
+      "searchHint": "Merkmale suchen oder neue hinzufügen.",
+      "selectedLabel": "Ausgewählt",
+      "noResults": "Keine Ergebnisse.",
+      "empty": "Noch keine Merkmale.",
+      "dialog": {
+        "title": "Merkmal hinzufügen",
+        "description": "Merkmale für dieses Tier auswählen."
+      },
+      "toast": {
+        "updated": "Merkmale aktualisiert."
+      },
+      "categories": {
+        "BEHAVIOR": "Verhalten",
+        "MEDICAL": "Medizinisch",
+        "ENVIRONMENT": "Umgebung",
+        "ADMINISTRATIVE": "Administrativ",
+        "OTHER": "Sonstiges"
+      }
+    }
   }
 }

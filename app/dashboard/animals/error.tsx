@@ -2,6 +2,7 @@
 
 import PageNotFoundOrAccessDenied from '@/components/PageNotFoundOrAccessDenied';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from "next-intl";
 
 export default function Error({
   error,
@@ -10,6 +11,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("dashboard");
   // You could optionally log the error to a service like Sentry
   // console.error(error);
 
@@ -18,7 +20,7 @@ export default function Error({
       onClick={() => reset()}
       className="mt-8"
     >
-      Try again
+      {t("common.tryAgain")}
     </Button>
   );
 
