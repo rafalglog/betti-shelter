@@ -276,16 +276,36 @@ This method mirrors the live production environment. It's ideal for testing the 
 * **Settings & Localization**: Settings page with password change and language switcher (EN/PL/DE).
 * **User Management Enhancements**: Add-user flow with temporary passwords and enforced password change on login.
 * **Public Pet Filters**: Added color, breed, and size filters to the public pet list.
+* **Dashboard Translations**: Dashboard UI translated for EN/PL/DE.
 
-### Remaining (To-Do)
-* **User Account Management**: Create a settings page allowing users to soft-delete their own accounts.
-* **Automated Medication Tasks**: Implement a scheduler (e.g., cron job) that automatically creates tasks for staff based on active `MedicationSchedule` records to ensure doses are not missed.
-* **Assessment Template Management**: Build a dashboard page for `ADMIN` users to create, view, and manage `AssessmentTemplate` records, allowing for customizable assessment forms.
-* **AI-Powered Task Recommendations**: Integrate an AI service that analyzes new `Assessment` summaries and suggests relevant tasks for staff to create (e.g., suggesting a "Vet Check" task if an assessment mentions a health concern).
-* **Volunteer Management & Scheduling**: Develop modules to define volunteer jobs, create schedules with shifts, and allow volunteers to sign up for specific time slots.
-* **Donation & Financial Tracking**: Implement a system to log monetary and in-kind donations, track adoption fees, and maintain a complete history of financial transactions for reporting.
-* **Centralized Communications Log**: Create a feature to log all communications (emails, phone calls, notes) related to animals, adoptions, or individuals, providing a complete interaction history for staff.
-* **Characteristics Management Dashboard**: Implement a dedicated admin interface for creating, viewing, and managing the list of **animal characteristics** (e.g., "Good with Kids," "Deaf").
+### Roadmap (prioritized)
+Phases reflect approximate timing; P0 is highest priority. Each item includes a brief "done when" to reduce ambiguity.
+
+#### Next 3 months (P0)
+* **User Account Management** (Deps: auth + settings UI)
+  * Done when: users can soft-delete their account from Settings and see a confirmation state.
+* **Automated Medication Tasks** (Deps: background job/cron)
+  * Done when: active `MedicationSchedule` records generate tasks on schedule, with a visible audit trail.
+* **Assessment Template Management** (Deps: RBAC admin)
+  * Done when: admins can create/edit/delete templates and new assessments use those templates.
+
+#### Next 6 months (P1)
+* **Characteristics Management Dashboard** (Deps: admin permissions)
+  * Done when: admins manage characteristics list and changes reflect in animal profiles and filters.
+* **Centralized Communications Log** (Deps: data model + UI)
+  * Done when: staff can log and view communications linked to animals and applications.
+* **Donation & Financial Tracking (Phase 1: ledger)** (Deps: data model)
+  * Done when: staff can log donations/fees and view a basic ledger with totals.
+
+#### Later (P2)
+* **Donation & Financial Tracking (Phase 2: reporting)** (Deps: Phase 1)
+  * Done when: reports can be filtered by date/type and exported (CSV).
+* **Volunteer Management (Phase 1: roles & shifts)** (Deps: scheduling model)
+  * Done when: admins create roles and shifts, volunteers can sign up.
+* **Volunteer Management (Phase 2: approvals & reminders)** (Deps: Phase 1 + email)
+  * Done when: approvals and email reminders are supported.
+* **AI-Powered Task Recommendations** (Deps: assessment summaries + AI service)
+  * Done when: suggested tasks appear after assessments with confidence hints and can be accepted/ignored.
 
 ## Contributing
 
