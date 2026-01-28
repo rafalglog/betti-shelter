@@ -567,6 +567,7 @@ async function seedPersonsAndUsers() {
             email: pData.email,
             password: hashedPassword,
             role: pData.role,
+            emailVerified: pData.role === Role.ADMIN ? new Date() : null,
             person: { connect: { id: person.id } },
           }
         });
@@ -576,6 +577,8 @@ async function seedPersonsAndUsers() {
           data: {
             role: pData.role,
             personId: person.id,
+            emailVerified:
+              pData.role === Role.ADMIN ? new Date() : undefined,
           },
         });
       }
