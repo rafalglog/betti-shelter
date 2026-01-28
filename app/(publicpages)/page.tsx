@@ -8,10 +8,16 @@ import { Suspense } from "react";
 import { PhotoIcon } from "@heroicons/react/16/solid";
 import LikeButton from "../../components/public-pages/like-button";
 import { auth } from "@/auth";
+import { getTranslations } from "next-intl/server";
 
-const categories = ["Dog", "Cat", "Bird", "Reptile"];
-
-const Page = () => {
+const Page = async () => {
+  const t = await getTranslations();
+  const categories = [
+    { value: "Dog", label: t("categories.dog") },
+    { value: "Cat", label: t("categories.cat") },
+    { value: "Bird", label: t("categories.bird") },
+    { value: "Reptile", label: t("categories.reptile") },
+  ];
   return (
     <>
       <WelcomeImage />
@@ -21,10 +27,10 @@ const Page = () => {
           id="featured-pets-heading"
           className="text-2xl font-semibold text-gray-700 text-center mb-8"
         >
-          Friends Awaiting a Home
+          {t("home.featuredHeading")}
         </h2>
 
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>{t("home.loading")}</div>}>
           <LatestPetsContent />
         </Suspense>
 
@@ -33,7 +39,7 @@ const Page = () => {
             href="/pets?page=1"
             className="inline-block bg-black text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all"
           >
-            View All Our Animals
+            {t("home.featuredCta")}
           </Link>
         </div>
       </section>
@@ -43,16 +49,18 @@ const Page = () => {
           id="categories-heading"
           className="text-2xl font-semibold text-gray-700 text-center mb-8"
         >
-          Browse by Category
+          {t("home.browseCategory")}
         </h2>
         <div className="flex flex-wrap justify-center mt-2 gap-4 mb-5">
           {categories.map((category) => (
             <Link
-              href={`pets?page=1&category=${category}`}
-              key={category}
+              href={`pets?page=1&category=${category.value}`}
+              key={category.value}
               className="flex items-center justify-center w-40 h-20 sm:w-48 sm:h-24 rounded-lg shadow-md bg-slate-500 hover:bg-slate-600 transition-colors duration-200"
             >
-              <h3 className="font-medium text-lg text-gray-100">{category}</h3>
+              <h3 className="font-medium text-lg text-gray-100">
+                {category.label}
+              </h3>
             </Link>
           ))}
         </div>
@@ -66,51 +74,52 @@ const Page = () => {
           id="how-to-help-heading"
           className="text-2xl font-semibold text-gray-800 mb-8 text-center"
         >
-          How You Can Help
+          {t("home.howToHelp")}
         </h2>
         <div className="grid md:grid-cols-3 gap-8 text-center max-w-4xl mx-auto">
           {/* Donate */}
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200/90">
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">Donate</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              {t("home.donateTitle")}
+            </h3>
             <p className="text-gray-600 mb-4">
-              Your generosity helps us provide essential care, medical
-              treatment, and find loving homes for animals.
+              {t("home.donateBody")}
             </p>
             <Link
               href="/donate"
               className="inline-block bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-5 rounded-md shadow transition-colors"
             >
-              Give Today
+              {t("home.donateCta")}
             </Link>
           </div>
           {/* Volunteer */}
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200/90">
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Volunteer
+              {t("home.volunteerTitle")}
             </h3>
             <p className="text-gray-600 mb-4">
-              Lend your time and skills to make a difference in the lives of our
-              animals. Every hour helps!
+              {t("home.volunteerBody")}
             </p>
             <Link
               href="/volunteer"
               className="inline-block bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-5 rounded-md shadow transition-colors"
             >
-              Join Our Team
+              {t("home.volunteerCta")}
             </Link>
           </div>
           {/* Foster */}
           <div className="p-6 bg-gray-50 rounded-lg border border-gray-200/90">
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">Foster</h3>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              {t("home.fosterTitle")}
+            </h3>
             <p className="text-gray-600 mb-4">
-              Open your home temporarily to an animal in need, providing them
-              with a nurturing environment.
+              {t("home.fosterBody")}
             </p>
             <Link
               href="/foster"
               className="inline-block bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-5 rounded-md shadow transition-colors"
             >
-              Learn to Foster
+              {t("home.fosterCta")}
             </Link>
           </div>
         </div>
@@ -121,6 +130,7 @@ const Page = () => {
 
 const LatestPetsContent = async () => {
   const latestAnimals = await fetchLatestPublicAnimals();
+  const t = await getTranslations();
 
   const session = await auth();
   const currentUserPersonId = session?.user?.personId;
@@ -145,7 +155,7 @@ const LatestPetsContent = async () => {
               {animal.animalImages?.length > 0 ? (
                 <Image
                   src={animal.animalImages[0].url}
-                  alt={`Photo of ${animal.name}`}
+                  alt={t("pets.photoOf", { name: animal.name })}
                   fill
                   sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"
                   placeholder={`data:image/svg+xml;base64,${toBase64(

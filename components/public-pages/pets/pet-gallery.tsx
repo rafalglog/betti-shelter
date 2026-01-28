@@ -8,6 +8,7 @@ import { shimmer, toBase64 } from "@/app/lib/utils/image-loading-placeholder";
 import LikeButton from "../like-button";
 import clsx from "clsx";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 
 interface PetGalleryProps {
   images: PrismaPetImage[];
@@ -25,6 +26,7 @@ const PetGallery = ({
   const [selectedImage, setSelectedImage] = useState(
     images.length > 0 ? images[0].url : ""
   );
+  const t = useTranslations("petGallery");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxImageUrl, setLightboxImageUrl] = useState("");
 
@@ -50,7 +52,7 @@ const PetGallery = ({
               placeholder={`data:image/svg+xml;base64,${toBase64(
                 shimmer(600, 600)
               )}`}
-              alt="Selected pet image, click to enlarge"
+              alt={t("selectedAlt")}
             />
           ) : (
             <div className="w-full h-full bg-gray-200 rounded-md flex">
@@ -78,7 +80,7 @@ const PetGallery = ({
                   : "opacity-70 hover:opacity-100 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white"
               )}
               onClick={() => setSelectedImage(image.url)}
-              aria-label={`Select pet image ${index + 1}`}
+              aria-label={t("thumbnailAria", { index: index + 1 })}
             >
               <Image
                 className="w-full h-full object-cover transition-transform duration-150 ease-in-out group-hover:scale-110"
@@ -88,7 +90,7 @@ const PetGallery = ({
                 placeholder={`data:image/svg+xml;base64,${toBase64(
                   shimmer(100, 100)
                 )}`}
-                alt={`Pet image thumbnail ${index + 1}`}
+                alt={t("thumbnailAlt", { index: index + 1 })}
               />
             </button>
           ))}
@@ -99,11 +101,11 @@ const PetGallery = ({
       <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
         <DialogContent className="max-w-3xl p-2 bg-white border-none sm:rounded-lg">
           {/* Add a visually hidden title for screen reader accessibility */}
-          <DialogTitle className="sr-only">Enlarged Pet Image</DialogTitle>
+          <DialogTitle className="sr-only">{t("lightboxTitle")}</DialogTitle>
           {lightboxImageUrl && (
             <Image
               src={lightboxImageUrl}
-              alt="Enlarged pet image"
+              alt={t("lightboxAlt")}
               width={1200}
               height={800}
               className="object-contain w-full h-auto max-h-[80vh] rounded"

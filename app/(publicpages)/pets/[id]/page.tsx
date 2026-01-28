@@ -9,6 +9,7 @@ import { auth } from "@/auth";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPinIcon } from "@heroicons/react/24/outline";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   params: IDParamType;
@@ -16,6 +17,7 @@ interface Props {
 
 const Page = async ({ params }: Props) => {
   const { id: animalId } = await params;
+  const t = await getTranslations("petDetail");
   const session = await auth();
   const currentUserPersonId = session?.user?.personId;
 
@@ -43,7 +45,7 @@ const Page = async ({ params }: Props) => {
 
   // Prepare array data for display
   const breedString =
-    animal.breeds?.map((b) => b.name).join(", ") || "Mixed Breed";
+    animal.breeds?.map((b) => b.name).join(", ") || t("mixedBreed");
   const colorString = animal.colors?.map((c) => c.name).join(", ") || "";
 
 
@@ -68,22 +70,25 @@ const Page = async ({ params }: Props) => {
         </div>
 
         <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-200">
-          <PetCardDetail label="Species" value={animal.species.name} />
-          <PetCardDetail label="Breed" value={breedString} />
-          <PetCardDetail label="Color" value={colorString} />
-          <PetCardDetail label="Sex" value={animal.sex} />
-          <PetCardDetail label="Size" value={animal.size} />
-          <PetCardDetail label="Spayed/Neutered" value={animal.isSpayedNeutered ? "Yes" : "No"} />
-          <PetCardDetail label="Age" value={ageString} />
-          <PetCardDetail label="Date of Birth" value={formattedBirthDate} />
-          <PetCardDetail label="Weight" value={animal.weightKg} unit="kg" />
-          <PetCardDetail label="Height" value={animal.heightCm} unit="cm" />
+          <PetCardDetail label={t("species")} value={animal.species.name} />
+          <PetCardDetail label={t("breed")} value={breedString} />
+          <PetCardDetail label={t("color")} value={colorString} />
+          <PetCardDetail label={t("sex")} value={animal.sex} />
+          <PetCardDetail label={t("size")} value={animal.size} />
+          <PetCardDetail
+            label={t("spayedNeutered")}
+            value={animal.isSpayedNeutered ? t("yes") : t("no")}
+          />
+          <PetCardDetail label={t("age")} value={ageString} />
+          <PetCardDetail label={t("dob")} value={formattedBirthDate} />
+          <PetCardDetail label={t("weight")} value={animal.weightKg} unit="kg" />
+          <PetCardDetail label={t("height")} value={animal.heightCm} unit="cm" />
         </div>
         
         {animal.description && (
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-medium text-gray-700 text-lg mb-2">
-              About {animal.name}
+              {t("about", { name: animal.name })}
             </h3>
             <p className="text-gray-600 whitespace-pre-wrap leading-relaxed">
               {animal.description}
@@ -94,7 +99,7 @@ const Page = async ({ params }: Props) => {
         {animal.characteristics && animal.characteristics.length > 0 && (
           <div className="pt-4 border-t border-gray-200">
             <h3 className="font-medium text-gray-700 text-lg mb-3">
-              Personality & Needs
+              {t("personality")}
             </h3>
             <div className="flex flex-wrap gap-3">
               {animal.characteristics.map((char) => (
@@ -112,21 +117,21 @@ const Page = async ({ params }: Props) => {
         <div className="pt-2">
           {animal.listingStatus === "PENDING_ADOPTION" ? (
             <div className="block w-full sm:w-auto text-center bg-yellow-500 text-white px-8 py-3 rounded-md font-semibold text-lg shadow-sm cursor-not-allowed">
-              Pending Adoption
+              {t("pendingAdoption")}
             </div>
           ) : currentUserHasActiveApplication ? (
             <Link
               href="/dashboard/my-applications"
               className="block w-full sm:w-auto text-center bg-gray-500 hover:bg-gray-600 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
             >
-              View Your Application
+              {t("viewApplication")}
             </Link>
           ) : (
             <Link
               href={`${animalId}/adopt`}
               className="block w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors duration-150 ease-in-out shadow-sm hover:shadow-md"
             >
-              Adopt
+              {t("adopt")}
             </Link>
           )}
         </div>

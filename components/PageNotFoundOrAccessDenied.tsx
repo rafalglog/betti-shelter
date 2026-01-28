@@ -1,6 +1,9 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button'; // Import the Button component
+import { useTranslations } from "next-intl";
 
 // The props for the component
 interface PageNotFoundOrAccessDeniedProps {
@@ -11,75 +14,72 @@ interface PageNotFoundOrAccessDeniedProps {
   buttonGoTo?: string;
 }
 
-// The structure for each error type's content
-interface ErrorContent {
-  errorCode: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-}
-
-const errorTypeDetails: Record<'notFound' | 'accessDenied' | 'genericError', ErrorContent> = {
-  notFound: {
-    errorCode: '404',
-    title: 'Page Not Found',
-    description:
-      "Oops! The page you're looking for doesn't seem to exist. It might have been moved, deleted, or you might have mistyped the URL.",
-    icon: (
+const PageNotFoundOrAccessDenied = ({
+  type,
+  actionButton,
+  itemName,
+  redirectUrl,
+  buttonGoTo,
+}: PageNotFoundOrAccessDeniedProps) => {
+  const t = useTranslations("errors");
+  const errorCodeMap = {
+    notFound: "404",
+    accessDenied: "403",
+    genericError: "500",
+  } as const;
+  const errorCode = errorCodeMap[type] ?? "404";
+  const titleMap = {
+    notFound: t("notFoundTitle"),
+    accessDenied: t("accessDeniedTitle"),
+    genericError: t("genericErrorTitle"),
+  } as const;
+  const descriptionMap = {
+    notFound: t("notFoundDescription"),
+    accessDenied: t("accessDeniedDescription"),
+    genericError: t("genericErrorDescription"),
+  } as const;
+  const iconMap = {
+    notFound: (
       <Image
         src="/icons/giraffe.svg"
-        alt="A giraffe looking surprised."
+        alt={t("giraffeAlt")}
         width={80}
         height={80}
         className="mb-5 sm:mb-6 size-20 sm:size-50"
         aria-hidden="true"
       />
     ),
-  },
-  accessDenied: {
-    errorCode: '403',
-    title: 'Access Denied',
-    description:
-      'You do not have the necessary permissions to view this page. If you believe this is an error, please contact an administrator or try signing in.',
-    icon: (
+    accessDenied: (
       <Image
         src="/icons/cobra.svg"
-        alt="A cobra in a defensive stance."
+        alt={t("cobraAlt")}
         width={80}
         height={80}
         className="mb-5 sm:mb-6 size-20 sm:size-50"
         aria-hidden="true"
       />
     ),
-  },
-  genericError: {
-    errorCode: '500',
-    title: 'Something Went Wrong',
-    description: "We've encountered an unexpected server error. Please try refreshing the page or click the button below to try again.",
-    icon: (
-        <Image
+    genericError: (
+      <Image
         src="/icons/racoon.svg"
-        alt="A racoon looking surprised."
+        alt={t("racoonAlt")}
         width={80}
         height={80}
         className="mb-5 sm:mb-6 size-20 sm:size-50"
         aria-hidden="true"
       />
     ),
-  },
-};
+  } as const;
 
-const PageNotFoundOrAccessDenied = ({ type, actionButton, itemName, redirectUrl, buttonGoTo }: PageNotFoundOrAccessDeniedProps) => {
-  const details = errorTypeDetails[type] || errorTypeDetails.notFound;
-  const { errorCode, description, icon } = details;
-
-  const title = type === 'notFound' && itemName ? `${itemName} Not Found` : details.title;
+  const description = descriptionMap[type] ?? descriptionMap.notFound;
+  const title = type === "notFound" && itemName ? t("itemNotFound", { item: itemName }) : (titleMap[type] ?? titleMap.notFound);
+  const icon = iconMap[type] ?? iconMap.notFound;
 
   // Updated to use the shadcn/ui Button component
   const defaultActionButton = (
     <Button asChild className="mt-8">
       <Link href={redirectUrl || '/'}>
-        {buttonGoTo ? `Back to ${buttonGoTo}` : 'Go to Homepage'}
+        {buttonGoTo ? t("backTo", { destination: buttonGoTo }) : t("goHome")}
       </Link>
     </Button>
   );

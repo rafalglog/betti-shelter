@@ -1,4 +1,7 @@
 {
+  "brand": {
+    "name": "Pet Adopt"
+  },
   "settings": {
     "title": "Settings",
     "description": "Manage your account preferences.",
@@ -6,5 +9,235 @@
     "languageDescription": "Choose the language for the dashboard.",
     "languageLabel": "Select language",
     "languageSave": "Save language"
+  },
+  "nav": {
+    "openMainMenu": "Open main menu",
+    "menuTitle": "Menu",
+    "mobileMenuDescription": "Mobile navigation menu with links to different sections of the website.",
+    "home": "Home",
+    "pets": "Pets",
+    "about": "About",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "signIn": "Sign In",
+    "notifications": "View notifications",
+    "openUserMenu": "Open user menu",
+    "userImageAlt": "User profile image",
+    "settings": "Settings",
+    "signOut": "Sign out"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "about": "About Us",
+    "contact": "Contact",
+    "findPet": "Find a Pet",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "connect": "Connect",
+    "facebookLabel": "Facebook",
+    "twitterLabel": "Twitter",
+    "instagramLabel": "Instagram",
+    "copyright": "© {year} Pet Adopt. All Rights Reserved."
+  },
+  "home": {
+    "welcomeTitle": "Find your perfect pet today",
+    "welcomeCta": "See Pets",
+    "imageAlt": "Home hero image",
+    "featuredHeading": "Friends Awaiting a Home",
+    "featuredCta": "View All Our Animals",
+    "browseCategory": "Browse by Category",
+    "howToHelp": "How You Can Help",
+    "donateTitle": "Donate",
+    "donateBody": "Your generosity helps us provide essential care, medical treatment, and find loving homes for animals.",
+    "donateCta": "Give Today",
+    "volunteerTitle": "Volunteer",
+    "volunteerBody": "Lend your time and skills to make a difference in the lives of our animals. Every hour helps!",
+    "volunteerCta": "Join Our Team",
+    "fosterTitle": "Foster",
+    "fosterBody": "Open your home temporarily to an animal in need, providing them with a nurturing environment.",
+    "fosterCta": "Learn to Foster",
+    "loading": "Loading..."
+  },
+  "categories": {
+    "dog": "Dog",
+    "cat": "Cat",
+    "bird": "Bird",
+    "reptile": "Reptile"
+  },
+  "about": {
+    "title": "About Us",
+    "description": "Welcome to PetAdopt, where compassion meets purpose. Our mission is simple yet profound: to provide a safe haven for animals in need, offering them refuge, care, and a second chance at a loving home. Join us in our journey to create a world where every paw print leaves a trail of hope.",
+    "locationsTitle": "Our Locations",
+    "locations": [
+      {
+        "location": "New York",
+        "address": "742 Evergreen Terrace",
+        "state": "New York, NY 10001"
+      },
+      {
+        "location": "San Francisco",
+        "address": "1600 Holloway Avenue",
+        "state": "San Francisco, CA 94132"
+      },
+      {
+        "location": "Chicago",
+        "address": "233 South Wacker Drive",
+        "state": "Chicago, IL 60606"
+      },
+      {
+        "location": "Austin",
+        "address": "5000 Burnet Road",
+        "state": "Austin, TX 78756"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contact",
+    "description": "Have questions or want to help? Reach out to us and be part of making a difference for animals in need.",
+    "details": [
+      {
+        "title": "Volunteer",
+        "email": "volunteer@example.com",
+        "phone": "+1 (555) 905-6789"
+      },
+      {
+        "title": "Donations",
+        "email": "donations@example.com",
+        "phone": "+1 (555) 905-7890"
+      },
+      {
+        "title": "Support",
+        "email": "support@example.com",
+        "phone": "+1 (555) 905-8901"
+      },
+      {
+        "title": "Feedback",
+        "email": "feedback@example.com",
+        "phone": "+1 (555) 905-9012"
+      }
+    ]
+  },
+  "auth": {
+    "brand": "Pet Adopt",
+    "signInTitle": "Sign in to your account",
+    "resetSuccess": "Your password has been reset. Please sign in with your new password.",
+    "emailLabel": "Email address",
+    "passwordLabel": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signInButton": "Sign in",
+    "orContinueWith": "Or continue with",
+    "signInWithProvider": "Sign in with {provider}",
+    "forgotTitle": "Forgot your password?",
+    "forgotSubtitle": "Enter your email to receive a reset link.",
+    "backToSignIn": "Back to sign in",
+    "sendResetLink": "Send reset link",
+    "sending": "Sending...",
+    "resetTitle": "Reset your password",
+    "resetTokenMissing": "Reset token is missing.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "updating": "Updating...",
+    "resetPasswordButton": "Reset password"
+  },
+  "authErrors": {
+    "signInTitle": "Sign-in error",
+    "defaultMessage": "Something went wrong while signing you in.",
+    "tryAgain": "Please try again, or use a different sign-in method.",
+    "backToSignIn": "Back to sign in",
+    "errorCode": "Error code: {error}",
+    "messages": {
+      "CredentialsSignin": "Invalid email or password. Please try again.",
+      "OAuthAccountNotLinked": "Please sign in with the same provider you used before.",
+      "AccessDenied": "You do not have access to this resource.",
+      "Verification": "The sign-in link is invalid or has expired.",
+      "Configuration": "Authentication is not configured correctly."
+    }
+  },
+  "pets": {
+    "title": "Pet List",
+    "subtitle": "Currently available for adoption",
+    "searchPlaceholder": "Search pet name",
+    "searchLabel": "Search",
+    "categoryPlaceholder": "Select a category",
+    "all": "All",
+    "allColors": "All colors",
+    "allBreeds": "All breeds",
+    "allSizes": "All sizes",
+    "color": "Color",
+    "breed": "Breed",
+    "size": "Size",
+    "noPets": "No pets found matching your criteria.",
+    "photoOf": "Photo of {name}",
+    "item": "Pet",
+    "sizes": {
+      "SMALL": "Small",
+      "MEDIUM": "Medium",
+      "LARGE": "Large",
+      "XLARGE": "Extra large"
+    }
+  },
+  "petDetail": {
+    "species": "Species",
+    "breed": "Breed",
+    "color": "Color",
+    "sex": "Sex",
+    "size": "Size",
+    "spayedNeutered": "Spayed/Neutered",
+    "yes": "Yes",
+    "no": "No",
+    "age": "Age",
+    "dob": "Date of Birth",
+    "weight": "Weight",
+    "height": "Height",
+    "about": "About {name}",
+    "personality": "Personality & Needs",
+    "pendingAdoption": "Pending Adoption",
+    "viewApplication": "View Your Application",
+    "adopt": "Adopt",
+    "mixedBreed": "Mixed Breed"
+  },
+  "petGallery": {
+    "selectedAlt": "Selected pet image, click to enlarge",
+    "thumbnailAlt": "Pet image thumbnail {index}",
+    "thumbnailAria": "Select pet image {index}",
+    "lightboxTitle": "Enlarged Pet Image",
+    "lightboxAlt": "Enlarged pet image"
+  },
+  "adopt": {
+    "applicationTitle": "Adoption Application"
+  },
+  "like": {
+    "like": "Like this pet",
+    "unlike": "Unlike this pet"
+  },
+  "loginPrompt": {
+    "close": "Close",
+    "title": "Login Required",
+    "description": "You need to be logged in to like pets and save your favorites. Please log in or create an account to continue.",
+    "cancel": "Cancel",
+    "loginCta": "Login / Sign Up"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "previousAria": "Go to previous page",
+    "nextAria": "Go to next page",
+    "more": "More pages"
+  },
+  "errors": {
+    "notFoundTitle": "Page Not Found",
+    "notFoundDescription": "Oops! The page you're looking for doesn't seem to exist. It might have been moved, deleted, or you might have mistyped the URL.",
+    "accessDeniedTitle": "Access Denied",
+    "accessDeniedDescription": "You do not have the necessary permissions to view this page. If you believe this is an error, please contact an administrator or try signing in.",
+    "genericErrorTitle": "Something Went Wrong",
+    "genericErrorDescription": "We've encountered an unexpected server error. Please try refreshing the page or click the button below to try again.",
+    "itemNotFound": "{item} Not Found",
+    "backTo": "Back to {destination}",
+    "goHome": "Go to Homepage",
+    "giraffeAlt": "A giraffe looking surprised.",
+    "cobraAlt": "A cobra in a defensive stance.",
+    "racoonAlt": "A racoon looking surprised."
   }
 }

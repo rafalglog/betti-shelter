@@ -28,8 +28,11 @@ These additions expand account security, user management, and localization:
   * New **Settings** page (`/dashboard/settings`) with password and language controls.
   * **Language switcher** with cookie-based locale persistence (`NEXT_LOCALE`).
   * Added **next-intl** integration and message catalogs for **EN/PL/DE**.
+  * Public-facing pages and navigation are fully translated (EN/PL/DE).
 * **Auth UX**
   * Dedicated **sign-in error** page (`/error`) with friendly error messaging.
+* **Public Pet Search**
+  * Enhanced pet listing filters for **Color, Breed, and Animal Size**.
 
 ## Core Features
 
@@ -272,6 +275,7 @@ This method mirrors the live production environment. It's ideal for testing the 
 * **Password Management & Recovery**: Forgot/reset password flow, SMTP email support, and reset tokens with expiry.
 * **Settings & Localization**: Settings page with password change and language switcher (EN/PL/DE).
 * **User Management Enhancements**: Add-user flow with temporary passwords and enforced password change on login.
+* **Public Pet Filters**: Added color, breed, and size filters to the public pet list.
 
 ### Remaining (To-Do)
 * **User Account Management**: Create a settings page allowing users to soft-delete their own accounts.
@@ -282,7 +286,6 @@ This method mirrors the live production environment. It's ideal for testing the 
 * **Donation & Financial Tracking**: Implement a system to log monetary and in-kind donations, track adoption fees, and maintain a complete history of financial transactions for reporting.
 * **Centralized Communications Log**: Create a feature to log all communications (emails, phone calls, notes) related to animals, adoptions, or individuals, providing a complete interaction history for staff.
 * **Characteristics Management Dashboard**: Implement a dedicated admin interface for creating, viewing, and managing the list of **animal characteristics** (e.g., "Good with Kids," "Deaf").
-* **Enhanced Pet Listing Filters**: Add new filtering options to the public pet list page, allowing users to search and filter by **Color, Breed, and Animal Size.**
 
 ## Contributing
 

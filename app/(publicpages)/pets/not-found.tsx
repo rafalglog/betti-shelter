@@ -1,11 +1,13 @@
 import PageNotFoundOrAccessDenied from "../../../components/PageNotFoundOrAccessDenied";
+import { getTranslations } from "next-intl/server";
 
-const Page = () => {
+const Page = async () => {
+  const t = await getTranslations();
   return (
     <PageNotFoundOrAccessDenied
       type="notFound"
-      itemName="Pet"
-      buttonGoTo="Pets"
+      itemName={t("pets.item")}
+      buttonGoTo={t("nav.pets")}
       redirectUrl="/pets"
     />
   );

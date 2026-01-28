@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RequestPasswordResetSchema } from "@/app/lib/zod-schemas/password.schemas";
 import { requestPasswordReset } from "@/app/lib/actions/password.actions";
 import { INITIAL_FORM_STATE, PasswordFormState } from "@/app/lib/form-state-types";
+import { useTranslations } from "next-intl";
 
 type PasswordResetRequestData = z.infer<typeof RequestPasswordResetSchema>;
 
@@ -15,6 +16,7 @@ const defaultValues: PasswordResetRequestData = {
 };
 
 const ForgotPasswordForm = () => {
+  const t = useTranslations("auth");
   const [state, formAction, isPending] = useActionState<PasswordFormState, PasswordResetRequestData>(
     async (_prev, data) => {
       const formData = new FormData();
@@ -50,7 +52,7 @@ const ForgotPasswordForm = () => {
     >
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email address
+          {t("emailLabel")}
         </label>
         <div className="mt-1">
           <input
@@ -77,7 +79,7 @@ const ForgotPasswordForm = () => {
         disabled={isPending}
         className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        {isPending ? "Sending..." : "Send reset link"}
+        {isPending ? t("sending") : t("sendResetLink")}
       </button>
     </form>
   );

@@ -1,4 +1,7 @@
 {
+  "brand": {
+    "name": "Pet Adopt"
+  },
   "settings": {
     "title": "Einstellungen",
     "description": "Verwalte deine Kontoeinstellungen.",
@@ -6,5 +9,235 @@
     "languageDescription": "Wähle die Sprache für das Dashboard.",
     "languageLabel": "Sprache auswählen",
     "languageSave": "Sprache speichern"
+  },
+  "nav": {
+    "openMainMenu": "Hauptmenü öffnen",
+    "menuTitle": "Menü",
+    "mobileMenuDescription": "Mobiles Navigationsmenü mit Links zu verschiedenen Bereichen der Website.",
+    "home": "Startseite",
+    "pets": "Tiere",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "dashboard": "Dashboard",
+    "signIn": "Anmelden",
+    "notifications": "Benachrichtigungen ansehen",
+    "openUserMenu": "Benutzermenü öffnen",
+    "userImageAlt": "Profilbild des Benutzers",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden"
+  },
+  "footer": {
+    "navigation": "Navigation",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "findPet": "Tier finden",
+    "legal": "Rechtliches",
+    "privacy": "Datenschutzrichtlinie",
+    "terms": "Nutzungsbedingungen",
+    "connect": "Kontakt",
+    "facebookLabel": "Facebook",
+    "twitterLabel": "Twitter",
+    "instagramLabel": "Instagram",
+    "copyright": "© {year} Pet Adopt. Alle Rechte vorbehalten."
+  },
+  "home": {
+    "welcomeTitle": "Finde heute dein perfektes Haustier",
+    "welcomeCta": "Tiere ansehen",
+    "imageAlt": "Startseiten-Hintergrundbild",
+    "featuredHeading": "Freunde, die ein Zuhause suchen",
+    "featuredCta": "Alle Tiere ansehen",
+    "browseCategory": "Nach Kategorie durchsuchen",
+    "howToHelp": "So kannst du helfen",
+    "donateTitle": "Spenden",
+    "donateBody": "Deine Großzügigkeit hilft uns, wichtige Pflege und Behandlung zu bieten und liebevolle Zuhause zu finden.",
+    "donateCta": "Jetzt spenden",
+    "volunteerTitle": "Freiwillig helfen",
+    "volunteerBody": "Schenke deine Zeit und Fähigkeiten, um das Leben unserer Tiere zu verbessern. Jede Stunde zählt!",
+    "volunteerCta": "Werde Teil des Teams",
+    "fosterTitle": "Pflegestelle",
+    "fosterBody": "Öffne dein Zuhause vorübergehend für ein Tier in Not und biete ihm eine fürsorgliche Umgebung.",
+    "fosterCta": "Mehr erfahren",
+    "loading": "Wird geladen..."
+  },
+  "categories": {
+    "dog": "Hund",
+    "cat": "Katze",
+    "bird": "Vogel",
+    "reptile": "Reptil"
+  },
+  "about": {
+    "title": "Über uns",
+    "description": "Willkommen bei PetAdopt, wo Mitgefühl auf Verantwortung trifft. Unsere Mission ist es, Tieren in Not einen sicheren Zufluchtsort zu bieten und ihnen Pflege sowie eine zweite Chance auf ein liebevolles Zuhause zu geben. Begleite uns auf dem Weg zu einer Welt, in der jeder Pfotenabdruck Hoffnung hinterlässt.",
+    "locationsTitle": "Unsere Standorte",
+    "locations": [
+      {
+        "location": "New York",
+        "address": "742 Evergreen Terrace",
+        "state": "New York, NY 10001"
+      },
+      {
+        "location": "San Francisco",
+        "address": "1600 Holloway Avenue",
+        "state": "San Francisco, CA 94132"
+      },
+      {
+        "location": "Chicago",
+        "address": "233 South Wacker Drive",
+        "state": "Chicago, IL 60606"
+      },
+      {
+        "location": "Austin",
+        "address": "5000 Burnet Road",
+        "state": "Austin, TX 78756"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Hast du Fragen oder möchtest helfen? Melde dich bei uns und werde Teil der Veränderung für Tiere in Not.",
+    "details": [
+      {
+        "title": "Freiwillige Hilfe",
+        "email": "volunteer@example.com",
+        "phone": "+1 (555) 905-6789"
+      },
+      {
+        "title": "Spenden",
+        "email": "donations@example.com",
+        "phone": "+1 (555) 905-7890"
+      },
+      {
+        "title": "Support",
+        "email": "support@example.com",
+        "phone": "+1 (555) 905-8901"
+      },
+      {
+        "title": "Feedback",
+        "email": "feedback@example.com",
+        "phone": "+1 (555) 905-9012"
+      }
+    ]
+  },
+  "auth": {
+    "brand": "Pet Adopt",
+    "signInTitle": "Melde dich bei deinem Konto an",
+    "resetSuccess": "Dein Passwort wurde zurückgesetzt. Bitte melde dich mit deinem neuen Passwort an.",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "rememberMe": "Angemeldet bleiben",
+    "forgotPassword": "Passwort vergessen?",
+    "signInButton": "Anmelden",
+    "orContinueWith": "Oder fortfahren mit",
+    "signInWithProvider": "Mit {provider} anmelden",
+    "forgotTitle": "Passwort vergessen?",
+    "forgotSubtitle": "Gib deine E-Mail ein, um einen Zurücksetzen-Link zu erhalten.",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "sendResetLink": "Link zum Zurücksetzen senden",
+    "sending": "Senden...",
+    "resetTitle": "Passwort zurücksetzen",
+    "resetTokenMissing": "Zurücksetz-Token fehlt.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "updating": "Aktualisieren...",
+    "resetPasswordButton": "Passwort zurücksetzen"
+  },
+  "authErrors": {
+    "signInTitle": "Anmeldefehler",
+    "defaultMessage": "Beim Anmelden ist etwas schiefgelaufen.",
+    "tryAgain": "Bitte versuche es erneut oder nutze eine andere Anmeldemethode.",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "errorCode": "Fehlercode: {error}",
+    "messages": {
+      "CredentialsSignin": "Ungültige E-Mail oder Passwort. Bitte erneut versuchen.",
+      "OAuthAccountNotLinked": "Bitte melde dich mit demselben Anbieter an, den du zuvor genutzt hast.",
+      "AccessDenied": "Du hast keinen Zugriff auf diese Ressource.",
+      "Verification": "Der Anmeldelink ist ungültig oder abgelaufen.",
+      "Configuration": "Die Authentifizierung ist nicht korrekt konfiguriert."
+    }
+  },
+  "pets": {
+    "title": "Tierliste",
+    "subtitle": "Aktuell zur Adoption verfügbar",
+    "searchPlaceholder": "Tiername suchen",
+    "searchLabel": "Suchen",
+    "categoryPlaceholder": "Kategorie auswählen",
+    "all": "Alle",
+    "allColors": "Alle Farben",
+    "allBreeds": "Alle Rassen",
+    "allSizes": "Alle Größen",
+    "color": "Farbe",
+    "breed": "Rasse",
+    "size": "Größe",
+    "noPets": "Keine Tiere gefunden, die deinen Kriterien entsprechen.",
+    "photoOf": "Foto von {name}",
+    "item": "Tier",
+    "sizes": {
+      "SMALL": "Klein",
+      "MEDIUM": "Mittel",
+      "LARGE": "Groß",
+      "XLARGE": "Sehr groß"
+    }
+  },
+  "petDetail": {
+    "species": "Art",
+    "breed": "Rasse",
+    "color": "Farbe",
+    "sex": "Geschlecht",
+    "size": "Größe",
+    "spayedNeutered": "Kastriert/Sterilisiert",
+    "yes": "Ja",
+    "no": "Nein",
+    "age": "Alter",
+    "dob": "Geburtsdatum",
+    "weight": "Gewicht",
+    "height": "Größe",
+    "about": "Über {name}",
+    "personality": "Persönlichkeit & Bedürfnisse",
+    "pendingAdoption": "Adoption ausstehend",
+    "viewApplication": "Deine Bewerbung ansehen",
+    "adopt": "Adoptieren",
+    "mixedBreed": "Mischling"
+  },
+  "petGallery": {
+    "selectedAlt": "Ausgewähltes Tierbild, zum Vergrößern klicken",
+    "thumbnailAlt": "Miniaturbild des Tieres {index}",
+    "thumbnailAria": "Tierbild {index} auswählen",
+    "lightboxTitle": "Vergrößertes Tierbild",
+    "lightboxAlt": "Vergrößertes Tierbild"
+  },
+  "adopt": {
+    "applicationTitle": "Adoptionsantrag"
+  },
+  "like": {
+    "like": "Tier favorisieren",
+    "unlike": "Favorit entfernen"
+  },
+  "loginPrompt": {
+    "close": "Schließen",
+    "title": "Anmeldung erforderlich",
+    "description": "Du musst angemeldet sein, um Tiere zu liken und Favoriten zu speichern. Bitte melde dich an oder erstelle ein Konto, um fortzufahren.",
+    "cancel": "Abbrechen",
+    "loginCta": "Anmelden / Registrieren"
+  },
+  "pagination": {
+    "previous": "Zurück",
+    "next": "Weiter",
+    "previousAria": "Zur vorherigen Seite",
+    "nextAria": "Zur nächsten Seite",
+    "more": "Weitere Seiten"
+  },
+  "errors": {
+    "notFoundTitle": "Seite nicht gefunden",
+    "notFoundDescription": "Hoppla! Die Seite, die du suchst, scheint nicht zu existieren. Sie wurde möglicherweise verschoben, gelöscht oder die URL ist falsch.",
+    "accessDeniedTitle": "Zugriff verweigert",
+    "accessDeniedDescription": "Du hast nicht die erforderlichen Berechtigungen, um diese Seite anzusehen. Wenn du denkst, dass das ein Fehler ist, kontaktiere bitte einen Administrator oder melde dich an.",
+    "genericErrorTitle": "Etwas ist schiefgelaufen",
+    "genericErrorDescription": "Es ist ein unerwarteter Serverfehler aufgetreten. Bitte aktualisiere die Seite oder klicke unten, um es erneut zu versuchen.",
+    "itemNotFound": "{item} nicht gefunden",
+    "backTo": "Zurück zu {destination}",
+    "goHome": "Zur Startseite",
+    "giraffeAlt": "Eine überraschte Giraffe.",
+    "cobraAlt": "Eine Kobra in Abwehrhaltung.",
+    "racoonAlt": "Ein überraschter Waschbär."
   }
 }

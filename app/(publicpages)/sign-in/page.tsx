@@ -4,6 +4,7 @@ import { auth, providerMap, signIn } from "@/auth"
 import { ProviderIcon } from "@/components/auth/provider-icon"
 import { SearchParamsType } from "@/app/lib/types"
 import clsx from "clsx"
+import { getTranslations } from "next-intl/server"
 
 const SIGNIN_ERROR_URL = "/error"
 
@@ -16,6 +17,7 @@ const SignInPage = async ({ searchParams }: Props) => {
   if (session) {
     return redirect("/")
   }
+  const t = await getTranslations();
 
   const { callbackUrl, reset } = await searchParams;
 
@@ -24,16 +26,18 @@ const SignInPage = async ({ searchParams }: Props) => {
       <div className="w-full max-w-md space-y-8">
         <div>
           <div className="flex justify-center">
-            <span className="text-3xl font-semibold text-indigo-700">Pet Adopt</span>
+            <span className="text-3xl font-semibold text-indigo-700">
+              {t("auth.brand")}
+            </span>
           </div>
           <h2 className="mt-6 text-center text-2xl font-medium text-gray-800">
-            Sign in to your account
+            {t("auth.signInTitle")}
           </h2>
         </div>
 
         {reset === "1" && (
           <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-            Your password has been reset. Please sign in with your new password.
+            {t("auth.resetSuccess")}
           </div>
         )}
 
@@ -58,7 +62,7 @@ const SignInPage = async ({ searchParams }: Props) => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                {t("auth.emailLabel")}
               </label>
               <div className="mt-1">
                 <input
@@ -74,7 +78,7 @@ const SignInPage = async ({ searchParams }: Props) => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+                {t("auth.passwordLabel")}
               </label>
               <div className="mt-1">
                 <input
@@ -97,13 +101,13 @@ const SignInPage = async ({ searchParams }: Props) => {
                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
+                  {t("auth.rememberMe")}
                 </label>
               </div>
 
               <div className="text-sm">
                 <a href="/forgot-password" className="font-medium text-indigo-600 hover:text-indigo-500">
-                  Forgot password?
+                  {t("auth.forgotPassword")}
                 </a>
               </div>
             </div>
@@ -113,7 +117,7 @@ const SignInPage = async ({ searchParams }: Props) => {
                 type="submit"
                 className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                Sign in
+                {t("auth.signInButton")}
               </button>
             </div>
           </form>
@@ -125,7 +129,9 @@ const SignInPage = async ({ searchParams }: Props) => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                <span className="bg-white px-2 text-gray-500">
+                  {t("auth.orContinueWith")}
+                </span>
               </div>
             </div>
           </div>
@@ -154,7 +160,9 @@ const SignInPage = async ({ searchParams }: Props) => {
                     type="submit"
                     className="w-full inline-flex justify-center py-2 px-4 border border-gray-200 rounded-md shadow bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                   >
-                    <span className="sr-only">Sign in with {provider.name}</span>
+                    <span className="sr-only">
+                      {t("auth.signInWithProvider", { provider: provider.name })}
+                    </span>
                     <ProviderIcon 
                       providerId={provider.id} 
                       providerName={provider.name}

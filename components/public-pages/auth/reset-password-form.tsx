@@ -8,11 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ResetPasswordSchema } from "@/app/lib/zod-schemas/password.schemas";
 import { resetPassword } from "@/app/lib/actions/password.actions";
 import { INITIAL_FORM_STATE, PasswordFormState } from "@/app/lib/form-state-types";
+import { useTranslations } from "next-intl";
 
 type PasswordResetData = z.infer<typeof ResetPasswordSchema>;
 
 const ResetPasswordForm = ({ token }: { token: string }) => {
   const router = useRouter();
+  const t = useTranslations("auth");
   const [state, formAction, isPending] = useActionState<PasswordFormState, PasswordResetData>(
     async (_prev, data) => {
       const formData = new FormData();
@@ -59,7 +61,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          New password
+          {t("newPassword")}
         </label>
         <div className="mt-1">
           <input
@@ -79,7 +81,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
 
       <div>
         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-          Confirm password
+          {t("confirmPassword")}
         </label>
         <div className="mt-1">
           <input
@@ -110,7 +112,7 @@ const ResetPasswordForm = ({ token }: { token: string }) => {
         disabled={isPending}
         className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        {isPending ? "Updating..." : "Reset password"}
+        {isPending ? t("updating") : t("resetPasswordButton")}
       </button>
     </form>
   );

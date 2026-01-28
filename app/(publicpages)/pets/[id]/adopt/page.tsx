@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import MyAdoptionAppSkeleton from "@/components/dashboard/my-adoption-applications/myAdoptionApp-skeleton";
 import { MyApplicationForm } from "@/components/dashboard/my-adoption-applications/my-adoption-application-form";
+import { getTranslations } from "next-intl/server";
 
 async function AdoptionApplicationContent({ animalId }: { animalId: string }) {
   // Get animal data for the application 
@@ -36,6 +37,7 @@ interface Props {
 
 const Page = async ({ params }: Props) => {
   const { id } = await params;
+  const t = await getTranslations("adopt");
 
   // Get user session information 
   const session = await auth();
@@ -46,7 +48,7 @@ const Page = async ({ params }: Props) => {
   return (
     <main className="max-w-3xl mx-auto pb-10 pt-5">
       <h1 className="text-3xl font-opensans font-medium text-gray-800 mb-6 text-center">
-        Adoption Application
+        {t("applicationTitle")}
       </h1>
       <Suspense fallback={<MyAdoptionAppSkeleton />}>
         <AdoptionApplicationContent animalId={id} />

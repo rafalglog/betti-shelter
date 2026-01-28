@@ -7,6 +7,7 @@ import { HeartIcon as SolidHeartIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import LoginPromptModal from "../login-prompt-modal";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface LikeButtonProps {
   animalId: string;
@@ -19,6 +20,7 @@ const LikeButton = ({
   currentUserPersonId,
   isLikedByCurrentUser,
 }: LikeButtonProps) => {
+  const t = useTranslations("like");
   const [isPending, startTransition] = useTransition();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -48,7 +50,7 @@ const LikeButton = ({
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        aria-label={isLikedByCurrentUser ? "Unlike this pet" : "Like this pet"}
+        aria-label={isLikedByCurrentUser ? t("unlike") : t("like")}
         className={clsx(
           "p-1.5 rounded-full bg-white/80 hover:bg-white transition-all duration-150 ease-in-out ",
           "shadow hover:shadow-md focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75"

@@ -1,20 +1,20 @@
 import Card from "@/components/public-pages/aboutUs/card";
 import PublicPageHeader from "@/components/public-pages/aboutUs/page-header";
 import PageLayout from "@/components/public-pages/aboutUs/page-layout";
+import { getTranslations } from "next-intl/server";
 
-const contactDetails = [
-  { title: "Volunteer", email: "volunteer@example.com", phone: "+1 (555) 905-6789" },
-  { title: "Donations", email: "donations@example.com", phone: "+1 (555) 905-7890" },
-  { title: "Support", email: "support@example.com", phone: "+1 (555) 905-8901" },
-  { title: "Feedback", email: "feedback@example.com", phone: "+1 (555) 905-9012" },
-];
-
-const Page = () => {
+const Page = async () => {
+  const t = await getTranslations();
+  const contactDetails = t.raw("contact.details") as Array<{
+    title: string;
+    email: string;
+    phone: string;
+  }>;
   return (
     <PageLayout>
       <PublicPageHeader
-        title="Contact"
-        description="Have questions or want to help? Reach out to us and be part of making a difference for animals in need."
+        title={t("contact.title")}
+        description={t("contact.description")}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

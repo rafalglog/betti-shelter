@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 
 interface NavLinkItem {
+  id: string;
   name: string;
   href: string;
 }
@@ -26,12 +28,13 @@ const NavItemsRenderer = ({
   itemClassName,
   signInButtonClassName,
 }: NavItemsRendererProps) => {
+  const t = useTranslations("nav");
   return (
     <>
       {links.map((link) =>
-        link.name === "Dashboard" && !showUserProfile ? null : (
+        link.id === "dashboard" && !showUserProfile ? null : (
           <Link
-            key={link.name}
+            key={link.id}
             href={link.href}
             onClick={onLinkClick} // Will be undefined for desktop, called for mobile
             passHref={!!onLinkClick} // passHref if onLinkClick is provided (typically for mobile)
@@ -63,7 +66,7 @@ const NavItemsRenderer = ({
             }
           }}
         >
-          Sign In
+          {t("signIn")}
         </button>
       )}
     </>

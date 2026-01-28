@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ResetPasswordForm from "@/components/public-pages/auth/reset-password-form";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   searchParams?: Promise<{ token?: string }>;
@@ -8,16 +9,19 @@ interface Props {
 const ResetPasswordPage = async ({ searchParams }: Props) => {
   const params = (await searchParams) ?? {};
   const token = params.token;
+  const t = await getTranslations("auth");
 
   return (
     <div className="flex flex-col items-center justify-center pt-8 pb-17 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-6">
         <div>
           <div className="flex justify-center">
-            <span className="text-3xl font-semibold text-indigo-700">Pet Adopt</span>
+            <span className="text-3xl font-semibold text-indigo-700">
+              {t("brand")}
+            </span>
           </div>
           <h2 className="mt-6 text-center text-2xl font-medium text-gray-800">
-            Reset your password
+            {t("resetTitle")}
           </h2>
         </div>
 
@@ -25,13 +29,13 @@ const ResetPasswordPage = async ({ searchParams }: Props) => {
           {token ? (
             <ResetPasswordForm token={token} />
           ) : (
-            <p className="text-sm text-red-600">Reset token is missing.</p>
+            <p className="text-sm text-red-600">{t("resetTokenMissing")}</p>
           )}
         </div>
 
         <div className="text-center text-sm">
           <Link href="/sign-in" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Back to sign in
+            {t("backToSignIn")}
           </Link>
         </div>
       </div>

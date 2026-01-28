@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 type FilterOption = {
   value: string;
@@ -34,12 +35,14 @@ const PetFilters = ({
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const t = useTranslations("pets");
+  const allValue = "All";
 
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("page", "1");
 
-    if (value === "All") {
+    if (value === allValue) {
       params.delete(key);
     } else {
       params.set(key, value);
@@ -53,13 +56,13 @@ const PetFilters = ({
       <div className="min-w-[180px]">
         <Select
           onValueChange={(value) => updateParam("color", value)}
-          defaultValue={selectedColor || "All"}
+          defaultValue={selectedColor || allValue}
         >
-          <SelectTrigger aria-label="Color filter">
-            <SelectValue placeholder="Color" />
+          <SelectTrigger aria-label={t("color")}>
+            <SelectValue placeholder={t("color")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All colors</SelectItem>
+            <SelectItem value={allValue}>{t("allColors")}</SelectItem>
             {colors.map((color) => (
               <SelectItem key={color} value={color}>
                 {color}
@@ -72,13 +75,13 @@ const PetFilters = ({
       <div className="min-w-[180px]">
         <Select
           onValueChange={(value) => updateParam("breed", value)}
-          defaultValue={selectedBreed || "All"}
+          defaultValue={selectedBreed || allValue}
         >
-          <SelectTrigger aria-label="Breed filter">
-            <SelectValue placeholder="Breed" />
+          <SelectTrigger aria-label={t("breed")}>
+            <SelectValue placeholder={t("breed")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All breeds</SelectItem>
+            <SelectItem value={allValue}>{t("allBreeds")}</SelectItem>
             {breeds.map((breed) => (
               <SelectItem key={breed} value={breed}>
                 {breed}
@@ -91,13 +94,13 @@ const PetFilters = ({
       <div className="min-w-[180px]">
         <Select
           onValueChange={(value) => updateParam("size", value)}
-          defaultValue={selectedSize || "All"}
+          defaultValue={selectedSize || allValue}
         >
-          <SelectTrigger aria-label="Size filter">
-            <SelectValue placeholder="Size" />
+          <SelectTrigger aria-label={t("size")}>
+            <SelectValue placeholder={t("size")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="All">All sizes</SelectItem>
+            <SelectItem value={allValue}>{t("allSizes")}</SelectItem>
             {sizes.map((size) => (
               <SelectItem key={size.value} value={size.value}>
                 {size.label}

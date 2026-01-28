@@ -10,6 +10,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useTranslations } from "next-intl";
 
 interface Props {
   totalPages: number;
@@ -18,6 +19,7 @@ interface Props {
 export function SimplePagination({ totalPages }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("pagination");
   const currentPage = Number(searchParams.get("page")) || 1;
 
   const createPageURL = (pageNumber: number | string) => {
@@ -46,7 +48,9 @@ export function SimplePagination({ totalPages }: Props) {
 
     // Show ellipsis if the current page is far from the start
     if (currentPage > 3) {
-      paginationItems.push(<PaginationEllipsis key="start-ellipsis" />);
+      paginationItems.push(
+        <PaginationEllipsis key="start-ellipsis" label={t("more")} />
+      );
     }
 
     // Show pages around the current page (but not the first or last)
@@ -72,7 +76,9 @@ export function SimplePagination({ totalPages }: Props) {
 
     // Show ellipsis if the current page is far from the end
     if (currentPage < totalPages - 2) {
-      paginationItems.push(<PaginationEllipsis key="end-ellipsis" />);
+      paginationItems.push(
+        <PaginationEllipsis key="end-ellipsis" label={t("more")} />
+      );
     }
 
     // Always show the last page (if it's not page 1) and apply disabled logic
@@ -101,6 +107,8 @@ export function SimplePagination({ totalPages }: Props) {
         <PaginationItem>
           <PaginationPrevious
             href={createPageURL(currentPage - 1)}
+            label={t("previous")}
+            ariaLabel={t("previousAria")}
             aria-disabled={currentPage <= 1}
             tabIndex={currentPage <= 1 ? -1 : undefined}
             className={
@@ -112,6 +120,8 @@ export function SimplePagination({ totalPages }: Props) {
         <PaginationItem>
           <PaginationNext
             href={createPageURL(currentPage + 1)}
+            label={t("next")}
+            ariaLabel={t("nextAria")}
             aria-disabled={currentPage >= totalPages}
             tabIndex={currentPage >= totalPages ? -1 : undefined}
             className={

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { IconPaw } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 import {
   Sheet,
   SheetContent,
@@ -17,6 +18,7 @@ import NavItemsRenderer from "./nav-items-renderer";
 import UserMenu from "./top-nav-user-avatar";
 
 interface NavLink {
+  id: string;
   name: string;
   href: string;
 }
@@ -29,6 +31,7 @@ interface TopNavProps {
 
 const TopNav = ({ userImage, showUserProfile, links }: TopNavProps) => {
   const pathname = usePathname();
+  const t = useTranslations();
   // State to control the Sheet component for mobile navigation
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -44,7 +47,7 @@ const TopNav = ({ userImage, showUserProfile, links }: TopNavProps) => {
                   size="icon"
                   className="text-gray-400 hover:bg-gray-700 hover:text-white"
                 >
-                  <span className="sr-only">Open main menu</span>
+                  <span className="sr-only">{t("nav.openMainMenu")}</span>
                   <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
                 </Button>
               </SheetTrigger>
@@ -53,17 +56,18 @@ const TopNav = ({ userImage, showUserProfile, links }: TopNavProps) => {
                 className="bg-gray-800 text-white border-r-gray-700 p-4"
               >
                 <SheetHeader className="sr-only">
-                  <SheetTitle className="text-white">Menu</SheetTitle>
+                  <SheetTitle className="text-white">
+                    {t("nav.menuTitle")}
+                  </SheetTitle>
                   <SheetDescription className="sr-only">
-                    Mobile navigation menu with links to different sections of
-                    the website.
+                    {t("nav.mobileMenuDescription")}
                   </SheetDescription>
                 </SheetHeader>
                 {/* Logo inside the Sheet */}
                 <div className="flex shrink-0 items-center">
                   <IconPaw className="h-6 w-6" />
                   <span className="text-white font-bold text-xl ml-2">
-                    Pet Adopt
+                    {t("brand.name")}
                   </span>
                 </div>
 
@@ -87,7 +91,7 @@ const TopNav = ({ userImage, showUserProfile, links }: TopNavProps) => {
             <div className="flex shrink-0 items-center">
               <IconPaw className="h-6 w-6 text-white" />
               <span className="text-white font-bold text-xl ml-2">
-                Pet Adopt
+                {t("brand.name")}
               </span>
             </div>
 

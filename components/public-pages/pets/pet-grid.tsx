@@ -8,6 +8,7 @@ import LikeButton from "../like-button";
 import { calculateAgeString } from "@/app/lib/utils/date-utils";
 import { SimplePagination } from "@/components/simple-pagination";
 import { AnimalSize } from "@prisma/client";
+import { getTranslations } from "next-intl/server";
 
 interface Props {
   query: string;
@@ -26,6 +27,7 @@ const PetGrid = async ({
   breedName,
   size,
 }: Props) => {
+  const t = await getTranslations("pets");
   const session = await auth();
   const currentUserPersonId = session?.user?.personId;
 
@@ -41,7 +43,7 @@ const PetGrid = async ({
   if (pets.length === 0) {
     return (
       <div className="text-center text-gray-500 mt-10">
-        <p>No pets found matching your criteria.</p>
+        <p>{t("noPets")}</p>
       </div>
     );
   }
@@ -68,7 +70,7 @@ const PetGrid = async ({
                 {pet.animalImages?.length > 0 ? (
                   <Image
                     src={pet.animalImages[0].url}
-                    alt={`Photo of ${pet.name}`}
+                    alt={t("photoOf", { name: pet.name })}
                     fill
                     sizes="(max-width: 480px) 80vw, (max-width: 768px) 40vw, (max-width: 1024px) 30vw, 224px"
                     placeholder={`data:image/svg+xml;base64,${toBase64(

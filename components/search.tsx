@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 
 interface SearchProps {
   placeholder: string;
+  label?: string;
 }
 
-const Search = ({ placeholder }: SearchProps) => {
+const Search = ({ placeholder, label = "Search" }: SearchProps) => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -29,7 +30,7 @@ const Search = ({ placeholder }: SearchProps) => {
   return (
     <div className="relative">
       <label htmlFor="search" className="sr-only">
-        Search
+        {label}
       </label>
       <Input
         id="search"

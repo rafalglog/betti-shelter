@@ -1,4 +1,7 @@
 {
+  "brand": {
+    "name": "Pet Adopt"
+  },
   "settings": {
     "title": "Ustawienia",
     "description": "Zarządzaj preferencjami konta.",
@@ -6,5 +9,235 @@
     "languageDescription": "Wybierz język panelu.",
     "languageLabel": "Wybierz język",
     "languageSave": "Zapisz język"
+  },
+  "nav": {
+    "openMainMenu": "Otwórz menu główne",
+    "menuTitle": "Menu",
+    "mobileMenuDescription": "Menu nawigacyjne na urządzenia mobilne z linkami do różnych sekcji strony.",
+    "home": "Strona główna",
+    "pets": "Zwierzęta",
+    "about": "O nas",
+    "contact": "Kontakt",
+    "dashboard": "Panel",
+    "signIn": "Zaloguj się",
+    "notifications": "Zobacz powiadomienia",
+    "openUserMenu": "Otwórz menu użytkownika",
+    "userImageAlt": "Zdjęcie profilowe użytkownika",
+    "settings": "Ustawienia",
+    "signOut": "Wyloguj się"
+  },
+  "footer": {
+    "navigation": "Nawigacja",
+    "about": "O nas",
+    "contact": "Kontakt",
+    "findPet": "Znajdź zwierzaka",
+    "legal": "Informacje prawne",
+    "privacy": "Polityka prywatności",
+    "terms": "Warunki korzystania",
+    "connect": "Bądźmy w kontakcie",
+    "facebookLabel": "Facebook",
+    "twitterLabel": "Twitter",
+    "instagramLabel": "Instagram",
+    "copyright": "© {year} Pet Adopt. Wszelkie prawa zastrzeżone."
+  },
+  "home": {
+    "welcomeTitle": "Znajdź swojego idealnego pupila już dziś",
+    "welcomeCta": "Zobacz zwierzaki",
+    "imageAlt": "Zdjęcie główne strony",
+    "featuredHeading": "Przyjaciele czekający na dom",
+    "featuredCta": "Zobacz wszystkie zwierzęta",
+    "browseCategory": "Przeglądaj według kategorii",
+    "howToHelp": "Jak możesz pomóc",
+    "donateTitle": "Wesprzyj",
+    "donateBody": "Twoja hojność pomaga nam zapewnić niezbędną opiekę, leczenie i znaleźć kochające domy dla zwierząt.",
+    "donateCta": "Wesprzyj dziś",
+    "volunteerTitle": "Wolontariat",
+    "volunteerBody": "Poświęć swój czas i umiejętności, aby zmieniać życie naszych zwierząt. Każda godzina pomaga!",
+    "volunteerCta": "Dołącz do zespołu",
+    "fosterTitle": "Dom tymczasowy",
+    "fosterBody": "Otwórz swój dom tymczasowo dla zwierzęcia w potrzebie, zapewniając mu opiekuńcze środowisko.",
+    "fosterCta": "Dowiedz się więcej",
+    "loading": "Ładowanie..."
+  },
+  "categories": {
+    "dog": "Pies",
+    "cat": "Kot",
+    "bird": "Ptak",
+    "reptile": "Gad"
+  },
+  "about": {
+    "title": "O nas",
+    "description": "Witamy w PetAdopt, gdzie współczucie spotyka się z misją. Naszym celem jest zapewnienie bezpiecznego schronienia zwierzętom w potrzebie, oferując im opiekę i drugą szansę na kochający dom. Dołącz do nas w tworzeniu świata, w którym każdy odcisk łapy niesie nadzieję.",
+    "locationsTitle": "Nasze lokalizacje",
+    "locations": [
+      {
+        "location": "New York",
+        "address": "742 Evergreen Terrace",
+        "state": "New York, NY 10001"
+      },
+      {
+        "location": "San Francisco",
+        "address": "1600 Holloway Avenue",
+        "state": "San Francisco, CA 94132"
+      },
+      {
+        "location": "Chicago",
+        "address": "233 South Wacker Drive",
+        "state": "Chicago, IL 60606"
+      },
+      {
+        "location": "Austin",
+        "address": "5000 Burnet Road",
+        "state": "Austin, TX 78756"
+      }
+    ]
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Masz pytania lub chcesz pomóc? Skontaktuj się z nami i bądź częścią zmiany na lepsze dla zwierząt w potrzebie.",
+    "details": [
+      {
+        "title": "Wolontariat",
+        "email": "volunteer@example.com",
+        "phone": "+1 (555) 905-6789"
+      },
+      {
+        "title": "Darowizny",
+        "email": "donations@example.com",
+        "phone": "+1 (555) 905-7890"
+      },
+      {
+        "title": "Wsparcie",
+        "email": "support@example.com",
+        "phone": "+1 (555) 905-8901"
+      },
+      {
+        "title": "Opinie",
+        "email": "feedback@example.com",
+        "phone": "+1 (555) 905-9012"
+      }
+    ]
+  },
+  "auth": {
+    "brand": "Pet Adopt",
+    "signInTitle": "Zaloguj się do swojego konta",
+    "resetSuccess": "Twoje hasło zostało zresetowane. Zaloguj się nowym hasłem.",
+    "emailLabel": "Adres e-mail",
+    "passwordLabel": "Hasło",
+    "rememberMe": "Zapamiętaj mnie",
+    "forgotPassword": "Nie pamiętasz hasła?",
+    "signInButton": "Zaloguj się",
+    "orContinueWith": "Lub kontynuuj przez",
+    "signInWithProvider": "Zaloguj się przez {provider}",
+    "forgotTitle": "Nie pamiętasz hasła?",
+    "forgotSubtitle": "Wpisz e-mail, aby otrzymać link resetujący.",
+    "backToSignIn": "Wróć do logowania",
+    "sendResetLink": "Wyślij link resetujący",
+    "sending": "Wysyłanie...",
+    "resetTitle": "Zresetuj hasło",
+    "resetTokenMissing": "Brak tokenu resetu.",
+    "newPassword": "Nowe hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "updating": "Aktualizacja...",
+    "resetPasswordButton": "Zresetuj hasło"
+  },
+  "authErrors": {
+    "signInTitle": "Błąd logowania",
+    "defaultMessage": "Coś poszło nie tak podczas logowania.",
+    "tryAgain": "Spróbuj ponownie lub użyj innej metody logowania.",
+    "backToSignIn": "Wróć do logowania",
+    "errorCode": "Kod błędu: {error}",
+    "messages": {
+      "CredentialsSignin": "Nieprawidłowy e-mail lub hasło. Spróbuj ponownie.",
+      "OAuthAccountNotLinked": "Zaloguj się tym samym dostawcą, którego użyłeś wcześniej.",
+      "AccessDenied": "Nie masz dostępu do tego zasobu.",
+      "Verification": "Link logowania jest nieprawidłowy lub wygasł.",
+      "Configuration": "Uwierzytelnianie nie jest poprawnie skonfigurowane."
+    }
+  },
+  "pets": {
+    "title": "Lista zwierząt",
+    "subtitle": "Aktualnie dostępne do adopcji",
+    "searchPlaceholder": "Szukaj po imieniu",
+    "searchLabel": "Szukaj",
+    "categoryPlaceholder": "Wybierz kategorię",
+    "all": "Wszystkie",
+    "allColors": "Wszystkie kolory",
+    "allBreeds": "Wszystkie rasy",
+    "allSizes": "Wszystkie rozmiary",
+    "color": "Kolor",
+    "breed": "Rasa",
+    "size": "Rozmiar",
+    "noPets": "Nie znaleziono zwierząt pasujących do kryteriów.",
+    "photoOf": "Zdjęcie: {name}",
+    "item": "Zwierzę",
+    "sizes": {
+      "SMALL": "Mały",
+      "MEDIUM": "Średni",
+      "LARGE": "Duży",
+      "XLARGE": "Bardzo duży"
+    }
+  },
+  "petDetail": {
+    "species": "Gatunek",
+    "breed": "Rasa",
+    "color": "Kolor",
+    "sex": "Płeć",
+    "size": "Rozmiar",
+    "spayedNeutered": "Wykastrowany/Wysterylizowana",
+    "yes": "Tak",
+    "no": "Nie",
+    "age": "Wiek",
+    "dob": "Data urodzenia",
+    "weight": "Waga",
+    "height": "Wzrost",
+    "about": "O {name}",
+    "personality": "Osobowość i potrzeby",
+    "pendingAdoption": "W trakcie adopcji",
+    "viewApplication": "Zobacz swoją aplikację",
+    "adopt": "Adoptuj",
+    "mixedBreed": "Mieszaniec"
+  },
+  "petGallery": {
+    "selectedAlt": "Wybrane zdjęcie zwierzaka, kliknij aby powiększyć",
+    "thumbnailAlt": "Miniatura zdjęcia zwierzaka {index}",
+    "thumbnailAria": "Wybierz zdjęcie zwierzaka {index}",
+    "lightboxTitle": "Powiększone zdjęcie zwierzaka",
+    "lightboxAlt": "Powiększone zdjęcie zwierzaka"
+  },
+  "adopt": {
+    "applicationTitle": "Wniosek adopcyjny"
+  },
+  "like": {
+    "like": "Dodaj do ulubionych",
+    "unlike": "Usuń z ulubionych"
+  },
+  "loginPrompt": {
+    "close": "Zamknij",
+    "title": "Wymagane logowanie",
+    "description": "Aby polubić zwierzaki i zapisać ulubione, musisz być zalogowany. Zaloguj się lub utwórz konto, aby kontynuować.",
+    "cancel": "Anuluj",
+    "loginCta": "Zaloguj się / Zarejestruj"
+  },
+  "pagination": {
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "previousAria": "Przejdź do poprzedniej strony",
+    "nextAria": "Przejdź do następnej strony",
+    "more": "Więcej stron"
+  },
+  "errors": {
+    "notFoundTitle": "Nie znaleziono strony",
+    "notFoundDescription": "Ups! Strona, której szukasz, nie istnieje. Mogła zostać przeniesiona, usunięta lub wpisałeś błędny adres URL.",
+    "accessDeniedTitle": "Brak dostępu",
+    "accessDeniedDescription": "Nie masz wymaganych uprawnień, aby zobaczyć tę stronę. Jeśli uważasz, że to błąd, skontaktuj się z administratorem lub spróbuj się zalogować.",
+    "genericErrorTitle": "Coś poszło nie tak",
+    "genericErrorDescription": "Wystąpił nieoczekiwany błąd serwera. Odśwież stronę lub kliknij przycisk poniżej, aby spróbować ponownie.",
+    "itemNotFound": "{item} nie znaleziono",
+    "backTo": "Wróć do {destination}",
+    "goHome": "Przejdź na stronę główną",
+    "giraffeAlt": "Zaskoczona żyrafa.",
+    "cobraAlt": "Kobra w pozycji obronnej.",
+    "racoonAlt": "Zaskoczony szop."
   }
 }
