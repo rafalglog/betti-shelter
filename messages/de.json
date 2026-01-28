@@ -169,6 +169,60 @@
       "secondaryCta": "Tiere ansehen"
     }
   },
+  "foster": {
+    "hero": {
+      "kicker": "Zuhause schenken",
+      "title": "Pflegestellen geben Tieren die Brücke zur Adoption.",
+      "subtitle": "Kurzzeitpflege entlastet das Tierheim und gibt Tieren Ruhe und Stabilität.",
+      "primaryCta": "Pflegestelle werden",
+      "secondaryCta": "Fragen zur Pflege"
+    },
+    "benefits": {
+      "home": {
+        "title": "Ruhe zum Ankommen",
+        "body": "Viele Tiere blühen in einem Zuhause schneller auf als im Tierheim."
+      },
+      "support": {
+        "title": "Wir unterstützen dich",
+        "body": "Wir helfen mit Rat, Ausstattung und medizinischer Betreuung."
+      },
+      "adoption": {
+        "title": "Bessere Vermittlungen",
+        "body": "Pflegestellen helfen, Persönlichkeit und Bedürfnisse besser zu verstehen."
+      }
+    },
+    "expect": {
+      "title": "Was dich erwartet",
+      "body": "Wir matchen Tiere passend zu deinem Zuhause und deiner Zeit.",
+      "items": {
+        "supplies": "Futter und Ausstattung, wenn möglich",
+        "training": "Training und Verhaltenstipps vom Team",
+        "medical": "Medizinische Betreuung über Partner-Tierärzte",
+        "match": "Sorgfältige Auswahl passend zu deinem Zuhause"
+      }
+    },
+    "steps": {
+      "title": "So läuft es ab",
+      "step1": {
+        "title": "1. Bewerbung",
+        "body": "Erzähl uns von dir und deinem Zuhause."
+      },
+      "step2": {
+        "title": "2. Matching",
+        "body": "Wir schlagen ein passendes Tier vor."
+      },
+      "step3": {
+        "title": "3. Willkommen zuhause",
+        "body": "Du bekommst einen Plan, Unterstützung und Begleitung."
+      }
+    },
+    "footer": {
+      "title": "Pflege rettet Leben",
+      "body": "Schon wenige Wochen können einem Tier den Weg in ein Zuhause ebnen.",
+      "primaryCta": "Jetzt Pflegestelle werden",
+      "secondaryCta": "Tiere ansehen"
+    }
+  },
   "categories": {
     "dog": "Hund",
     "cat": "Katze",

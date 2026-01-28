@@ -169,6 +169,60 @@
       "secondaryCta": "Zobacz zwierzęta"
     }
   },
+  "foster": {
+    "hero": {
+      "kicker": "Otwórz swój dom",
+      "title": "Dom tymczasowy to bezpieczny most do adopcji.",
+      "subtitle": "Dom tymczasowy odciąża schronisko i daje zwierzętom spokój potrzebny do regeneracji.",
+      "primaryCta": "Zostań domem tymczasowym",
+      "secondaryCta": "Zapytaj o wolny termin"
+    },
+    "benefits": {
+      "home": {
+        "title": "Ciche miejsce do odzyskania sił",
+        "body": "W domu zwierzęta szybciej się adaptują niż w hałaśliwym schronisku."
+      },
+      "support": {
+        "title": "Jesteśmy z Tobą",
+        "body": "Zapewniamy wsparcie, wskazówki i opiekę weterynaryjną."
+      },
+      "adoption": {
+        "title": "Lepsze adopcje",
+        "body": "Domy tymczasowe pomagają lepiej poznać charakter zwierzęcia."
+      }
+    },
+    "expect": {
+      "title": "Czego się spodziewać",
+      "body": "Dobieramy zwierzę do Twojego domu i możliwości. Wszystko jest jasne i bezpieczne.",
+      "items": {
+        "supplies": "Zapewniamy karmę i wyposażenie, gdy to możliwe",
+        "training": "Wskazówki behawioralne i wsparcie zespołu",
+        "medical": "Opieka medyczna organizowana przez schronisko",
+        "match": "Dopasowanie zwierzęcia do warunków domowych"
+      }
+    },
+    "steps": {
+      "title": "Jak to działa",
+      "step1": {
+        "title": "1. Zgłoś się",
+        "body": "Opowiedz o swoim domu i dostępności."
+      },
+      "step2": {
+        "title": "2. Dopasowanie",
+        "body": "Łączymy Cię z odpowiednim zwierzakiem."
+      },
+      "step3": {
+        "title": "3. Powitaj go w domu",
+        "body": "Dostajesz plan opieki i stałe wsparcie."
+      }
+    },
+    "footer": {
+      "title": "Dom tymczasowy zmienia życie",
+      "body": "Nawet kilka tygodni opieki może odmienić los zwierzęcia.",
+      "primaryCta": "Zacznij pomagać",
+      "secondaryCta": "Poznaj zwierzęta"
+    }
+  },
   "categories": {
     "dog": "Pies",
     "cat": "Kot",

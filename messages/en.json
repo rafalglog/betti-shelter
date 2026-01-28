@@ -169,6 +169,60 @@
       "secondaryCta": "View animals"
     }
   },
+  "foster": {
+    "hero": {
+      "kicker": "Open your home",
+      "title": "Fostering gives animals a safe bridge to adoption.",
+      "subtitle": "Short-term fostering relieves shelter capacity and gives animals the calm, home-like environment they need to recover and thrive.",
+      "primaryCta": "Become a foster",
+      "secondaryCta": "Ask about fostering"
+    },
+    "benefits": {
+      "home": {
+        "title": "A quiet place to heal",
+        "body": "Many animals do better in a home than in a noisy shelter. Your care helps them decompress."
+      },
+      "support": {
+        "title": "We support you",
+        "body": "We provide guidance, supplies, and medical support so you’re never on your own."
+      },
+      "adoption": {
+        "title": "Better adoption outcomes",
+        "body": "Foster families help us learn personalities and match animals with the right homes."
+      }
+    },
+    "expect": {
+      "title": "What to expect",
+      "body": "Fosters are paired with animals that fit their home and schedule. We keep things clear and supportive.",
+      "items": {
+        "supplies": "Supplies and food provided when possible",
+        "training": "Training and behavior tips from our team",
+        "medical": "Medical care coordinated through our partner vets",
+        "match": "Carefully matched animals based on your home"
+      }
+    },
+    "steps": {
+      "title": "How it works",
+      "step1": {
+        "title": "1. Apply",
+        "body": "Tell us about your home, availability, and experience."
+      },
+      "step2": {
+        "title": "2. Get matched",
+        "body": "We pair you with an animal that fits your lifestyle."
+      },
+      "step3": {
+        "title": "3. Welcome them home",
+        "body": "We provide a plan, supplies, and ongoing support."
+      }
+    },
+    "footer": {
+      "title": "Foster love changes lives",
+      "body": "Even a few weeks of care can make all the difference for an animal waiting on a family.",
+      "primaryCta": "Start fostering",
+      "secondaryCta": "Meet the animals"
+    }
+  },
   "categories": {
     "dog": "Dog",
     "cat": "Cat",
