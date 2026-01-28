@@ -62,3 +62,35 @@ export const sendPasswordResetEmail = async (to: string, token: string) => {
     `,
   });
 };
+
+export const sendVerificationEmail = async (to: string, token: string) => {
+  const config = getEmailConfig();
+  if (!config) {
+    throw new Error("Email provider is not configured.");
+  }
+
+  const appUrl = process.env.APP_URL || "http://localhost:3000";
+  const verifyUrl = `${appUrl}/verify-email?token=${token}`;
+
+  const transporter = nodemailer.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.secure,
+    auth: {
+      user: config.user,
+      pass: config.pass,
+    },
+  });
+
+  await transporter.sendMail({
+    from: config.from,
+    to,
+    subject: "Verify your email",
+    text: `Verify your email using this link: ${verifyUrl}`,
+    html: `
+      <p>Thanks for creating an account.</p>
+      <p><a href="${verifyUrl}">Verify your email</a></p>
+      <p>If you did not request this, you can ignore this email.</p>
+    `,
+  });
+};

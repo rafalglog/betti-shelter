@@ -49,7 +49,7 @@ export default async function Footer() {
           <ul className="mt-4 space-y-2">
             <li>
               <Link
-                href="#"
+                href="/privacy"
                 className="text-sm text-slate-500 hover:text-slate-700"
               >
                 {t("privacy")}
@@ -57,7 +57,7 @@ export default async function Footer() {
             </li>
             <li>
               <Link
-                href="#"
+                href="/terms"
                 className="text-sm text-slate-500 hover:text-slate-700"
               >
                 {t("terms")}

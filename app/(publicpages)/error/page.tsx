@@ -11,6 +11,7 @@ const ErrorPage = async ({ searchParams }: Props) => {
   const { error } = await searchParams;
   const errorMessages: Record<string, string> = {
     CredentialsSignin: t("authErrors.messages.CredentialsSignin"),
+    EmailNotVerified: t("authErrors.messages.EmailNotVerified"),
     OAuthAccountNotLinked: t("authErrors.messages.OAuthAccountNotLinked"),
     AccessDenied: t("authErrors.messages.AccessDenied"),
     Verification: t("authErrors.messages.Verification"),

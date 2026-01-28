@@ -223,6 +223,86 @@
       "secondaryCta": "Poznaj zwierzęta"
     }
   },
+  "privacyPage": {
+    "hero": {
+      "kicker": "Prywatność",
+      "title": "Twoje zaufanie ma znaczenie. Tak dbamy o dane.",
+      "subtitle": "Zbieramy tylko to, co potrzebne do działania platformy, bezpieczeństwa kont i procesu adopcji. Poniżej wyjaśniamy, co zbieramy i jak możesz korzystać ze swoich praw.",
+      "updated": "Ostatnia aktualizacja: 28 stycznia 2026"
+    },
+    "sections": {
+      "data": {
+        "title": "Jakie dane zbieramy",
+        "body": "Dane konta i kontaktowe, wnioski adopcyjne, wiadomości oraz dane techniczne (urządzenie i logi użycia)."
+      },
+      "use": {
+        "title": "W jakim celu je wykorzystujemy",
+        "body": "Do świadczenia usługi, obsługi wniosków adopcyjnych, poprawy bezpieczeństwa, komunikacji oraz spełnienia wymogów prawnych."
+      },
+      "sharing": {
+        "title": "Udostępnianie danych",
+        "body": "Udostępniamy dane wyłącznie zaufanym dostawcom (hosting, email, analityka) lub gdy wymaga tego prawo. Nie sprzedajemy danych osobowych."
+      },
+      "cookies": {
+        "title": "Pliki cookie i analityka",
+        "body": "Używamy cookie do logowania, preferencji i podstawowej analityki. Możesz je kontrolować w ustawieniach przeglądarki."
+      },
+      "rights": {
+        "title": "Twoje prawa",
+        "body": "Możesz zażądać dostępu, sprostowania, usunięcia lub eksportu danych. Skontaktuj się z nami, aby złożyć wniosek."
+      },
+      "security": {
+        "title": "Bezpieczeństwo i retencja",
+        "body": "Stosujemy rozsądne zabezpieczenia i przechowujemy dane tylko tak długo, jak jest to potrzebne operacyjnie i prawnie."
+      }
+    },
+    "footer": {
+      "title": "Masz pytania o prywatność?",
+      "body": "Napisz do nas, jeśli chcesz uzyskać dostęp do danych, je poprawić lub je usunąć.",
+      "primaryCta": "Kontakt z ochroną danych",
+      "secondaryCta": "Przejdź do kontaktu"
+    }
+  },
+  "termsPage": {
+    "hero": {
+      "kicker": "Regulamin",
+      "title": "Proste zasady odpowiedzialnego korzystania z platformy.",
+      "subtitle": "Korzystając z serwisu, akceptujesz poniższe warunki. Wyjaśniają one, czego możesz oczekiwać od nas i czego oczekujemy od Ciebie.",
+      "updated": "Ostatnia aktualizacja: 28 stycznia 2026"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Akceptacja warunków",
+        "body": "Korzystanie z serwisu oznacza akceptację regulaminu i jego przyszłych zmian. Jeśli się nie zgadzasz, nie korzystaj z serwisu."
+      },
+      "accounts": {
+        "title": "Konta i wymagania",
+        "body": "Odpowiadasz za swoje dane logowania i aktywność. Musisz mieć co najmniej 13 lat, aby korzystać z platformy."
+      },
+      "use": {
+        "title": "Dozwolone korzystanie",
+        "body": "Nie nadużywaj serwisu, nie uzyskuj dostępu do danych bez uprawnień i nie podawaj fałszywych informacji."
+      },
+      "content": {
+        "title": "Treści i własność",
+        "body": "Treści i branding serwisu należą do nas. Zachowujesz prawa do swoich treści, ale udzielasz nam zgody na ich przetwarzanie w ramach działań schroniska."
+      },
+      "donations": {
+        "title": "Darowizny",
+        "body": "Darowizny są dobrowolne i wspierają działania schroniska. Zwroty są możliwe tylko, jeśli wymaga tego prawo."
+      },
+      "liability": {
+        "title": "Wyłączenia i odpowiedzialność",
+        "body": "Usługa jest świadczona w stanie „takim, jak jest”. W zakresie dozwolonym przez prawo nie odpowiadamy za szkody pośrednie."
+      }
+    },
+    "footer": {
+      "title": "Masz pytania o regulamin?",
+      "body": "Jeśli coś jest niejasne, skontaktuj się z nami — wszystko wyjaśnimy.",
+      "primaryCta": "Kontakt z obsługą",
+      "secondaryCta": "Polityka prywatności"
+    }
+  },
   "categories": {
     "dog": "Pies",
     "cat": "Kot",
@@ -284,20 +364,33 @@
   },
   "auth": {
     "brand": "Pet Adopt",
+    "signUpTitle": "Utwórz konto",
+    "signUpSubtitle": "Zarejestruj się jako użytkownik i potwierdź e-mail.",
     "signInTitle": "Zaloguj się do swojego konta",
     "resetSuccess": "Twoje hasło zostało zresetowane. Zaloguj się nowym hasłem.",
+    "nameLabel": "Imię i nazwisko",
     "emailLabel": "Adres e-mail",
     "passwordLabel": "Hasło",
+    "confirmPasswordLabel": "Potwierdź hasło",
     "rememberMe": "Zapamiętaj mnie",
     "forgotPassword": "Nie pamiętasz hasła?",
     "signInButton": "Zaloguj się",
+    "createAccountButton": "Utwórz konto",
     "orContinueWith": "Lub kontynuuj przez",
     "signInWithProvider": "Zaloguj się przez {provider}",
+    "noAccount": "Nie masz konta?",
+    "createAccount": "Utwórz je",
+    "alreadyHaveAccount": "Masz już konto?",
     "forgotTitle": "Nie pamiętasz hasła?",
     "forgotSubtitle": "Wpisz e-mail, aby otrzymać link resetujący.",
     "backToSignIn": "Wróć do logowania",
     "sendResetLink": "Wyślij link resetujący",
     "sending": "Wysyłanie...",
+    "creating": "Tworzenie...",
+    "verifyTitle": "Potwierdź e-mail",
+    "verifying": "Trwa potwierdzanie e-maila...",
+    "verifySuccess": "E-mail potwierdzony. Możesz się zalogować.",
+    "verifyHelp": "Jeśli link wygasł, poproś o nową wiadomość weryfikacyjną.",
     "resetTitle": "Zresetuj hasło",
     "resetTokenMissing": "Brak tokenu resetu.",
     "newPassword": "Nowe hasło",
@@ -313,6 +406,7 @@
     "errorCode": "Kod błędu: {error}",
     "messages": {
       "CredentialsSignin": "Nieprawidłowy e-mail lub hasło. Spróbuj ponownie.",
+      "EmailNotVerified": "Najpierw potwierdź e-mail.",
       "OAuthAccountNotLinked": "Zaloguj się tym samym dostawcą, którego użyłeś wcześniej.",
       "AccessDenied": "Nie masz dostępu do tego zasobu.",
       "Verification": "Link logowania jest nieprawidłowy lub wygasł.",

@@ -223,6 +223,86 @@
       "secondaryCta": "Tiere ansehen"
     }
   },
+  "privacyPage": {
+    "hero": {
+      "kicker": "Datenschutz",
+      "title": "Dein Vertrauen zählt. So gehen wir mit Daten um.",
+      "subtitle": "Wir erheben nur, was wir für den Betrieb der Plattform, sichere Konten und Adoptionen brauchen. Hier erklären wir, was wir sammeln und welche Rechte du hast.",
+      "updated": "Zuletzt aktualisiert: 28. Januar 2026"
+    },
+    "sections": {
+      "data": {
+        "title": "Welche Daten wir sammeln",
+        "body": "Kontodaten, Kontaktdaten, Adoptionsanträge, Nachrichten sowie technische Daten wie Geräte- und Nutzungsprotokolle."
+      },
+      "use": {
+        "title": "Wie wir Daten nutzen",
+        "body": "Zur Bereitstellung des Dienstes, Bearbeitung von Anträgen, Sicherheit, Kommunikation und zur Einhaltung gesetzlicher Pflichten."
+      },
+      "sharing": {
+        "title": "Weitergabe von Daten",
+        "body": "Wir teilen Daten nur mit vertrauenswürdigen Dienstleistern (Hosting, E-Mail, Analytics) oder wenn gesetzlich erforderlich. Wir verkaufen keine personenbezogenen Daten."
+      },
+      "cookies": {
+        "title": "Cookies & Analytics",
+        "body": "Wir verwenden Cookies für Anmeldung, Einstellungen und Basis-Analytics. Du kannst Cookies in deinem Browser steuern."
+      },
+      "rights": {
+        "title": "Deine Rechte",
+        "body": "Du kannst Zugriff, Berichtigung, Löschung oder Export deiner Daten verlangen. Kontaktiere uns dafür."
+      },
+      "security": {
+        "title": "Sicherheit & Aufbewahrung",
+        "body": "Wir setzen angemessene Sicherheitsmaßnahmen ein und speichern Daten nur so lange wie nötig."
+      }
+    },
+    "footer": {
+      "title": "Fragen zum Datenschutz?",
+      "body": "Melde dich, wenn du Daten einsehen, ändern oder löschen lassen möchtest.",
+      "primaryCta": "Datenschutz kontaktieren",
+      "secondaryCta": "Zur Kontaktseite"
+    }
+  },
+  "termsPage": {
+    "hero": {
+      "kicker": "Nutzungsbedingungen",
+      "title": "Klare Regeln für die verantwortungsvolle Nutzung.",
+      "subtitle": "Mit der Nutzung der Website akzeptierst du diese Bedingungen. Sie erklären, was du von uns erwarten kannst und was wir von dir erwarten.",
+      "updated": "Zuletzt aktualisiert: 28. Januar 2026"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Zustimmung zu den Bedingungen",
+        "body": "Die Nutzung der Website bedeutet Zustimmung zu diesen Bedingungen und zukünftigen Änderungen. Wenn du nicht einverstanden bist, nutze die Website nicht."
+      },
+      "accounts": {
+        "title": "Konten & Voraussetzungen",
+        "body": "Du bist für deine Zugangsdaten und Aktivitäten verantwortlich. Du musst mindestens 13 Jahre alt sein."
+      },
+      "use": {
+        "title": "Zulässige Nutzung",
+        "body": "Kein Missbrauch der Plattform, kein unbefugter Zugriff und keine falschen Angaben."
+      },
+      "content": {
+        "title": "Inhalte & Eigentum",
+        "body": "Inhalte und Branding der Plattform gehören uns. Deine Inhalte bleiben deine, aber du erlaubst uns die Verarbeitung für den Betrieb des Tierheims."
+      },
+      "donations": {
+        "title": "Spenden",
+        "body": "Spenden sind freiwillig und unterstützen den Betrieb. Rückerstattungen erfolgen nur, wenn gesetzlich erforderlich."
+      },
+      "liability": {
+        "title": "Haftungsausschluss",
+        "body": "Der Dienst wird „wie besehen“ bereitgestellt. Soweit gesetzlich zulässig haften wir nicht für indirekte Schäden."
+      }
+    },
+    "footer": {
+      "title": "Fragen zu den Bedingungen?",
+      "body": "Wenn etwas unklar ist, kontaktiere uns — wir helfen gern.",
+      "primaryCta": "Support kontaktieren",
+      "secondaryCta": "Datenschutz lesen"
+    }
+  },
   "categories": {
     "dog": "Hund",
     "cat": "Katze",
@@ -284,20 +364,33 @@
   },
   "auth": {
     "brand": "Pet Adopt",
+    "signUpTitle": "Konto erstellen",
+    "signUpSubtitle": "Registriere dich als Nutzer*in und bestätige deine E-Mail.",
     "signInTitle": "Melde dich bei deinem Konto an",
     "resetSuccess": "Dein Passwort wurde zurückgesetzt. Bitte melde dich mit deinem neuen Passwort an.",
+    "nameLabel": "Vollständiger Name",
     "emailLabel": "E-Mail-Adresse",
     "passwordLabel": "Passwort",
+    "confirmPasswordLabel": "Passwort bestätigen",
     "rememberMe": "Angemeldet bleiben",
     "forgotPassword": "Passwort vergessen?",
     "signInButton": "Anmelden",
+    "createAccountButton": "Konto erstellen",
     "orContinueWith": "Oder fortfahren mit",
     "signInWithProvider": "Mit {provider} anmelden",
+    "noAccount": "Noch kein Konto?",
+    "createAccount": "Jetzt erstellen",
+    "alreadyHaveAccount": "Schon ein Konto?",
     "forgotTitle": "Passwort vergessen?",
     "forgotSubtitle": "Gib deine E-Mail ein, um einen Zurücksetzen-Link zu erhalten.",
     "backToSignIn": "Zurück zur Anmeldung",
     "sendResetLink": "Link zum Zurücksetzen senden",
     "sending": "Senden...",
+    "creating": "Wird erstellt...",
+    "verifyTitle": "E-Mail bestätigen",
+    "verifying": "E-Mail wird bestätigt...",
+    "verifySuccess": "E-Mail bestätigt. Du kannst dich jetzt anmelden.",
+    "verifyHelp": "Wenn der Link abgelaufen ist, fordere eine neue Bestätigung an.",
     "resetTitle": "Passwort zurücksetzen",
     "resetTokenMissing": "Zurücksetz-Token fehlt.",
     "newPassword": "Neues Passwort",
@@ -313,6 +406,7 @@
     "errorCode": "Fehlercode: {error}",
     "messages": {
       "CredentialsSignin": "Ungültige E-Mail oder Passwort. Bitte erneut versuchen.",
+      "EmailNotVerified": "Bitte bestätige zuerst deine E-Mail.",
       "OAuthAccountNotLinked": "Bitte melde dich mit demselben Anbieter an, den du zuvor genutzt hast.",
       "AccessDenied": "Du hast keinen Zugriff auf diese Ressource.",
       "Verification": "Der Anmeldelink ist ungültig oder abgelaufen.",

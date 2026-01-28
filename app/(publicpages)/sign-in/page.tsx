@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { redirect } from "next/navigation"
 import { AuthError } from "next-auth"
 import { auth, providerMap, signIn } from "@/auth"
@@ -52,6 +53,9 @@ const SignInPage = async ({ searchParams }: Props) => {
               } catch (error) {
                 if (error instanceof AuthError) {
                   return redirect(`${SIGNIN_ERROR_URL}?error=${error.type}`)
+                }
+                if (error instanceof Error && error.message === "EmailNotVerified") {
+                  return redirect(`${SIGNIN_ERROR_URL}?error=EmailNotVerified`)
                 }
                 throw error
               }
@@ -174,6 +178,12 @@ const SignInPage = async ({ searchParams }: Props) => {
               )
             })}
           </div>
+        </div>
+        <div className="text-center text-sm text-gray-600">
+          <span>{t("auth.noAccount")}</span>{" "}
+          <Link href="/sign-up" className="font-medium text-indigo-600 hover:text-indigo-500">
+            {t("auth.createAccount")}
+          </Link>
         </div>
       </div>
     </div>

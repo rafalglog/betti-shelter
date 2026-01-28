@@ -75,6 +75,17 @@ export type PasswordFormState = {
   };
 };
 
+export type RegisterFormState = {
+  success?: boolean;
+  message?: string | null;
+  errors?: {
+    name?: string[];
+    email?: string[];
+    password?: string[];
+    confirmPassword?: string[];
+  };
+};
+
 // Error messages for application form
 export interface MyAdoptionAppFormState {
   message?: string | null;

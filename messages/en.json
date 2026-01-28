@@ -223,6 +223,86 @@
       "secondaryCta": "Meet the animals"
     }
   },
+  "privacyPage": {
+    "hero": {
+      "kicker": "Privacy",
+      "title": "Your trust matters. Here is how we handle your data.",
+      "subtitle": "We only collect what we need to run the shelter platform, keep accounts secure, and match animals with adopters. This page explains what we collect, how we use it, and the choices you have.",
+      "updated": "Last updated: January 28, 2026"
+    },
+    "sections": {
+      "data": {
+        "title": "Data we collect",
+        "body": "Account details, contact information, adoption applications, messages, and technical data such as device and usage logs."
+      },
+      "use": {
+        "title": "How we use data",
+        "body": "To provide the service, process adoption applications, improve safety, communicate with you, and comply with legal obligations."
+      },
+      "sharing": {
+        "title": "Sharing and disclosure",
+        "body": "We share data only with trusted service providers (hosting, email, analytics) or when required by law. We never sell your personal data."
+      },
+      "cookies": {
+        "title": "Cookies & analytics",
+        "body": "We use cookies for authentication, preferences, and basic analytics. You can control cookies in your browser settings."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You may request access, correction, deletion, or export of your data. Contact us to submit a request."
+      },
+      "security": {
+        "title": "Security & retention",
+        "body": "We use reasonable safeguards to protect data and keep it only as long as needed for operations and legal requirements."
+      }
+    },
+    "footer": {
+      "title": "Questions about privacy?",
+      "body": "Reach out if you want to access, change, or delete your data or learn more about our practices.",
+      "primaryCta": "Contact privacy team",
+      "secondaryCta": "Visit contact page"
+    }
+  },
+  "termsPage": {
+    "hero": {
+      "kicker": "Terms",
+      "title": "Simple rules for using the platform responsibly.",
+      "subtitle": "By using this website, you agree to these terms. They explain what you can expect from us and what we expect from you.",
+      "updated": "Last updated: January 28, 2026"
+    },
+    "sections": {
+      "acceptance": {
+        "title": "Acceptance of terms",
+        "body": "Using the site means you agree to these terms and any future updates. If you do not agree, please do not use the site."
+      },
+      "accounts": {
+        "title": "Accounts & eligibility",
+        "body": "You are responsible for your account credentials and activity. You must be at least 13 years old to use the platform."
+      },
+      "use": {
+        "title": "Acceptable use",
+        "body": "Do not misuse the platform, attempt to access data you are not authorized to see, or submit false information."
+      },
+      "content": {
+        "title": "Content & intellectual property",
+        "body": "We own the platform content and branding. You keep ownership of what you submit but grant us permission to process it for shelter operations."
+      },
+      "donations": {
+        "title": "Donations",
+        "body": "Donations are voluntary and support shelter operations. Refunds are provided only when required by law."
+      },
+      "liability": {
+        "title": "Disclaimers & liability",
+        "body": "The service is provided as-is. To the extent permitted by law, we are not liable for indirect or consequential damages."
+      }
+    },
+    "footer": {
+      "title": "Need help with the terms?",
+      "body": "If anything is unclear, contact us and we will walk you through it.",
+      "primaryCta": "Contact support",
+      "secondaryCta": "Read privacy policy"
+    }
+  },
   "categories": {
     "dog": "Dog",
     "cat": "Cat",
@@ -284,20 +364,33 @@
   },
   "auth": {
     "brand": "Pet Adopt",
+    "signUpTitle": "Create your account",
+    "signUpSubtitle": "Register as a user and confirm your email to continue.",
     "signInTitle": "Sign in to your account",
     "resetSuccess": "Your password has been reset. Please sign in with your new password.",
+    "nameLabel": "Full name",
     "emailLabel": "Email address",
     "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm password",
     "rememberMe": "Remember me",
     "forgotPassword": "Forgot password?",
     "signInButton": "Sign in",
+    "createAccountButton": "Create account",
     "orContinueWith": "Or continue with",
     "signInWithProvider": "Sign in with {provider}",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one",
+    "alreadyHaveAccount": "Already have an account?",
     "forgotTitle": "Forgot your password?",
     "forgotSubtitle": "Enter your email to receive a reset link.",
     "backToSignIn": "Back to sign in",
     "sendResetLink": "Send reset link",
     "sending": "Sending...",
+    "creating": "Creating...",
+    "verifyTitle": "Verify your email",
+    "verifying": "Verifying your email...",
+    "verifySuccess": "Your email is verified. You can sign in now.",
+    "verifyHelp": "If the link is expired, request a new verification email.",
     "resetTitle": "Reset your password",
     "resetTokenMissing": "Reset token is missing.",
     "newPassword": "New password",
@@ -313,6 +406,7 @@
     "errorCode": "Error code: {error}",
     "messages": {
       "CredentialsSignin": "Invalid email or password. Please try again.",
+      "EmailNotVerified": "Please verify your email before signing in.",
       "OAuthAccountNotLinked": "Please sign in with the same provider you used before.",
       "AccessDenied": "You do not have access to this resource.",
       "Verification": "The sign-in link is invalid or has expired.",

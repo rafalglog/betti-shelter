@@ -138,7 +138,12 @@ const credentialsConfig = Credentials({
       const passwordsMatch = await bcrypt.compare(password, user.password);
 
       // If the password is correct, return the user object
-      if (passwordsMatch) return user;
+      if (passwordsMatch) {
+        if (!user.emailVerified) {
+          throw new Error("EmailNotVerified");
+        }
+        return user;
+      }
     }
     return null;
   },

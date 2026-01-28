@@ -123,6 +123,7 @@ const _createUser = async (
           password: hashedPassword,
           role,
           mustChangePassword: true,
+          emailVerified: new Date(),
           person: { connect: { id: person.id } },
         },
       });
