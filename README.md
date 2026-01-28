@@ -12,7 +12,7 @@ The platform features a public-facing portal for potential adopters and a powerf
 
 ## Recent Updates
 
-These additions expand account security, user management, and localization:
+These additions expand account security, user management, localization, and public engagement pages:
 
 * **Password Management & Recovery**
   * Public **Forgot Password** (`/forgot-password`) and **Reset Password** (`/reset-password`) pages.
@@ -29,10 +29,16 @@ These additions expand account security, user management, and localization:
   * **Language switcher** with cookie-based locale persistence (`NEXT_LOCALE`).
   * Added **next-intl** integration and message catalogs for **EN/PL/DE**.
   * Public-facing pages and navigation are fully translated (EN/PL/DE).
+  * Dashboard UI translated (EN/PL/DE).
 * **Auth UX**
   * Dedicated **sign-in error** page (`/error`) with friendly error messaging.
 * **Public Pet Search**
   * Enhanced pet listing filters for **Color, Breed, and Animal Size**.
+* **Public Engagement Pages**
+  * New **Donate** (`/donate`), **Volunteer** (`/volunteer`), and **Foster** (`/foster`) pages.
+  * Added **Privacy Policy** (`/privacy`) and **Terms of Service** (`/terms`) pages; footer links are wired.
+* **Globalized Adoption Address Fields**
+  * Adoption application address now supports **Country** + optional **Region/State/Province** (text), with international postal codes.
 
 ## Core Features
 
