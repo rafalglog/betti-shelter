@@ -115,6 +115,60 @@
       "secondaryCta": "Kontakt aufnehmen"
     }
   },
+  "volunteer": {
+    "hero": {
+      "kicker": "Werde Teil des Teams",
+      "title": "Ehrenamt, das Leben verändert.",
+      "subtitle": "Die Arbeit im Tierheim ist praktisch und bedeutungsvoll. Ob tägliche Pflege, Events oder Unterstützung im Hintergrund — deine Zeit zählt.",
+      "primaryCta": "Als Helfer*in bewerben",
+      "secondaryCta": "Frage stellen"
+    },
+    "roles": {
+      "care": {
+        "title": "Tierpflege",
+        "body": "Füttern, Gassi gehen, Beschäftigung und Zuwendung für die Tiere."
+      },
+      "events": {
+        "title": "Events & Outreach",
+        "body": "Unterstützung bei Adoptionstagen, Aktionen und Veranstaltungen."
+      },
+      "support": {
+        "title": "Organisation & Support",
+        "body": "Fotos, Transporte, Büroarbeit und Ordnung in den Materialien."
+      }
+    },
+    "why": {
+      "title": "Warum bei uns helfen",
+      "body": "Du wirst Teil eines verlässlichen Teams, das das Tierheim jeden Tag trägt.",
+      "items": {
+        "training": "Einführung und Training für neue Helfer*innen",
+        "flexible": "Flexible Einsätze, die zu deinem Alltag passen",
+        "team": "Ein unterstützendes Team an deiner Seite",
+        "impact": "Direkter Einfluss auf Wohlbefinden und Adoptionen"
+      }
+    },
+    "steps": {
+      "title": "So läuft es ab",
+      "step1": {
+        "title": "1. Stell dich vor",
+        "body": "Erzähl uns, was du kannst und wie viel Zeit du hast."
+      },
+      "step2": {
+        "title": "2. Lerne uns kennen",
+        "body": "Wir laden dich zu einem kurzen Gespräch oder Besuch ein."
+      },
+      "step3": {
+        "title": "3. Loslegen",
+        "body": "Dein erster Einsatz findet mit einem Mentor statt."
+      }
+    },
+    "footer": {
+      "title": "Bereit, etwas zu bewegen?",
+      "body": "Deine Zeit ist genauso wertvoll wie Spenden. Wir freuen uns auf dich.",
+      "primaryCta": "Jetzt helfen",
+      "secondaryCta": "Tiere ansehen"
+    }
+  },
   "categories": {
     "dog": "Hund",
     "cat": "Katze",

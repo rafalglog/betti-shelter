@@ -115,6 +115,60 @@
       "secondaryCta": "Contact our team"
     }
   },
+  "volunteer": {
+    "hero": {
+      "kicker": "Join the team",
+      "title": "Volunteer time that changes lives.",
+      "subtitle": "Shelter work is hands-on and deeply meaningful. Whether you help with daily care, events, or behind-the-scenes support, you give animals the steady, kind care they need.",
+      "primaryCta": "Apply to volunteer",
+      "secondaryCta": "Ask a question"
+    },
+    "roles": {
+      "care": {
+        "title": "Animal care",
+        "body": "Feeding, walking, enrichment, and comfort for animals adjusting to shelter life."
+      },
+      "events": {
+        "title": "Events & outreach",
+        "body": "Help at adoption days, community events, and awareness campaigns."
+      },
+      "support": {
+        "title": "Operations support",
+        "body": "Photography, transport, admin help, and keeping supplies organized."
+      }
+    },
+    "why": {
+      "title": "Why volunteer with us",
+      "body": "You become part of a reliable, compassionate team that keeps the shelter running day after day.",
+      "items": {
+        "training": "Guided onboarding and training for new volunteers",
+        "flexible": "Flexible shifts that fit real-life schedules",
+        "team": "A supportive team that has your back",
+        "impact": "Direct impact on animal wellbeing and adoption outcomes"
+      }
+    },
+    "steps": {
+      "title": "How it works",
+      "step1": {
+        "title": "1. Introduce yourself",
+        "body": "Tell us what skills you bring and how much time you can give."
+      },
+      "step2": {
+        "title": "2. Meet the team",
+        "body": "We’ll invite you for a short call or visit to find the best fit."
+      },
+      "step3": {
+        "title": "3. Start helping",
+        "body": "Join your first shift with a mentor and learn by doing."
+      }
+    },
+    "footer": {
+      "title": "Ready to make a difference?",
+      "body": "Your time and care are just as valuable as donations. We’d love to welcome you.",
+      "primaryCta": "Volunteer now",
+      "secondaryCta": "View animals"
+    }
+  },
   "categories": {
     "dog": "Dog",
     "cat": "Cat",

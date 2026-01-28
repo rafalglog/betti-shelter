@@ -115,6 +115,60 @@
       "secondaryCta": "Skontaktuj się z nami"
     }
   },
+  "volunteer": {
+    "hero": {
+      "kicker": "Dołącz do zespołu",
+      "title": "Wolontariat, który zmienia życie.",
+      "subtitle": "Praca w schronisku jest praktyczna i bardzo potrzebna. Pomagaj w opiece, wydarzeniach lub wsparciu organizacyjnym — każda godzina ma znaczenie.",
+      "primaryCta": "Zgłoś się na wolontariat",
+      "secondaryCta": "Zadaj pytanie"
+    },
+    "roles": {
+      "care": {
+        "title": "Opieka nad zwierzętami",
+        "body": "Karmienie, spacery, zabawy i wsparcie zwierząt w schronisku."
+      },
+      "events": {
+        "title": "Wydarzenia i promocja",
+        "body": "Pomoc podczas dni adopcyjnych i wydarzeń w społeczności."
+      },
+      "support": {
+        "title": "Wsparcie organizacyjne",
+        "body": "Zdjęcia, transport, administracja i porządkowanie zapasów."
+      }
+    },
+    "why": {
+      "title": "Dlaczego warto",
+      "body": "Stajesz się częścią zespołu, który zapewnia zwierzętom stałą, troskliwą opiekę.",
+      "items": {
+        "training": "Wprowadzenie i szkolenie dla nowych wolontariuszy",
+        "flexible": "Elastyczne grafiki dopasowane do życia",
+        "team": "Wspierający zespół, który pomaga na każdym kroku",
+        "impact": "Realny wpływ na dobrostan i adopcje"
+      }
+    },
+    "steps": {
+      "title": "Jak to działa",
+      "step1": {
+        "title": "1. Napisz do nas",
+        "body": "Powiedz, jakie masz umiejętności i ile czasu możesz poświęcić."
+      },
+      "step2": {
+        "title": "2. Poznajmy się",
+        "body": "Zaprosimy Cię na krótką rozmowę lub spotkanie."
+      },
+      "step3": {
+        "title": "3. Zacznij pomagać",
+        "body": "Pierwszy dyżur odbywa się z mentorem."
+      }
+    },
+    "footer": {
+      "title": "Gotowy/a pomagać?",
+      "body": "Twój czas jest bezcenny. Z radością Cię przyjmiemy.",
+      "primaryCta": "Dołącz teraz",
+      "secondaryCta": "Zobacz zwierzęta"
+    }
+  },
   "categories": {
     "dog": "Pies",
     "cat": "Kot",
