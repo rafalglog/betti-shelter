@@ -62,6 +62,7 @@ export function DataTablePagination<TData>({
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
         {t("rowsSelected", {
+          count: table.getFilteredSelectedRowModel().rows.length,
           selected: table.getFilteredSelectedRowModel().rows.length,
           total: table.getFilteredRowModel().rows.length,
         })}
